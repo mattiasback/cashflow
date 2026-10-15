@@ -54,6 +54,8 @@ dependencies {
     androidTestImplementation(libs.koin.test)
     androidTestImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.test.runner)
+    // Compose UI tests need an Espresso that knows API 36's InputManager.
+    androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.compose.ui.test.junit4)
     debugImplementation(libs.compose.ui.test.manifest)

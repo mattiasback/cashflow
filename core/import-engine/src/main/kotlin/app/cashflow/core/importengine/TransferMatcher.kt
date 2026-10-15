@@ -167,7 +167,7 @@ class TransferMatcher(
 /** Text hints that a row is a transfer. Account numbers are compared with dots stripped. */
 object TransferHints {
     private val accountNumber = Regex("""(?<![\p{L}\d])(\d{4}[ .-]?\d{2}[ .-]?\d{3}[ .-]?\d{2,5}|\d{10,15})(?![\p{L}\d])""")
-    private val transferWords = Regex("""(?iU)\b(överföring|overforing|överf|overf)\b""")
+    private val transferWords = Regex("""(?i)(?<![\p{L}\d])([ÖöO]verf[öo]ring|[ÖöO]verf)(?![\p{L}\d])""") // ASCII-only (?i): Android's ICU rejects (?U)
 
     /** Clearing-number prefixes of savings and investment institutions (9550–9569 Avanza, 9100 Nordnet). */
     private val savingsClearing = listOf("955", "956", "9100")

@@ -5,10 +5,12 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.hasScrollAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cashflow.core.categorization.BundledCatalog
@@ -105,43 +107,48 @@ class ImportFlowTest {
             .answerNewAccount()
             .assertReceipt(newRows = 3)
             .openReview()
-            .approveFirstGroup("Nöje")
+            .approveFirstGroup(app.cashflow.core.ui.R.string.category_noje)
             .assertReviewDone()
     }
 }
 
 class ImportFlowRobot(private val compose: ComposeContentTestRule) {
 
+    // Strings come from resources so the test runs in Swedish and English.
+    private val res = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext.resources
+    private fun s(id: Int) = res.getString(id)
+
     fun assertFlowEmptyState() = apply {
-        compose.onNodeWithText("Inget flöde än").assertIsDisplayed()
+        compose.onNodeWithText(s(app.cashflow.feature.flow.ui.R.string.flow_empty_title)).assertIsDisplayed()
     }
 
     fun shareFile(shares: MutableSharedFlow<List<String>>) = apply {
         shares.tryEmit(listOf("content://test/exempel"))
-        compose.waitUntil(5_000) { compose.onAllNodesWithText("Vilket konto gäller filerna?").fetchSemanticsNodes().isNotEmpty() }
+        compose.waitUntil(5_000) { compose.onAllNodesWithText(s(app.cashflow.feature.importer.ui.R.string.import_which_account)).fetchSemanticsNodes().isNotEmpty() }
     }
 
     fun answerNewAccount() = apply {
-        compose.onNodeWithText("Importera").performClick()
+        compose.onNodeWithText(s(app.cashflow.feature.importer.ui.R.string.import_button_go)).performClick()
     }
 
     fun assertReceipt(newRows: Int) = apply {
-        compose.waitUntil(5_000) { compose.onAllNodesWithText("Import klar").fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithText("$newRows nya transaktioner", substring = true).assertIsDisplayed()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText(s(app.cashflow.feature.importer.ui.R.string.receipt_title)).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithContentDescription(res.getQuantityString(app.cashflow.feature.importer.ui.R.plurals.receipt_new, newRows, newRows)).assertIsDisplayed()
     }
 
     fun openReview() = apply {
-        compose.onNodeWithText("Granska nu").performClick()
-        compose.waitUntil(5_000) { compose.onAllNodesWithText("Godkänn").fetchSemanticsNodes().isNotEmpty() }
+        // The Händelser review card behind the sheet has the same label; the sheet is drawn last.
+        compose.onAllNodesWithText(s(app.cashflow.feature.importer.ui.R.string.receipt_review_now)).onLast().performClick()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText(s(app.cashflow.feature.events.ui.R.string.review_approve)).fetchSemanticsNodes().isNotEmpty() }
     }
 
-    fun approveFirstGroup(category: String) = apply {
-        compose.onAllNodesWithText(category).onFirst().performClick()
-        compose.onAllNodesWithText("Godkänn").onFirst().performClick()
+    fun approveFirstGroup(categoryRes: Int) = apply {
+        compose.onAllNodesWithText(s(categoryRes)).onFirst().performClick()
+        compose.onAllNodesWithText(s(app.cashflow.feature.events.ui.R.string.review_approve)).onFirst().performClick()
     }
 
     fun assertReviewDone() = apply {
-        compose.waitUntil(5_000) { compose.onAllNodesWithText("Allt är kategoriserat").fetchSemanticsNodes().isNotEmpty() }
+        compose.waitUntil(5_000) { compose.onAllNodesWithText(s(app.cashflow.feature.events.ui.R.string.review_done_title)).fetchSemanticsNodes().isNotEmpty() }
     }
 
     @Suppress("unused")

@@ -4,7 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.graphics.Color
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.content.IntentCompat
@@ -17,8 +19,9 @@ class MainActivity : ComponentActivity() {
     private val sharedFiles = Channel<List<String>>(Channel.BUFFERED)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Bar icon colours follow the theme automatically with ComponentActivity's edge-to-edge.
-        enableEdgeToEdge()
+        // Every screen draws an accent band behind the status bar, so its icons are always light.
+        // The navigation bar follows the theme.
+        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // The floating nav draws its own fade over the navigation bar.
