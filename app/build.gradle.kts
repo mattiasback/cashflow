@@ -49,6 +49,10 @@ dependencies {
     implementation(libs.kermit)
 
     testImplementation(testFixtures(projects.core.domain))
+    androidTestImplementation(testFixtures(projects.core.domain))
+    androidTestImplementation(platform(libs.koin.bom))
+    androidTestImplementation(libs.koin.test)
+    androidTestImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.compose.ui.test.junit4)
