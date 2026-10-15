@@ -89,7 +89,7 @@ fun TransactionDetailSheet(
             }
             item {
                 Column(
-                    Modifier.fillMaxWidth().clip(Radius.sm).background(c.surfaceGroup).padding(horizontal = Spacing.s4, vertical = Spacing.s3),
+                    Modifier.fillMaxWidth().clip(Radius.sm).background(if (c.isDark) c.surfaceCard else c.surfaceGroup).padding(horizontal = Spacing.s4, vertical = Spacing.s3),
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     Text(stringResource(R.string.detail_how_title), style = CashFlowTheme.typography.caption, color = c.textSecondary)
@@ -172,7 +172,7 @@ fun TransactionDetailSheet(
 private fun KeyValue(label: String, value: String, modifier: Modifier = Modifier) {
     val c = CashFlowTheme.colors
     Column(
-        modifier.clip(Radius.sm).background(c.surfaceGroup).padding(Spacing.s3),
+        modifier.clip(Radius.sm).background(if (c.isDark) c.surfaceCard else c.surfaceGroup).padding(Spacing.s3),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Text(label, style = CashFlowTheme.typography.label, color = c.textSecondary)

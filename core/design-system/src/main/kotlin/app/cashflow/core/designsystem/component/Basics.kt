@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
@@ -92,7 +93,10 @@ fun CfButton(
     val c = CashFlowTheme.colors
     val (bg, fg, border) = when (variant) {
         CfButtonVariant.Primary -> Triple(c.brand, c.textOnAccent, null)
-        CfButtonVariant.Accent -> Triple(accent ?: c.brand, Color.White, null)
+        // Ink accents are light in dark theme, so the label flips to dark text to keep contrast.
+        CfButtonVariant.Accent -> (accent ?: c.brand).let { bg ->
+            Triple(bg, if (bg.luminance() > 0.4f) c.textOnThumb else Color.White, null)
+        }
         CfButtonVariant.Outline -> Triple(Color.Transparent, c.textPrimary, BorderStroke(1.5.dp, c.borderStrong))
         CfButtonVariant.Danger -> Triple(Color.Transparent, c.textDanger, BorderStroke(1.5.dp, c.textDanger))
     }

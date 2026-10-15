@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -114,7 +115,9 @@ fun FlowScreen(
                     Modifier.padding(horizontal = Spacing.gutter).padding(top = Spacing.s4),
                     verticalArrangement = Arrangement.spacedBy(Spacing.s3),
                 ) {
-                    state.tiles.chunked(2).forEach { row ->
+                    // From 1.5× font scale the tiles stack in one column (design system scaling rule).
+                    val perRow = if (LocalDensity.current.fontScale >= 1.5f) 1 else 2
+                    state.tiles.chunked(perRow).forEach { row ->
                         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s3)) {
                             row.forEach { t ->
                                 val label = t.label.asString()

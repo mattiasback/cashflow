@@ -16,6 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,7 +61,8 @@ fun SummaryCard(
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
             Text(label, style = CashFlowTheme.typography.label, color = c.textSecondary)
-            Text(value, style = CashFlowTheme.typography.headlineL, color = c.textPrimary, maxLines = 1, softWrap = false)
+            // Hero figures shrink to fit one line rather than truncate (design: minimumScaleFactor 0.7).
+            FitText(value, CashFlowTheme.typography.headlineL, c.textPrimary)
             if (delta != null) {
                 Text(
                     delta,
@@ -99,17 +104,15 @@ fun StatTile(
             }
             Text(label, style = CashFlowTheme.typography.label, color = c.textSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
-        Text(
+        FitText(
             value,
-            style = CashFlowTheme.typography.headline.copy(fontSize = CashFlowTheme.typography.titleL.fontSize * 1.1f, fontFeatureSettings = "tnum"),
-            color = valueColor,
-            maxLines = 1,
-            softWrap = false,
-            modifier = Modifier.padding(top = 6.dp),
+            CashFlowTheme.typography.headline.copy(fontSize = CashFlowTheme.typography.titleL.fontSize * 1.1f, fontFeatureSettings = "tnum"),
+            valueColor,
+            Modifier.padding(top = 6.dp),
         )
         Spacer(Modifier.weight(1f, fill = false))
         if (sub != null) {
-            Text(sub, style = CashFlowTheme.typography.label, color = c.textSecondary, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = Spacing.s2))
+            Text(sub, style = CashFlowTheme.typography.label, color = c.textSecondary, maxLines = 4, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = Spacing.s2))
         }
     }
 }
@@ -151,7 +154,7 @@ fun CategoryBar(
             Spacer(Modifier.width(10.dp))
             Text(amount, style = CashFlowTheme.typography.body.copy(fontFeatureSettings = "tnum"), color = c.textPrimary, maxLines = 1, softWrap = false)
             Spacer(Modifier.width(10.dp))
-            Text(share, style = CashFlowTheme.typography.label.copy(fontFeatureSettings = "tnum"), color = c.textSecondary, maxLines = 1, softWrap = false, modifier = Modifier.width(48.dp), textAlign = androidx.compose.ui.text.style.TextAlign.End)
+            Text(share, style = CashFlowTheme.typography.label.copy(fontFeatureSettings = "tnum"), color = c.textSecondary, maxLines = 1, softWrap = false, modifier = Modifier.widthIn(min = 48.dp), textAlign = androidx.compose.ui.text.style.TextAlign.End)
         }
         Box(
             Modifier
@@ -165,6 +168,19 @@ fun CategoryBar(
                 },
         )
     }
+}
+
+/** One line of text that steps its size down to fit instead of being cut off. */
+@Composable
+fun FitText(text: String, style: TextStyle, color: Color, modifier: Modifier = Modifier) {
+    BasicText(
+        text = text,
+        style = style.copy(color = color),
+        maxLines = 1,
+        softWrap = false,
+        autoSize = TextAutoSize.StepBased(minFontSize = style.fontSize * 0.5f, maxFontSize = style.fontSize),
+        modifier = modifier,
+    )
 }
 
 /** A grey placeholder block for section skeletons. */
