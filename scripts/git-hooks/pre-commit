@@ -1,0 +1,12 @@
+#!/bin/sh
+# Blocks commits that would add real bank exports or other private financial data.
+# Installed with: git config core.hooksPath scripts/git-hooks
+bad=$(git diff --cached --name-only --diff-filter=AM \
+  | grep -Ei '(^|/)\.private/|\.xlsx?$|\.csv$|kontoutdrag|transaktioner_' \
+  | grep -v '/src/test/resources/synthetic/')
+if [ -n "$bad" ]; then
+  echo "pre-commit: refusing to commit possible private financial data:" >&2
+  echo "$bad" >&2
+  exit 1
+fi
+exit 0

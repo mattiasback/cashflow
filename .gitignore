@@ -33,3 +33,13 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Private financial data: real bank exports never enter git
+.private/
+*.xls
+*.xlsx
+*.csv
+!**/src/test/resources/synthetic/*.csv
+
+# Local Gradle user home (sandboxed builds)
+.gradle-user/
