@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_disk_full">Your phone is out of storage. Free up some space and try again.</string>
+    <string name="error_not_found">Couldn\'t find what you were looking for.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="error_import_unsupported">This file isn\'t recognised. Pick a Länsförsäkringar export (.xls) or a CSV file.</string>
+    <string name="error_import_empty">The file has no transactions.</string>
+    <string name="error_import_unreadable">Couldn\'t read the file.</string>
+    <string name="error_import_unknown_account">That account no longer exists. Pick another one.</string>
+    <string name="error_import_chain_break">The balance doesn\'t follow on from the account\'s earlier transactions.</string>
+
+    <string name="category_lon">Salary</string>
+    <string name="category_barnbidrag">Child benefit</string>
+    <string name="category_ersattning">Benefits</string>
+    <string name="category_inkomst_ovrig">Other income</string>
+    <string name="category_boende">Housing</string>
+    <string name="category_transport">Transport</string>
+    <string name="category_barnomsorg">Childcare</string>
+    <string name="category_forsakringar">Insurance</string>
+    <string name="category_abonnemang">Subscriptions</string>
+    <string name="category_lan">Loans &amp; CSN</string>
+    <string name="category_fack">Union &amp; unemployment fund</string>
+    <string name="category_mat">Groceries</string>
+    <string name="category_restaurang">Restaurants</string>
+    <string name="category_shopping">Shopping</string>
+    <string name="category_hem_bygg">Home &amp; DIY</string>
+    <string name="category_halsa">Health</string>
+    <string name="category_noje">Entertainment</string>
+    <string name="category_resa">Travel</string>
+    <string name="category_ovrigt_rorligt">Other variable</string>
+    <string name="category_sparande">Savings</string>
+    <string name="category_fonder">Funds</string>
+    <string name="category_buffert">Buffer</string>
+    <string name="category_pension">Pension &amp; child savings</string>
+    <string name="category_amortering">Mortgage repayment</string>
+    <string name="category_overforing">Transfer</string>
+    <string name="category_okat">Uncategorized</string>
+
+    <string name="group_income">Income</string>
+    <string name="group_fixed">Fixed</string>
+    <string name="group_variable">Variable</string>
+    <string name="group_savings">Savings</string>
+    <string name="group_transfer">Transfers</string>
+    <string name="group_uncategorized">To review</string>
+
+    <string name="nav_events">Activity</string>
+    <string name="nav_flow">Flow</string>
+    <string name="cd_profile">Profile</string>
+    <string name="cd_close">Close</string>
+</resources>

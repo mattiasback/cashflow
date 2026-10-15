@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_disk_full">Telefonen har inte plats att spara mer. Frigör utrymme och försök igen.</string>
+    <string name="error_not_found">Hittade inte det du letade efter.</string>
+    <string name="error_unknown">Något gick fel. Försök igen.</string>
+    <string name="error_import_unsupported">Känner inte igen filen. Välj en export från Länsförsäkringar (.xls) eller en CSV-fil.</string>
+    <string name="error_import_empty">Filen innehåller inga transaktioner.</string>
+    <string name="error_import_unreadable">Kunde inte läsa filen.</string>
+    <string name="error_import_unknown_account">Kontot finns inte längre. Välj ett annat konto.</string>
+    <string name="error_import_chain_break">Saldot hänger inte ihop med kontots tidigare transaktioner.</string>
+
+    <string name="category_lon">Lön</string>
+    <string name="category_barnbidrag">Barnbidrag</string>
+    <string name="category_ersattning">Ersättningar</string>
+    <string name="category_inkomst_ovrig">Övrig inkomst</string>
+    <string name="category_boende">Boende</string>
+    <string name="category_transport">Transport</string>
+    <string name="category_barnomsorg">Barnomsorg</string>
+    <string name="category_forsakringar">Försäkringar</string>
+    <string name="category_abonnemang">Abonnemang</string>
+    <string name="category_lan">Lån &amp; CSN</string>
+    <string name="category_fack">Fack &amp; a-kassa</string>
+    <string name="category_mat">Mat</string>
+    <string name="category_restaurang">Restaurang</string>
+    <string name="category_shopping">Shopping</string>
+    <string name="category_hem_bygg">Hem &amp; bygg</string>
+    <string name="category_halsa">Hälsa</string>
+    <string name="category_noje">Nöje</string>
+    <string name="category_resa">Resa</string>
+    <string name="category_ovrigt_rorligt">Övrigt rörligt</string>
+    <string name="category_sparande">Sparande</string>
+    <string name="category_fonder">Fonder</string>
+    <string name="category_buffert">Buffert</string>
+    <string name="category_pension">Pension &amp; barnspar</string>
+    <string name="category_amortering">Amortering</string>
+    <string name="category_overforing">Överföring</string>
+    <string name="category_okat">Ej kategoriserat</string>
+
+    <string name="group_income">Inkomster</string>
+    <string name="group_fixed">Fasta</string>
+    <string name="group_variable">Rörliga</string>
+    <string name="group_savings">Sparande</string>
+    <string name="group_transfer">Överföringar</string>
+    <string name="group_uncategorized">Att granska</string>
+
+    <string name="nav_events">Händelser</string>
+    <string name="nav_flow">Flöde</string>
+    <string name="cd_profile">Profil</string>
+    <string name="cd_close">Stäng</string>
+</resources>

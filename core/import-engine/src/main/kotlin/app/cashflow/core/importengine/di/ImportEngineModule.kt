@@ -1,6 +1,7 @@
 package app.cashflow.core.importengine.di
 
 import app.cashflow.core.importengine.AccountInferrer
+import app.cashflow.core.importengine.CategorizeUseCase
 import app.cashflow.core.importengine.ImportStatementUseCase
 import app.cashflow.core.importengine.ReclassifyUseCase
 import app.cashflow.core.importengine.TransactionHasher
@@ -14,6 +15,7 @@ val importEngineModule = module {
     singleOf(::AccountInferrer)
     single { TransferMatcher() }
     factoryOf(::ReclassifyUseCase)
+    factoryOf(::CategorizeUseCase)
     factory {
         ImportStatementUseCase(
             transactions = get(),

@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.cashflow.android.library)
     alias(libs.plugins.cashflow.koin)
-    alias(libs.plugins.cashflow.kotlinx.serialization)
 }
 
 dependencies {
@@ -10,4 +9,5 @@ dependencies {
     implementation(projects.core.categorization)
     implementation(libs.kermit)
     implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
 }
