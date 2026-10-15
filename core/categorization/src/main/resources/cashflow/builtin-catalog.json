@@ -109,7 +109,6 @@
     { "p": "VIRTA", "c": "transport", "m": "starts_with" },
     { "p": "AIMO", "c": "transport" },
     { "p": "MER SWEDEN", "c": "transport" },
-    { "p": "VOLVO", "c": "transport" },
 
     { "p": "SPOTIFY", "c": "abonnemang" },
     { "p": "NETFLIX", "c": "abonnemang" },
@@ -262,6 +261,9 @@
     { "p": "FLYGBUSSARNA", "c": "resa" },
 
     { "p": "LYSA", "c": "fonder", "s": -1 },
+    { "p": "LYSA", "c": "sparande", "s": 1 },
+    { "p": "AVANZA", "c": "sparande", "s": 1 },
+    { "p": "NORDNET", "c": "sparande", "s": 1 },
     { "p": "AVANZA", "c": "fonder", "s": -1 },
     { "p": "NORDNET", "c": "fonder", "s": -1 },
     { "p": "ÖVERF ISK", "c": "fonder", "s": -1 },
