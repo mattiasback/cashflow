@@ -83,14 +83,9 @@ class AccountInferrer(
         // Group the unresolved files by their own chains so the question is asked once per account.
         val groups = UnionFind(pending.size)
         pending.forEachIndexed { i, a ->
-            val aBalances = a.rows.mapNotNull { it.balanceAfter }.toSet()
-            val aOpening = RowOrder.openingBalance(a.rows)
             pending.forEachIndexed { j, b ->
                 if (i >= j) return@forEachIndexed
-                val bBalances = b.rows.mapNotNull { it.balanceAfter }.toSet()
-                val bOpening = RowOrder.openingBalance(b.rows)
-                val chains = (bOpening != null && bOpening in aBalances) || (aOpening != null && aOpening in bBalances)
-                if (chains || sharesRows(a.rows, b.rows)) groups.union(i, j)
+                if (continues(a.rows, b.rows) || continues(b.rows, a.rows) || sharesRows(a.rows, b.rows)) groups.union(i, j)
             }
         }
         pending.forEachIndexed { i, input ->
@@ -113,6 +108,13 @@ class AccountInferrer(
         val latestDate = before.maxOfOrNull { it.date }
         if (latestDate != null && before.any { it.date == latestDate && it.balance == opening }) return 3
         return if (states.any { it.balance == opening }) 1 else 0
+    }
+
+    /** [next] starts where [previous] ends: on or after its last day, at its closing balance. */
+    private fun continues(previous: List<StatementRow>, next: List<StatementRow>): Boolean {
+        val closing = previous.last().balanceAfter ?: return false
+        val opening = RowOrder.openingBalance(next) ?: return false
+        return opening == closing && next.first().bookingDate >= previous.last().bookingDate
     }
 
     private fun sharesRows(a: List<StatementRow>, b: List<StatementRow>): Boolean {
