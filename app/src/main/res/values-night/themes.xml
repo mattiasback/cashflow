@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.CashFlow" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/bg_canvas</item>
+    </style>
+    <color name="bg_canvas">#0E0B10</color>
+</resources>
