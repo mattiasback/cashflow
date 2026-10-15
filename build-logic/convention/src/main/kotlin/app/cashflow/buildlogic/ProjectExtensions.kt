@@ -25,10 +25,7 @@ fun Project.configureKotlinJvmTarget() {
         if (options is KotlinJvmCompilerOptions) {
             options.jvmTarget.set(JvmTarget.JVM_17)
         }
-        options.freeCompilerArgs.addAll(
-            "-opt-in=kotlin.time.ExperimentalTime",
-            "-Xannotation-default-target=param-property",
-        )
+        options.freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
     }
 }
 

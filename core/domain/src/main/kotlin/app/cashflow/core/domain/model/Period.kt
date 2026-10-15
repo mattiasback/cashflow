@@ -1,7 +1,8 @@
 package app.cashflow.core.domain.model
 
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.Month
+import kotlinx.datetime.minus
 import kotlinx.datetime.number
 
 /** A calendar month, the unit of the cash-flow view. */
@@ -11,7 +12,7 @@ data class Period(val year: Int, val month: Int) : Comparable<Period> {
     }
 
     val first: LocalDate get() = LocalDate(year, month, 1)
-    val last: LocalDate get() = next().first.let { LocalDate.fromEpochDays(it.toEpochDays() - 1) }
+    val last: LocalDate get() = next().first.minus(1, DateTimeUnit.DAY)
 
     fun next(): Period = if (month == 12) Period(year + 1, 1) else Period(year, month + 1)
     fun previous(): Period = if (month == 1) Period(year - 1, 12) else Period(year, month - 1)
@@ -29,5 +30,3 @@ data class Period(val year: Int, val month: Int) : Comparable<Period> {
         }
     }
 }
-
-val Month.numberValue: Int get() = number

@@ -43,3 +43,11 @@ google-services.json
 
 # Local Gradle user home (sandboxed builds)
 .gradle-user/
+
+# Local tool homes (Java cannot write the user profile on this machine)
+.gradle-user/
+.android-user/
+.tmp/
+
+# Local Claude Code settings
+.claude/settings.local.json

@@ -1,4 +1,4 @@
-package app.cashflow.feature.import.data.xls
+package app.cashflow.feature.importer.data.xls
 
 import java.nio.ByteBuffer
 import java.nio.ByteOrder

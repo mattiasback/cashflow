@@ -14,7 +14,9 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.library")
         extensions.configure<LibraryExtension> {
-            namespace = "app.cashflow." + path.removePrefix(":").replace(':', '.').replace('-', '_')
+            // "import" is a keyword in Kotlin and Java, so that package segment is "importer".
+            namespace = "app.cashflow." + path.removePrefix(":").split(':')
+                .joinToString(".") { if (it == "import") "importer" else it.replace('-', '_') }
             compileSdk = libs.int("compileSdk")
             defaultConfig {
                 minSdk = libs.int("minSdk")
