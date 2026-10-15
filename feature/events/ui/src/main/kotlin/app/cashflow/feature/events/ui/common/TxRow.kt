@@ -1,6 +1,5 @@
 package app.cashflow.feature.events.ui.common
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,7 +32,7 @@ fun TxRow(
         value = row.amount,
         valueColor = if (row.isIncome) CashFlowTheme.colors.textPositive else CashFlowTheme.colors.textPrimary,
         leading = { CategoryDot(color = colors.strong, fill = colors.fill) },
-        trailing = { StatusBadge(badge, row.badgeKind, Modifier.padding(top = 2.dp())) },
+        trailing = { StatusBadge(badge, row.badgeKind) },
         showDivider = showDivider,
         onClick = onClick,
         modifier = modifier.clearAndSetSemantics {
@@ -42,5 +41,3 @@ fun TxRow(
         },
     )
 }
-
-private fun Int.dp() = androidx.compose.ui.unit.Dp(this.toFloat())

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="status_auto">Automatic</string>
+    <string name="status_manual">Manual</string>
+    <string name="status_review">To review</string>
+    <string name="status_transfer">Transfer</string>
+    <string name="status_savings">Savings</string>
+
+    <string name="filter_all">All</string>
+    <string name="filter_all_categories">All categories</string>
+    <string name="filter_all_time">All time</string>
+    <string name="filter_period">Period</string>
+    <string name="filter_category">Category</string>
+    <string name="cd_filter_period">Period: %1$s. Change period</string>
+    <string name="cd_filter_category">Category: %1$s. Change category</string>
+    <string name="sheet_filter_eyebrow">Filter</string>
+    <string name="sheet_pick_category">Choose category</string>
+    <string name="sheet_pick_period">Choose period</string>
+
+    <string name="section_review">To review</string>
+    <string name="section_transactions">Transactions</string>
+    <string name="search_placeholder">Search payee or text</string>
+    <string name="empty_filtered">No transactions match. Try another search or filter.</string>
+    <string name="empty_none">No transactions yet. Import a bank statement to get started.</string>
+    <string name="review_now">Review now</string>
+
+    <string name="import_eyebrow">Get transactions</string>
+    <string name="import_title">Import statements</string>
+    <string name="import_body">Pick one or more export files from your bank. Accounts and transfers are recognised automatically.</string>
+    <string name="import_button">Import file</string>
+    <string name="import_hint">Pick a file, or share it to CashFlow from your bank app</string>
+    <string name="last_import">Last imported %1$s</string>
+    <string name="last_import_meta">%1$d imports · %2$d accounts</string>
+
+    <string name="cd_tx_row">%1$s, %2$s, %3$s, %4$s, %5$s</string>
+    <string name="cd_show_details">show details</string>
+
+    <plurals name="transactions_count">
+        <item quantity="one">%d transaction</item>
+        <item quantity="other">%d transactions</item>
+    </plurals>
+    <plurals name="review_left">
+        <item quantity="one">%d left</item>
+        <item quantity="other">%d left</item>
+    </plurals>
+    <plurals name="review_summary">
+        <item quantity="one">%1$d transaction from %2$d payees needs a category. One decision per payee is enough.</item>
+        <item quantity="other">%1$d transactions from %2$d payees need a category. One decision per payee is enough.</item>
+    </plurals>
+
+    <string name="review_title">Review</string>
+    <string name="review_intro">Sorted by number of purchases, so one decision clears many rows.</string>
+    <string name="review_done_title">Everything is categorized</string>
+    <string name="review_done_body">New purchases show up here after the next import. Your flow is up to date.</string>
+    <string name="review_purchases">%1$d · %2$s · %3$s</string>
+    <string name="review_pick_other">More categories</string>
+    <string name="review_pick_fewer">Fewer categories</string>
+    <string name="review_remember">Remember for %1$s</string>
+    <string name="review_approve">Approve</string>
+    <string name="review_skip">Skip</string>
+    <string name="review_household">Household transfer</string>
+    <string name="review_household_hint">Money to an account you don\'t import, such as your partner\'s. Not counted as spending.</string>
+    <string name="review_suggestion">Choose category</string>
+    <string name="cd_back">Back</string>
+    <string name="review_saved">Saved for %1$s</string>
+
+    <string name="detail_eyebrow">Transaction</string>
+    <string name="detail_category">Category</string>
+    <string name="detail_date">Purchase date</string>
+    <string name="detail_booked">Booked</string>
+    <string name="detail_account">Account</string>
+    <string name="detail_how_title">How it was categorized</string>
+    <string name="detail_how_transfer">Transfer</string>
+    <string name="detail_how_transfer_text">The same amount moved the other way on another of your accounts that day, so this row counts as neither income nor spending.</string>
+    <string name="detail_how_savings_text">The money went to or from a savings account. It counts as savings, not spending.</string>
+    <string name="detail_how_lone">Transfer without a match</string>
+    <string name="detail_how_lone_text">The text looks like a transfer to an account you haven\'t imported. Mark it as a household transfer, or pick a category.</string>
+    <string name="detail_how_household_text">You marked this as a household transfer. It doesn\'t count in your flow.</string>
+    <string name="detail_how_memory">Remembered</string>
+    <string name="detail_how_memory_text">You chose a category for this payee with Remember. New purchases there get the same category.</string>
+    <string name="detail_how_rule">Your rule</string>
+    <string name="detail_how_rule_text">One of your rules matched the text.</string>
+    <string name="detail_how_builtin">Built-in rule</string>
+    <string name="detail_how_builtin_text">The text matched a built-in rule for known chains and services.</string>
+    <string name="detail_how_manual">Manual</string>
+    <string name="detail_how_manual_text">You picked the category yourself. It only applies to this transaction.</string>
+    <string name="detail_how_none">To review</string>
+    <string name="detail_how_none_text">No rule matched with confidence, so the transaction is waiting for review.</string>
+    <string name="detail_partner">Counterpart: %1$s</string>
+    <string name="detail_raw">Bank text: %1$s</string>
+    <string name="detail_id">Transaction ID %1$s</string>
+    <string name="detail_change_category">Change category</string>
+    <string name="detail_mark_household">Mark as household transfer</string>
+    <string name="detail_save">Save</string>
+    <string name="detail_cancel">Cancel</string>
+</resources>

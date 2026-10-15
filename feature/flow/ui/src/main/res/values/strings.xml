@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flow_title">Kassaflöde</string>
+    <string name="flow_net_label">Nettokassaflöde · %1$s</string>
+    <string name="flow_net_spoken">Nettokassaflöde %1$s, %2$s</string>
+    <string name="flow_delta_vs">%1$s mot %2$s</string>
+    <string name="cd_previous_month">Föregående månad, %1$s</string>
+    <string name="cd_next_month">Nästa månad, %1$s</string>
+    <string name="tile_income">Inkomster</string>
+    <string name="tile_expenses">Utgifter</string>
+    <string name="tile_expenses_sub">Fasta %1$s · Rörliga %2$s</string>
+    <string name="tile_savings">Sparande</string>
+    <string name="tile_savings_sub">Sparkvot %1$s</string>
+    <string name="tile_left">Kvar på kontot</string>
+    <string name="tile_left_sub">Efter utgifter och sparande</string>
+    <string name="flow_expenses_by_category">Utgifter per kategori</string>
+    <string name="flow_income_by_category">Inkomster</string>
+    <string name="flow_savings_by_category">Sparande</string>
+    <string name="cd_category_bar">%1$s, %2$s, %3$s. Visa transaktioner</string>
+    <string name="flow_empty_title">Inget flöde än</string>
+    <string name="flow_empty_body">Importera dina kontoutdrag så visar vi inkomster, utgifter och sparande per månad.</string>
+    <string name="flow_empty_button">Importera kontoutdrag</string>
+</resources>

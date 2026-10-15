@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flow_title">Cash flow</string>
+    <string name="flow_net_label">Net cash flow · %1$s</string>
+    <string name="flow_net_spoken">Net cash flow %1$s, %2$s</string>
+    <string name="flow_delta_vs">%1$s vs %2$s</string>
+    <string name="cd_previous_month">Previous month, %1$s</string>
+    <string name="cd_next_month">Next month, %1$s</string>
+    <string name="tile_income">Income</string>
+    <string name="tile_expenses">Spending</string>
+    <string name="tile_expenses_sub">Fixed %1$s · Variable %2$s</string>
+    <string name="tile_savings">Savings</string>
+    <string name="tile_savings_sub">Savings rate %1$s</string>
+    <string name="tile_left">Left in account</string>
+    <string name="tile_left_sub">After spending and savings</string>
+    <string name="flow_expenses_by_category">Spending by category</string>
+    <string name="flow_income_by_category">Income</string>
+    <string name="flow_savings_by_category">Savings</string>
+    <string name="cd_category_bar">%1$s, %2$s, %3$s. Show transactions</string>
+    <string name="flow_empty_title">No cash flow yet</string>
+    <string name="flow_empty_body">Import your bank statements to see income, spending and savings per month.</string>
+    <string name="flow_empty_button">Import statements</string>
+</resources>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="import_title">Importera fil</string>
+    <string name="cd_cancel_import">Avbryt importen</string>
+    <string name="import_pick_title">Välj kontoutdrag</string>
+    <string name="import_pick_body">Exportera från internetbanken och välj en eller flera filer. Samma fil två gånger är ingen fara: dubbletter hoppas över.</string>
+    <string name="import_pick_button">Välj filer</string>
+    <string name="import_pick_again">Välj andra filer</string>
+    <string name="import_importing">Importerar och känner igen överföringar…</string>
+    <string name="import_questions_title">Vilket konto?</string>
+    <string name="import_questions_body">Filerna saknar kontonummer. Välj konto en gång per konto, så känns nästa fil igen automatiskt.</string>
+    <string name="import_which_account">Vilket konto gäller filerna?</string>
+    <string name="import_new_account">+ Nytt konto</string>
+    <string name="import_account_name">Namn på kontot</string>
+    <string name="import_remember_hint">Nästa fil som fortsätter kontots saldo hamnar här automatiskt.</string>
+    <string name="import_button_go">Importera</string>
+    <string name="import_failed_title">Importen gick inte</string>
+    <string name="import_nothing_readable">Ingen av filerna gick att läsa.</string>
+    <string name="import_skipped_files">Filer som hoppades över</string>
+    <plurals name="import_reading">
+        <item quantity="one">Läser %d fil…</item>
+        <item quantity="other">Läser %d filer…</item>
+    </plurals>
+
+    <string name="receipt_title">Import klar</string>
+    <string name="receipt_done">Klar</string>
+    <string name="receipt_review_now">Granska nu</string>
+    <plurals name="receipt_new">
+        <item quantity="one">%d ny transaktion</item>
+        <item quantity="other">%d nya transaktioner</item>
+    </plurals>
+    <plurals name="receipt_duplicates">
+        <item quantity="one">%d dubblett överhoppad</item>
+        <item quantity="other">%d dubbletter överhoppade</item>
+    </plurals>
+    <plurals name="receipt_transfers">
+        <item quantity="one">%d överföring hittad</item>
+        <item quantity="other">%d överföringar hittade</item>
+    </plurals>
+    <plurals name="receipt_review">
+        <item quantity="one">%d att granska</item>
+        <item quantity="other">%d att granska</item>
+    </plurals>
+    <plurals name="receipt_auto">
+        <item quantity="one">%d kategoriserades automatiskt. Rader du inte granskat räknas som Ej kategoriserat.</item>
+        <item quantity="other">%d kategoriserades automatiskt. Rader du inte granskat räknas som Ej kategoriserat.</item>
+    </plurals>
+    <plurals name="receipt_warnings">
+        <item quantity="one">%d rad kunde inte läsas och hoppades över.</item>
+        <item quantity="other">%d rader kunde inte läsas och hoppades över.</item>
+    </plurals>
+</resources>

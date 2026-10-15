@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="import_title">Import file</string>
+    <string name="cd_cancel_import">Cancel import</string>
+    <string name="import_pick_title">Pick bank statements</string>
+    <string name="import_pick_body">Export from your online bank and pick one or more files. Picking the same file twice is fine: duplicates are skipped.</string>
+    <string name="import_pick_button">Pick files</string>
+    <string name="import_pick_again">Pick other files</string>
+    <string name="import_importing">Importing and finding transfers…</string>
+    <string name="import_questions_title">Which account?</string>
+    <string name="import_questions_body">The files have no account number. Choose once per account and the next file is recognised automatically.</string>
+    <string name="import_which_account">Which account are these files from?</string>
+    <string name="import_new_account">+ New account</string>
+    <string name="import_account_name">Account name</string>
+    <string name="import_remember_hint">The next file that continues this account\'s balance goes here automatically.</string>
+    <string name="import_button_go">Import</string>
+    <string name="import_failed_title">The import didn\'t work</string>
+    <string name="import_nothing_readable">None of the files could be read.</string>
+    <string name="import_skipped_files">Skipped files</string>
+    <plurals name="import_reading">
+        <item quantity="one">Reading %d file…</item>
+        <item quantity="other">Reading %d files…</item>
+    </plurals>
+
+    <string name="receipt_title">Import complete</string>
+    <string name="receipt_done">Done</string>
+    <string name="receipt_review_now">Review now</string>
+    <plurals name="receipt_new">
+        <item quantity="one">%d new transaction</item>
+        <item quantity="other">%d new transactions</item>
+    </plurals>
+    <plurals name="receipt_duplicates">
+        <item quantity="one">%d duplicate skipped</item>
+        <item quantity="other">%d duplicates skipped</item>
+    </plurals>
+    <plurals name="receipt_transfers">
+        <item quantity="one">%d transfer found</item>
+        <item quantity="other">%d transfers found</item>
+    </plurals>
+    <plurals name="receipt_review">
+        <item quantity="one">%d to review</item>
+        <item quantity="other">%d to review</item>
+    </plurals>
+    <plurals name="receipt_auto">
+        <item quantity="one">%d was categorized automatically. Rows you haven\'t reviewed count as Uncategorized.</item>
+        <item quantity="other">%d were categorized automatically. Rows you haven\'t reviewed count as Uncategorized.</item>
+    </plurals>
+    <plurals name="receipt_warnings">
+        <item quantity="one">%d row couldn\'t be read and was skipped.</item>
+        <item quantity="other">%d rows couldn\'t be read and were skipped.</item>
+    </plurals>
+</resources>

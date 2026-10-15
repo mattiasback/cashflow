@@ -148,7 +148,7 @@ class EventsViewModel(
             reviewCount = review.size,
             reviewPayees = review.map { it.normalizedText.uppercase() }.distinct().size,
             lastImport = latest?.let {
-                LastImportUi(it.fileName, UiText.StringResource(R.string.last_import_meta, imports.size, all.map { t -> t.accountId }.distinct().size))
+                LastImportUi(it.fileName, UiText.StringResource(R.string.last_import_meta, arrayOf(imports.size, all.map { t -> t.accountId }.distinct().size)))
             },
             hasTransactions = all.isNotEmpty(),
             sheet = f.sheet,

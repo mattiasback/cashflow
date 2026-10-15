@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="status_auto">Automatisk</string>
+    <string name="status_manual">Manuell</string>
+    <string name="status_review">Att granska</string>
+    <string name="status_transfer">Överföring</string>
+    <string name="status_savings">Sparande</string>
+
+    <string name="filter_all">Alla</string>
+    <string name="filter_all_categories">Alla kategorier</string>
+    <string name="filter_all_time">Hela tiden</string>
+    <string name="filter_period">Period</string>
+    <string name="filter_category">Kategori</string>
+    <string name="cd_filter_period">Period: %1$s. Ändra period</string>
+    <string name="cd_filter_category">Kategori: %1$s. Ändra kategori</string>
+    <string name="sheet_filter_eyebrow">Filter</string>
+    <string name="sheet_pick_category">Välj kategori</string>
+    <string name="sheet_pick_period">Välj period</string>
+
+    <string name="section_review">Att granska</string>
+    <string name="section_transactions">Transaktioner</string>
+    <string name="search_placeholder">Sök handlare eller text</string>
+    <string name="empty_filtered">Inga transaktioner matchar. Prova ett annat sökord eller filter.</string>
+    <string name="empty_none">Inga transaktioner än. Importera ett kontoutdrag för att komma igång.</string>
+    <string name="review_now">Granska nu</string>
+
+    <string name="import_eyebrow">Hämta transaktioner</string>
+    <string name="import_title">Importera kontoutdrag</string>
+    <string name="import_body">Välj en eller flera exportfiler från banken. Konto och överföringar känns igen automatiskt.</string>
+    <string name="import_button">Importera fil</string>
+    <string name="import_hint">Välj fil, eller dela filen till CashFlow från din bankapp</string>
+    <string name="last_import">Senast importerad %1$s</string>
+    <string name="last_import_meta">%1$d importer · %2$d konton</string>
+
+    <string name="cd_tx_row">%1$s, %2$s, %3$s, %4$s, %5$s</string>
+    <string name="cd_show_details">visa detaljer</string>
+
+    <plurals name="transactions_count">
+        <item quantity="one">%d transaktion</item>
+        <item quantity="other">%d transaktioner</item>
+    </plurals>
+    <plurals name="review_left">
+        <item quantity="one">%d kvar</item>
+        <item quantity="other">%d kvar</item>
+    </plurals>
+    <plurals name="review_summary">
+        <item quantity="one">%1$d transaktion från %2$d mottagare behöver en kategori. Ett beslut per mottagare räcker.</item>
+        <item quantity="other">%1$d transaktioner från %2$d mottagare behöver en kategori. Ett beslut per mottagare räcker.</item>
+    </plurals>
+
+    <!-- Review by payee -->
+    <string name="review_title">Granska</string>
+    <string name="review_intro">Sorterat efter antal köp, så ett beslut rensar många rader.</string>
+    <string name="review_done_title">Allt är kategoriserat</string>
+    <string name="review_done_body">Nya köp hamnar här efter nästa import. Flödet är uppdaterat.</string>
+    <string name="review_purchases">%1$d st · %2$s · %3$s</string>
+    <string name="review_pick_other">Fler kategorier</string>
+    <string name="review_pick_fewer">Färre kategorier</string>
+    <string name="review_remember">Kom ihåg för %1$s</string>
+    <string name="review_approve">Godkänn</string>
+    <string name="review_skip">Hoppa över</string>
+    <string name="review_household">Hushållsöverföring</string>
+    <string name="review_household_hint">Pengar till ett konto du inte importerar, till exempel din partners. Räknas inte som utgift.</string>
+    <string name="review_suggestion">Välj kategori</string>
+    <string name="cd_back">Tillbaka</string>
+    <string name="review_saved">Sparat för %1$s</string>
+
+    <!-- Transaction detail -->
+    <string name="detail_eyebrow">Transaktion</string>
+    <string name="detail_category">Kategori</string>
+    <string name="detail_date">Köpdatum</string>
+    <string name="detail_booked">Bokförd</string>
+    <string name="detail_account">Konto</string>
+    <string name="detail_how_title">Så kategoriserades den</string>
+    <string name="detail_how_transfer">Överföring</string>
+    <string name="detail_how_transfer_text">Samma belopp gick åt motsatt håll på ett annat av dina konton samma dag, så raden räknas varken som inkomst eller utgift.</string>
+    <string name="detail_how_savings_text">Pengarna gick till eller från ett sparkonto. De räknas som sparande, inte som utgift.</string>
+    <string name="detail_how_lone">Överföring utan motpart</string>
+    <string name="detail_how_lone_text">Texten ser ut som en överföring till ett konto som inte är importerat. Markera den som hushållsöverföring, eller välj en kategori.</string>
+    <string name="detail_how_household_text">Du markerade raden som en hushållsöverföring. Den räknas inte i flödet.</string>
+    <string name="detail_how_memory">Ihågkommen</string>
+    <string name="detail_how_memory_text">Du har valt kategori för den här mottagaren med Kom ihåg. Nya köp där får samma kategori.</string>
+    <string name="detail_how_rule">Din regel</string>
+    <string name="detail_how_rule_text">En av dina regler matchade texten.</string>
+    <string name="detail_how_builtin">Inbyggd regel</string>
+    <string name="detail_how_builtin_text">Texten matchade en inbyggd regel för kända kedjor och tjänster.</string>
+    <string name="detail_how_manual">Manuell</string>
+    <string name="detail_how_manual_text">Du valde kategorin själv. Den gäller bara den här transaktionen.</string>
+    <string name="detail_how_none">Att granska</string>
+    <string name="detail_how_none_text">Ingen regel matchade säkert, så transaktionen väntar i granskningen.</string>
+    <string name="detail_partner">Motpart: %1$s</string>
+    <string name="detail_raw">Bankens text: %1$s</string>
+    <string name="detail_id">Transaktions-ID %1$s</string>
+    <string name="detail_change_category">Ändra kategori</string>
+    <string name="detail_mark_household">Markera som hushållsöverföring</string>
+    <string name="detail_save">Spara</string>
+    <string name="detail_cancel">Avbryt</string>
+</resources>
