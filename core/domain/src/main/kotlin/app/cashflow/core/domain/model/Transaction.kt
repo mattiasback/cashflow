@@ -32,6 +32,9 @@ enum class CategorizedBy {
     USER_RULE,
     BUILT_IN_RULE,
     MANUAL,
+
+    /** A row inside a savings or investment account, categorized by its movement type. */
+    SAVINGS_EXPORT,
     NONE,
 }
 
@@ -63,16 +66,30 @@ data class Transaction(
     val fileOrder: Int = 0,
     /** Copied from the account at import time so totals need no join. */
     val countsInCashFlow: Boolean = true,
+    /** What a savings or investment row is; null for bank rows. */
+    val movement: Movement? = null,
+    /** "Dölj": kept and listed, but left out of every total. */
+    val hidden: Boolean = false,
+    /** "Möjlig dubblett": an earlier row this one looks like, for sources without a balance. */
+    val duplicateOf: TxId? = null,
+    /** The user said it is not a duplicate, so it is never flagged again. */
+    val duplicateChecked: Boolean = false,
 ) {
     val status: TransactionStatus
         get() = when {
+            categorizedBy == CategorizedBy.MANUAL -> TransactionStatus.MANUAL
+            duplicateOf != null && !duplicateChecked -> TransactionStatus.TO_REVIEW
+            // Rows inside savings never count in cash flow, so they never wait for a decision.
+            !countsInCashFlow -> TransactionStatus.AUTO
             transferKind == TransferKind.LONE_LEG && !loneLegConfirmed -> TransactionStatus.TO_REVIEW
             // The user marked it as a household transfer, so it was set by hand.
             transferKind == TransferKind.LONE_LEG -> TransactionStatus.MANUAL
             categorizedBy == CategorizedBy.NONE -> TransactionStatus.TO_REVIEW
-            categorizedBy == CategorizedBy.MANUAL -> TransactionStatus.MANUAL
             else -> TransactionStatus.AUTO
         }
+
+    /** True when the row is a possible duplicate the user has not decided on yet. */
+    val isPossibleDuplicate: Boolean get() = duplicateOf != null && !duplicateChecked
 
     /** Periods use the date you spent the money. */
     val period: Period get() = Period.of(transactionDate)

@@ -86,6 +86,8 @@
     <string name="detail_how_manual_text">Du valde kategorin själv. Den gäller bara den här transaktionen.</string>
     <string name="detail_how_none">Att granska</string>
     <string name="detail_how_none_text">Ingen regel matchade säkert, så transaktionen väntar i granskningen.</string>
+    <string name="detail_how_savings_export">Från sparexporten</string>
+    <string name="detail_how_savings_export_text">Raden finns på ett spar- eller investeringskonto. Typen i exporten (insättning, köp, avgift …) bestämmer kategorin, och den räknas aldrig i kassaflödet.</string>
     <string name="detail_partner">Motpart: %1$s</string>
     <string name="detail_raw">Bankens text: %1$s</string>
     <string name="detail_id">Transaktions-ID %1$s</string>

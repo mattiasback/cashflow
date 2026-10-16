@@ -181,6 +181,7 @@ class TransactionDetailViewModel(
                 CategorizedBy.BUILT_IN_RULE -> s(R.string.detail_how_builtin) to s(R.string.detail_how_builtin_text)
                 CategorizedBy.MANUAL -> s(R.string.detail_how_manual) to s(R.string.detail_how_manual_text)
                 CategorizedBy.TRANSFER -> s(R.string.detail_how_transfer) to s(R.string.detail_how_transfer_text)
+                CategorizedBy.SAVINGS_EXPORT -> s(R.string.detail_how_savings_export) to s(R.string.detail_how_savings_export_text)
                 CategorizedBy.NONE -> s(R.string.detail_how_none) to s(R.string.detail_how_none_text)
             }
         }

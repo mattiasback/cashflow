@@ -8,11 +8,13 @@ import androidx.lifecycle.viewModelScope
 import app.cashflow.core.domain.cashflow.CashFlowCalculator
 import app.cashflow.core.domain.cashflow.CashFlowSummary
 import app.cashflow.core.domain.datasource.CategoryLocalDataSource
+import app.cashflow.core.domain.datasource.SettingsDataSource
 import app.cashflow.core.domain.datasource.TransactionLocalDataSource
 import app.cashflow.core.domain.model.Category
 import app.cashflow.core.domain.model.CategoryId
 import app.cashflow.core.domain.model.CategoryKind
 import app.cashflow.core.domain.model.Money
+import app.cashflow.core.domain.model.MortgageSplit
 import app.cashflow.core.domain.model.Period
 import app.cashflow.core.domain.model.Transaction
 import app.cashflow.core.ui.FlowTone
@@ -85,6 +87,7 @@ sealed interface FlowEvent {
 class FlowViewModel(
     transactions: TransactionLocalDataSource,
     categories: CategoryLocalDataSource,
+    settings: SettingsDataSource,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -103,8 +106,8 @@ class FlowViewModel(
     private var shown: Period? = null
 
     init {
-        combine(transactions.observeAll(), categories.observeCategories(), selected) { txs, cats, sel ->
-            build(txs, cats, sel)
+        combine(transactions.observeAll(), categories.observeCategories(), settings.settings, selected) { txs, cats, prefs, sel ->
+            build(txs, cats, prefs.mortgage, sel)
         }.onEach { s -> _state.update { s } }.launchIn(viewModelScope)
     }
 
@@ -129,17 +132,17 @@ class FlowViewModel(
         selected.value = target
     }
 
-    private fun build(txs: List<Transaction>, cats: List<Category>, sel: Period?): FlowState {
+    private fun build(txs: List<Transaction>, cats: List<Category>, mortgage: MortgageSplit, sel: Period?): FlowState {
         periods = calculator.periodsWithData(txs)
         val period = sel?.takeIf { it in periods } ?: periods.lastOrNull()
         shown = period
         if (period == null) return FlowState(isLoading = false, hasData = false)
         val byId = cats.associateBy { it.id }
         val kindOf: (CategoryId) -> CategoryKind = { byId[it]?.kind ?: CategoryKind.UNCATEGORIZED }
-        val s = calculator.summarize(period, txs, kindOf)
+        val s = calculator.summarize(period, txs, mortgage, kindOf)
         val index = periods.indexOf(period)
         val previous = periods.getOrNull(index - 1)
-        val prevSummary = previous?.let { calculator.summarize(it, txs, kindOf) }
+        val prevSummary = previous?.let { calculator.summarize(it, txs, mortgage, kindOf) }
 
         val fmt = { m: Money -> MoneyFormatter.format(m, locale = locale) }
         val delta = prevSummary?.let { p ->

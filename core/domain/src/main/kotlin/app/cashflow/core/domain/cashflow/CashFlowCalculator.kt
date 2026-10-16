@@ -3,6 +3,7 @@ package app.cashflow.core.domain.cashflow
 import app.cashflow.core.domain.model.CategoryId
 import app.cashflow.core.domain.model.CategoryKind
 import app.cashflow.core.domain.model.Money
+import app.cashflow.core.domain.model.MortgageSplit
 import app.cashflow.core.domain.model.Period
 import app.cashflow.core.domain.model.Transaction
 import app.cashflow.core.domain.model.TransferKind
@@ -33,14 +34,16 @@ data class CashFlowSummary(
 }
 
 /**
- * Sums only rows that count in cash flow. Rows are never pre-aggregated, so rule
- * changes, transfer re-matches and (later) undo always give consistent totals.
+ * Sums only rows that count in cash flow and are not hidden. Rows are never pre-aggregated,
+ * so rule changes, transfer re-matches, the mortgage split and undo always give consistent
+ * totals.
  */
 class CashFlowCalculator {
 
     fun summarize(
         period: Period,
         transactions: List<Transaction>,
+        mortgage: MortgageSplit = MortgageSplit(),
         kindOf: (CategoryId) -> CategoryKind,
     ): CashFlowSummary {
         val income = HashMap<CategoryId, Long>()
@@ -51,7 +54,7 @@ class CashFlowCalculator {
         var uncategorized = 0L
 
         for (tx in transactions) {
-            if (!tx.countsInCashFlow || tx.period != period) continue
+            if (!tx.countsInCashFlow || tx.hidden || tx.period != period) continue
             val ore = tx.amount.ore
             when (tx.transferKind) {
                 TransferKind.INTERNAL -> continue
@@ -62,18 +65,18 @@ class CashFlowCalculator {
                 }
                 TransferKind.NONE -> Unit
             }
-            when (kindOf(tx.categoryId)) {
+            when (val kind = kindOf(tx.categoryId)) {
                 CategoryKind.INCOME -> income.merge(tx.categoryId, ore, Long::plus)
-                CategoryKind.FIXED -> {
-                    expense.merge(tx.categoryId, -ore, Long::plus)
-                    fixed -= ore
-                }
-                CategoryKind.VARIABLE -> {
-                    expense.merge(tx.categoryId, -ore, Long::plus)
-                    variable -= ore
+                CategoryKind.FIXED, CategoryKind.VARIABLE -> {
+                    // A split mortgage payment is part interest (this expense) and part amortization (savings).
+                    val amortization = if (ore < 0 && mortgage.matches(tx.rawText)) mortgage.amortizationOf(Money(-ore)).ore else 0L
+                    if (amortization > 0) savings.merge(CategoryId.AMORTIZATION, amortization, Long::plus)
+                    val spent = -ore - amortization
+                    expense.merge(tx.categoryId, spent, Long::plus)
+                    if (kind == CategoryKind.FIXED) fixed += spent else variable += spent
                 }
                 CategoryKind.SAVINGS -> savings.merge(tx.categoryId, -ore, Long::plus)
-                CategoryKind.TRANSFER -> Unit
+                CategoryKind.TRANSFER, CategoryKind.INVESTMENT -> Unit
                 CategoryKind.UNCATEGORIZED -> {
                     // Unreviewed money in counts by its sign until someone decides.
                     if (ore > 0) {

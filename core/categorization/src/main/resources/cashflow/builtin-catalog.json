@@ -33,6 +33,9 @@
     { "id": "sparande", "name": "Övrigt sparande", "kind": "SAVINGS" },
 
     { "id": "overforing", "name": "Överföring", "kind": "TRANSFER" },
+    { "id": "vardepapper", "name": "Värdepapper", "kind": "INVESTMENT" },
+    { "id": "avkastning", "name": "Avkastning", "kind": "INVESTMENT" },
+    { "id": "sparkostnad", "name": "Kostnad för sparande", "kind": "INVESTMENT" },
     { "id": "okat", "name": "Ej kategoriserat", "kind": "UNCATEGORIZED" }
   ],
   "rules": [

@@ -9,6 +9,7 @@ import app.cashflow.core.domain.Result
 import app.cashflow.core.domain.datasource.AccountLocalDataSource
 import app.cashflow.core.domain.datasource.CategoryLocalDataSource
 import app.cashflow.core.domain.datasource.Classification
+import app.cashflow.core.domain.datasource.CsvProfileLocalDataSource
 import app.cashflow.core.domain.datasource.ImportBatchLocalDataSource
 import app.cashflow.core.domain.datasource.MerchantMemoryLocalDataSource
 import app.cashflow.core.domain.datasource.RuleLocalDataSource
@@ -18,6 +19,7 @@ import app.cashflow.core.domain.model.AccountId
 import app.cashflow.core.domain.model.BalanceState
 import app.cashflow.core.domain.model.Category
 import app.cashflow.core.domain.model.CategoryRule
+import app.cashflow.core.domain.model.CsvProfile
 import app.cashflow.core.domain.model.ImportBatch
 import app.cashflow.core.domain.model.ImportId
 import app.cashflow.core.domain.model.InsertSummary
@@ -29,6 +31,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlin.time.Instant
 
 /** Maps database failures to [DataError.Local]. Never logs row contents. */
 internal suspend inline fun <T> dbCall(crossinline block: suspend () -> T): Result<T, DataError.Local> =
@@ -81,6 +84,24 @@ class RoomTransactionDataSource(private val db: CashFlowDatabase) : TransactionL
         }
     }
 
+    override suspend fun setHidden(ids: Collection<TxId>, hidden: Boolean): EmptyResult<DataError.Local> = dbCall {
+        db.withTransaction { ids.map { it.value }.chunked(CHUNK).forEach { dao.setHidden(it, hidden) } }
+    }
+
+    override suspend fun delete(ids: Collection<TxId>, at: Instant): EmptyResult<DataError.Local> =
+        dbCall { dao.deleteWithTombstones(ids.map { it.value }, at.toEpochMilliseconds()) }
+
+    override suspend fun setDuplicates(duplicateOf: Map<TxId, TxId?>): EmptyResult<DataError.Local> = dbCall {
+        db.withTransaction { duplicateOf.forEach { (id, of) -> dao.setDuplicateOf(id.value, of?.value) } }
+    }
+
+    override suspend fun setDuplicateChecked(id: TxId): EmptyResult<DataError.Local> = dbCall { dao.setDuplicateChecked(id.value) }
+
+    override suspend fun undoImport(id: ImportId, at: Instant): EmptyResult<DataError.Local> =
+        dbCall { dao.undoImport(id.value, at.toEpochMilliseconds()) }
+
+    override suspend fun redoImport(id: ImportId): EmptyResult<DataError.Local> = dbCall { dao.redoImport(id.value) }
+
     private companion object {
         const val CHUNK = 500
 
@@ -116,10 +137,12 @@ class RoomRuleDataSource(db: CashFlowDatabase) : RuleLocalDataSource {
     override fun observeUserRules(): Flow<List<CategoryRule>> = dao.observeRules().map { list -> list.map { it.toRule() } }
     override suspend fun getUserRules() = dbCall { dao.getRules().map { it.toRule() } }
     override suspend fun upsertRule(rule: CategoryRule): EmptyResult<DataError.Local> = dbCall { dao.upsert(rule.toEntity()) }
+    override suspend fun deleteRule(id: String): EmptyResult<DataError.Local> = dbCall { dao.delete(id) }
 }
 
 class RoomMerchantMemoryDataSource(db: CashFlowDatabase) : MerchantMemoryLocalDataSource {
     private val dao = db.merchantMemoryDao()
+    override fun observeAll(): Flow<List<MerchantMemory>> = dao.observeAll().map { list -> list.map { it.toMemory() } }
     override suspend fun getAll() = dbCall { dao.getAll().map { it.toMemory() } }
     override suspend fun remember(memory: MerchantMemory): EmptyResult<DataError.Local> = dbCall { dao.upsert(memory.toEntity()) }
     override suspend fun forget(payeeKey: String): EmptyResult<DataError.Local> = dbCall { dao.delete(payeeKey) }
@@ -133,4 +156,14 @@ class RoomImportBatchDataSource(db: CashFlowDatabase) : ImportBatchLocalDataSour
             is Result.Error -> r
             is Result.Success -> r.data?.toBatch()?.let { Result.Success(it) } ?: Result.Error(DataError.Local.NOT_FOUND)
         }
+
+    override suspend fun undoneRowCount(id: ImportId): Result<Int, DataError.Local> = dbCall { dao.undoneRowCount(id.value) }
+}
+
+class RoomCsvProfileDataSource(db: CashFlowDatabase) : CsvProfileLocalDataSource {
+    private val dao = db.csvProfileDao()
+    override fun observeProfiles(): Flow<List<CsvProfile>> = dao.observeProfiles().map { list -> list.map { it.toProfile() } }
+    override suspend fun getProfiles() = dbCall { dao.getProfiles().map { it.toProfile() } }
+    override suspend fun upsertProfile(profile: CsvProfile): EmptyResult<DataError.Local> = dbCall { dao.upsert(profile.toEntity()) }
+    override suspend fun deleteProfile(id: String): EmptyResult<DataError.Local> = dbCall { dao.delete(id) }
 }

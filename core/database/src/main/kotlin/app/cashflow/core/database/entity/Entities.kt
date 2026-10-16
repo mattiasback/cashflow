@@ -1,5 +1,6 @@
 package app.cashflow.core.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Fts4
 import androidx.room.ForeignKey
@@ -13,6 +14,11 @@ data class AccountEntity(
     val type: String,
     val clearingPrefix: String?,
     val accountNumber: String?,
+    /** v2: savings exports name their accounts ("Lysa", "avanza:ISK …"). */
+    val institution: String? = null,
+    val externalKey: String? = null,
+    val marketValueOre: Long? = null,
+    val marketValueEpochDay: Long? = null,
 )
 
 @Entity(
@@ -45,6 +51,13 @@ data class TransactionEntity(
     val loneLegConfirmed: Boolean,
     val fileOrder: Int,
     val countsInCashFlow: Boolean,
+    /** v2: what a savings row is (DEPOSIT, TRADE …); null for bank rows. */
+    val movement: String? = null,
+    @ColumnInfo(defaultValue = "0") val hidden: Boolean = false,
+    /** v2: set aside because its import was undone; every read skips these rows. */
+    @ColumnInfo(defaultValue = "0") val undone: Boolean = false,
+    val duplicateOf: String? = null,
+    @ColumnInfo(defaultValue = "0") val duplicateChecked: Boolean = false,
 )
 
 /** Full-text search over the bank text and the cleaned payee. */
@@ -53,6 +66,13 @@ data class TransactionEntity(
 data class TransactionFtsEntity(
     val rawText: String,
     val normalizedText: String,
+)
+
+/** v2: the id of a deleted row, so a re-import does not bring it back. */
+@Entity(tableName = "tombstones")
+data class TombstoneEntity(
+    @PrimaryKey val id: String,
+    val deletedAtEpochMillis: Long,
 )
 
 @Entity(
@@ -80,6 +100,8 @@ data class ImportBatchEntity(
     val duplicateCount: Int,
     /** Row warnings as "row:REASON" pairs separated by ';'. */
     val warnings: String,
+    /** v2: when the whole import was undone. */
+    val undoneAtEpochMillis: Long? = null,
 )
 
 @Entity(tableName = "categories")
@@ -97,10 +119,35 @@ data class RuleEntity(
     val match: String,
     val categoryId: String,
     val sign: Int?,
+    /** v2: optional account and amount limits, and where the rule came from. */
+    val accountId: String? = null,
+    val minAmountOre: Long? = null,
+    val maxAmountOre: Long? = null,
+    @ColumnInfo(defaultValue = "CREATED") val origin: String = "CREATED",
+    val createdAtEpochMillis: Long? = null,
 )
 
 @Entity(tableName = "merchant_memory")
 data class MerchantMemoryEntity(
     @PrimaryKey val payeeKey: String,
     val categoryId: String,
+    val createdAtEpochMillis: Long? = null,
+)
+
+/** v2: a column mapping saved for a file format the app did not know. */
+@Entity(tableName = "csv_profiles")
+data class CsvProfileEntity(
+    @PrimaryKey val id: String,
+    val name: String,
+    val fingerprint: String,
+    val headerRow: Int,
+    val dateColumn: Int,
+    val textColumn: Int,
+    val amountColumn: Int?,
+    val inColumn: Int?,
+    val outColumn: Int?,
+    val transactionDateColumn: Int?,
+    val balanceColumn: Int?,
+    val createdAtEpochMillis: Long,
+    val lastUsedAtEpochMillis: Long?,
 )

@@ -6,6 +6,7 @@ import app.cashflow.core.domain.model.CategoryId
 import app.cashflow.core.domain.model.CategoryKind
 import app.cashflow.core.domain.testing.Fixtures.tx
 import app.cashflow.core.domain.testing.InMemoryCategoryDataSource
+import app.cashflow.core.domain.testing.InMemorySettingsDataSource
 import app.cashflow.core.domain.testing.InMemoryTransactionDataSource
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -57,7 +58,7 @@ class FlowViewModelTest {
 
     @Test
     fun `starts at the latest month with data and steps back`() = runTest {
-        val vm = FlowViewModel(transactions, categories, SavedStateHandle())
+        val vm = FlowViewModel(transactions, categories, InMemorySettingsDataSource(), SavedStateHandle())
 
         val may = vm.state.value
         assertThat(may.periodLabel).isEqualTo("maj 2026")
@@ -72,7 +73,7 @@ class FlowViewModelTest {
 
     @Test
     fun `a category bar opens Händelser for that month`() = runTest {
-        val vm = FlowViewModel(transactions, categories, SavedStateHandle())
+        val vm = FlowViewModel(transactions, categories, InMemorySettingsDataSource(), SavedStateHandle())
         vm.events.test {
             vm.onAction(FlowAction.OnCategoryClick("mat"))
             assertThat(awaitItem()).isEqualTo(FlowEvent.OpenCategory("mat", "2026-05"))
@@ -82,14 +83,14 @@ class FlowViewModelTest {
     @Test
     fun `the chosen month survives process death`() = runTest {
         val handle = SavedStateHandle()
-        FlowViewModel(transactions, categories, handle).onAction(FlowAction.OnPreviousPeriod)
-        val restored = FlowViewModel(transactions, categories, handle)
+        FlowViewModel(transactions, categories, InMemorySettingsDataSource(), handle).onAction(FlowAction.OnPreviousPeriod)
+        val restored = FlowViewModel(transactions, categories, InMemorySettingsDataSource(), handle)
         assertThat(restored.state.value.periodLabel).isEqualTo("apr 2026")
     }
 
     @Test
     fun `no data shows the empty state`() = runTest {
-        val vm = FlowViewModel(InMemoryTransactionDataSource(), categories, SavedStateHandle())
+        val vm = FlowViewModel(InMemoryTransactionDataSource(), categories, InMemorySettingsDataSource(), SavedStateHandle())
         assertThat(vm.state.value.hasData).isFalse()
         assertThat(vm.state.value.isLoading).isFalse()
     }

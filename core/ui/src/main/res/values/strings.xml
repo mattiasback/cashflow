@@ -34,6 +34,9 @@
     <string name="category_pension">Pension</string>
     <string name="category_amortering">Amortering</string>
     <string name="category_overforing">Överföring</string>
+    <string name="category_vardepapper">Värdepapper</string>
+    <string name="category_avkastning">Avkastning</string>
+    <string name="category_sparkostnad">Kostnad för sparande</string>
     <string name="category_okat">Ej kategoriserat</string>
 
     <string name="group_income">Inkomster</string>
@@ -41,6 +44,7 @@
     <string name="group_variable">Rörliga</string>
     <string name="group_savings">Sparande</string>
     <string name="group_transfer">Överföringar</string>
+    <string name="group_investment">Inom sparande</string>
     <string name="group_uncategorized">Att granska</string>
 
     <string name="nav_events">Händelser</string>

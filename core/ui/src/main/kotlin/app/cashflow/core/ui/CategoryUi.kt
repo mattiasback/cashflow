@@ -18,6 +18,7 @@ fun CategoryKind.tone(): FlowTone = when (this) {
     CategoryKind.VARIABLE -> FlowTone.Variable
     CategoryKind.SAVINGS -> FlowTone.Savings
     CategoryKind.TRANSFER -> FlowTone.Transfer
+    CategoryKind.INVESTMENT -> FlowTone.Savings
     CategoryKind.UNCATEGORIZED -> FlowTone.Neutral
 }
 
@@ -72,6 +73,9 @@ fun categoryName(id: CategoryId, fallback: String): UiText = when (id.value) {
     "barnspar" -> UiText.StringResource(R.string.category_barnspar)
     "amortering" -> UiText.StringResource(R.string.category_amortering)
     "overforing" -> UiText.StringResource(R.string.category_overforing)
+    "vardepapper" -> UiText.StringResource(R.string.category_vardepapper)
+    "avkastning" -> UiText.StringResource(R.string.category_avkastning)
+    "sparkostnad" -> UiText.StringResource(R.string.category_sparkostnad)
     "okat" -> UiText.StringResource(R.string.category_okat)
     else -> UiText.DynamicString(fallback)
 }
@@ -83,5 +87,6 @@ fun CategoryKind.groupName(): UiText = when (this) {
     CategoryKind.VARIABLE -> UiText.StringResource(R.string.group_variable)
     CategoryKind.SAVINGS -> UiText.StringResource(R.string.group_savings)
     CategoryKind.TRANSFER -> UiText.StringResource(R.string.group_transfer)
+    CategoryKind.INVESTMENT -> UiText.StringResource(R.string.group_investment)
     CategoryKind.UNCATEGORIZED -> UiText.StringResource(R.string.group_uncategorized)
 }

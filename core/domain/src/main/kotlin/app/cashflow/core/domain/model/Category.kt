@@ -6,6 +6,16 @@ value class CategoryId(val value: String) {
         val UNCATEGORIZED = CategoryId("okat")
         val TRANSFER = CategoryId("overforing")
         val SAVINGS_TRANSFER = CategoryId("sparande")
+        val BUFFER = CategoryId("buffert")
+        val FUNDS = CategoryId("fonder")
+        val PENSION = CategoryId("pension")
+        val AMORTIZATION = CategoryId("amortering")
+        val HOUSING = CategoryId("boende")
+
+        /** Rows inside savings and investment accounts. */
+        val TRADES = CategoryId("vardepapper")
+        val SAVINGS_RETURN = CategoryId("avkastning")
+        val SAVINGS_COST = CategoryId("sparkostnad")
     }
 }
 
@@ -16,6 +26,9 @@ enum class CategoryKind {
     VARIABLE,
     SAVINGS,
     TRANSFER,
+
+    /** Inside savings: trades, return and cost. Never part of cash flow or the pickers. */
+    INVESTMENT,
     UNCATEGORIZED;
 
     val isExpense: Boolean get() = this == FIXED || this == VARIABLE

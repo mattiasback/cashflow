@@ -172,5 +172,6 @@ class EventsViewModel(
         CategoryKind.VARIABLE -> 3
         CategoryKind.SAVINGS -> 4
         CategoryKind.TRANSFER -> 5
+        CategoryKind.INVESTMENT -> 6
     }
 }

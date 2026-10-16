@@ -1,10 +1,12 @@
 package app.cashflow.core.categorization
 
+import app.cashflow.core.domain.model.AccountId
 import app.cashflow.core.domain.model.CategorizedBy
 import app.cashflow.core.domain.model.CategoryId
 import app.cashflow.core.domain.model.CategoryRule
 import app.cashflow.core.domain.model.MerchantMemory
 import app.cashflow.core.domain.model.Money
+import app.cashflow.core.domain.model.Movement
 import app.cashflow.core.domain.model.RuleMatch
 import app.cashflow.core.domain.model.TransferKind
 import assertk.assertThat
@@ -56,5 +58,46 @@ class CategorizerTest {
         assertThat(cat("MAXI ICA STORMARKNAD,STAD,SE")).isEqualTo("mat")
         assertThat(cat("CENTRALA STUDIESTÖDSNÄMNDEN")).isEqualTo("lan")
         assertThat(cat("CENTRALA STUDIESTÖDSNÄMNDEN", kr = 3000)).isEqualTo("ersattning")
+    }
+
+    @Test
+    fun `rows inside savings are categorized by their movement and never by rules`() = runTest {
+        val ctx = CategorizationContext(emptyList(), emptyList(), BundledCatalog.load().builtInRules())
+        fun decide(movement: Movement) = categorizer.categorize(
+            CategorizationInput("ICA Utdelning", Money.kr(100), TransferKind.NONE, loneLegConfirmed = false, countsInCashFlow = false, movement = movement),
+            ctx,
+        )
+        assertThat(decide(Movement.TRADE)).isEqualTo(CategoryDecision(CategoryId.TRADES, CategorizedBy.SAVINGS_EXPORT))
+        assertThat(decide(Movement.RETURN)).isEqualTo(CategoryDecision(CategoryId.SAVINGS_RETURN, CategorizedBy.SAVINGS_EXPORT))
+        assertThat(decide(Movement.COST)).isEqualTo(CategoryDecision(CategoryId.SAVINGS_COST, CategorizedBy.SAVINGS_EXPORT))
+        assertThat(decide(Movement.DEPOSIT).categoryId).isEqualTo(CategoryId.TRANSFER)
+    }
+
+    @Test
+    fun `a savings transfer takes the category of its savings account, else a savings rule`() = runTest {
+        val ctx = CategorizationContext(emptyList(), emptyList(), BundledCatalog.load().builtInRules())
+        fun decide(text: String, savingsCategory: CategoryId?) = categorizer.categorize(
+            CategorizationInput(text, Money.kr(-500), TransferKind.TO_SAVINGS, loneLegConfirmed = false, savingsCategory = savingsCategory),
+            ctx,
+        ).categoryId
+        assertThat(decide("Lysa Spar", CategoryId.BUFFER)).isEqualTo(CategoryId.BUFFER)
+        assertThat(decide("Lysa Spar", null)).isEqualTo(CategoryId.FUNDS)
+        assertThat(decide("ICA", null)).isEqualTo(CategoryId.SAVINGS_TRANSFER)
+    }
+
+    @Test
+    fun `a user rule can be limited to an account and an amount`() = runTest {
+        val rule = CategoryRule(
+            "u1", "BOLÅN", RuleMatch.STARTS_WITH, CategoryId("boende"), isBuiltIn = false,
+            accountId = AccountId("bank-a"), minAmount = Money.kr(5000),
+        )
+        val ctx = CategorizationContext(emptyList(), listOf(rule), emptyList())
+        fun decide(amount: Long, account: String) = categorizer.categorize(
+            CategorizationInput("BOLÅN 123", Money.kr(amount), TransferKind.NONE, loneLegConfirmed = false, accountId = AccountId(account)),
+            ctx,
+        ).categoryId
+        assertThat(decide(-8000, "bank-a")).isEqualTo(CategoryId("boende"))
+        assertThat(decide(-800, "bank-a")).isEqualTo(CategoryId.UNCATEGORIZED)
+        assertThat(decide(-8000, "bank-b")).isEqualTo(CategoryId.UNCATEGORIZED)
     }
 }

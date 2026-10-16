@@ -21,7 +21,20 @@ sealed interface AccountGuess {
      * to "Vilket konto?" covers all of them. [candidates] are tied accounts, if any.
      */
     data class Ask(val group: Int, val candidates: List<AccountId>) : AccountGuess
+
+    /** The file names its own accounts (savings exports), so nothing is inferred. */
+    data class Named(val accounts: List<NamedAccount>) : AccountGuess
 }
+
+/**
+ * An account a savings export names. [existing] is set when it was imported before (same
+ * [StatementAccount.key]); [type] is null when the name does not tell, and the user is asked.
+ */
+data class NamedAccount(
+    val source: app.cashflow.core.domain.model.StatementAccount,
+    val existing: AccountId?,
+    val type: app.cashflow.core.domain.model.AccountType?,
+)
 
 /**
  * Finds the account of each statement from its balance chain, since the exports carry no

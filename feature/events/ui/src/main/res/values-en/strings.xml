@@ -84,6 +84,8 @@
     <string name="detail_how_manual_text">You picked the category yourself. It only applies to this transaction.</string>
     <string name="detail_how_none">To review</string>
     <string name="detail_how_none_text">No rule matched with confidence, so the transaction is waiting for review.</string>
+    <string name="detail_how_savings_export">From the savings export</string>
+    <string name="detail_how_savings_export_text">The row is on a savings or investment account. Its type in the export (deposit, buy, fee …) sets the category, and it never counts in cash flow.</string>
     <string name="detail_partner">Counterpart: %1$s</string>
     <string name="detail_raw">Bank text: %1$s</string>
     <string name="detail_id">Transaction ID %1$s</string>

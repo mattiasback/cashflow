@@ -43,7 +43,7 @@ class CashFlowCalculatorTest {
 
     @Test
     fun `sums only rows that count, with transfers neutral and savings separate`() {
-        val s = calculator.summarize(may, month, kindOf)
+        val s = calculator.summarize(may, month, kindOf = kindOf)
 
         assertThat(s.income).isEqualTo(Money.kr(30000))
         assertThat(s.variableExpenses).isEqualTo(Money.kr(1100)) // 1200 − 200 refund + 100
@@ -59,9 +59,9 @@ class CashFlowCalculatorTest {
     @Test
     fun `a confirmed lone leg is neutral, an unconfirmed one counts by its category`() {
         val lone = tx("l", kronor = -4000.0, category = CategoryId("okat"), transferKind = TransferKind.LONE_LEG)
-        assertThat(calculator.summarize(may, listOf(lone), kindOf).expenses).isEqualTo(Money.kr(4000))
+        assertThat(calculator.summarize(may, listOf(lone), kindOf = kindOf).expenses).isEqualTo(Money.kr(4000))
         val confirmed = lone.copy(loneLegConfirmed = true, categoryId = CategoryId("overforing"), categorizedBy = CategorizedBy.TRANSFER)
-        assertThat(calculator.summarize(may, listOf(confirmed), kindOf).expenses).isEqualTo(Money.ZERO)
+        assertThat(calculator.summarize(may, listOf(confirmed), kindOf = kindOf).expenses).isEqualTo(Money.ZERO)
     }
 
     @Test
@@ -74,7 +74,7 @@ class CashFlowCalculatorTest {
             tx("b1", kronor = 5000.0, category = CategoryId("overforing"), categorizedBy = CategorizedBy.MANUAL),
             tx("e1", kronor = -5000.0, category = CategoryId("mat")),
         )
-        val s = calculator.summarize(may, rows, kindOf)
+        val s = calculator.summarize(may, rows, kindOf = kindOf)
         assertThat(s.income).isEqualTo(Money.ZERO)
         assertThat(s.expenses).isEqualTo(Money.kr(5000))
         assertThat(s.savings).isEqualTo(Money.ZERO)

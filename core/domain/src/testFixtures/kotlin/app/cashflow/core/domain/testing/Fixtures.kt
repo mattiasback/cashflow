@@ -5,6 +5,7 @@ import app.cashflow.core.domain.model.CategorizedBy
 import app.cashflow.core.domain.model.CategoryId
 import app.cashflow.core.domain.model.ImportId
 import app.cashflow.core.domain.model.Money
+import app.cashflow.core.domain.model.Movement
 import app.cashflow.core.domain.model.StatementRow
 import app.cashflow.core.domain.model.Transaction
 import app.cashflow.core.domain.model.TransferKind
@@ -49,10 +50,13 @@ object Fixtures {
         transactionDate: String = date,
         countsInCashFlow: Boolean = true,
         loneLegConfirmed: Boolean = false,
+        movement: Movement? = null,
+        hidden: Boolean = false,
+        importId: String = "import-1",
     ) = Transaction(
         id = TxId(id),
         accountId = AccountId(account),
-        importId = ImportId("import-1"),
+        importId = ImportId(importId),
         bookingDate = LocalDate.parse(date),
         transactionDate = LocalDate.parse(transactionDate),
         amount = Money.ofDouble(kronor),
@@ -64,5 +68,7 @@ object Fixtures {
         transferKind = transferKind,
         countsInCashFlow = countsInCashFlow,
         loneLegConfirmed = loneLegConfirmed,
+        movement = movement,
+        hidden = hidden,
     )
 }
