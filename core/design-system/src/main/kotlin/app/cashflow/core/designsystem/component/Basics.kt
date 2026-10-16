@@ -160,7 +160,8 @@ fun StatusBadge(text: String, kind: BadgeKind, modifier: Modifier = Modifier) {
         BadgeKind.Auto -> c.accentEventsTint to c.textOnEventsTint
         BadgeKind.Manual -> c.surfaceControl to c.textPrimary
         BadgeKind.Review -> c.surfaceCelebrate to c.textOnCelebrate
-        BadgeKind.Transfer -> c.surfaceTintBrand to c.textOnTintBrand
+        // Teal, like the transfer category dot, so it never matches the blue of a positive amount.
+        BadgeKind.Transfer -> c.vizInvestFill to (if (c.isDark) c.vizInvest else c.accentCashflowInk)
     }
     Text(
         text = text,
