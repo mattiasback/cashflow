@@ -39,7 +39,8 @@ data class ImportRowUi(
     val id: String,
     val title: String,
     val kind: ImportKind,
-    val line: UiText,
+    /** Parts joined with " · " in the UI; zero counts are left out. */
+    val line: List<UiText>,
     val undone: Boolean,
 )
 
@@ -124,11 +125,14 @@ class ImportHistoryViewModel(
                                 title = b.fileName,
                                 kind = kindOf(b.source),
                                 line = if (b.undoneAt != null) {
-                                    UiText.StringResource(R.string.history_line_undone, arrayOf(b.newCount))
+                                    listOf(UiText.StringResource(R.string.history_line_undone, arrayOf(b.newCount)))
                                 } else {
-                                    UiText.StringResource(
-                                        R.string.history_line,
-                                        arrayOf(stamp(b), b.newCount, b.duplicateCount, rows.count { it.status == TransactionStatus.TO_REVIEW }),
+                                    val review = rows.count { it.status == TransactionStatus.TO_REVIEW }
+                                    listOfNotNull(
+                                        UiText.DynamicString(stamp(b)),
+                                        UiText.PluralResource(R.plurals.history_new, b.newCount),
+                                        b.duplicateCount.takeIf { it > 0 }?.let { UiText.PluralResource(R.plurals.history_dups, it) },
+                                        review.takeIf { it > 0 }?.let { UiText.PluralResource(R.plurals.history_review, it) },
                                     )
                                 },
                                 undone = b.undoneAt != null,

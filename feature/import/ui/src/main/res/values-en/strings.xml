@@ -57,7 +57,9 @@
     <string name="history_title">Import history</string>
     <string name="history_intro_title">All imports</string>
     <string name="history_intro_body">Every transaction knows which import it came from. Undo removes only what that import added, even much later.</string>
-    <string name="history_line">%1$s · %2$d new · %3$d duplicates · %4$d to review</string>
+    <plurals name="history_new"><item quantity="one">%d new</item><item quantity="other">%d new</item></plurals>
+    <plurals name="history_dups"><item quantity="one">%d duplicate</item><item quantity="other">%d duplicates</item></plurals>
+    <plurals name="history_review"><item quantity="one">%d to review</item><item quantity="other">%d to review</item></plurals>
     <string name="history_line_undone">Undone · %1$d removed</string>
     <string name="history_footer">Undone rows are set aside so the import can be redone. Importing the same file again brings them back. Rows you deleted never come back.</string>
     <string name="history_kind_bank">Bank statement</string>

@@ -97,7 +97,7 @@ fun ImportHistoryScreen(
                         month.rows.forEachIndexed { i, row ->
                             ListRow(
                                 title = row.title,
-                                subtitle = row.line.asString(),
+                                subtitle = row.line.map { it.asString() }.joinToString(" · "),
                                 leading = { KindIcon(row.kind, row.undone) },
                                 showDivider = i > 0,
                                 onClick = { onAction(ImportHistoryAction.OnImportClick(row.id)) },
@@ -217,8 +217,8 @@ private fun ImportHistoryPreview() {
                     ImportMonthUi(
                         "oktober 2026",
                         listOf(
-                            ImportRowUi("1", "Kontoutdrag.xls", ImportKind.BANK_FILE, UiText.DynamicString("2026-10-16 10:11 · 38 nya · 6 dubbletter · 3 att granska"), false),
-                            ImportRowUi("2", "transaktioner.csv", ImportKind.SAVINGS_FILE, UiText.DynamicString("Ångrad · 645 borttagna"), true),
+                            ImportRowUi("1", "Kontoutdrag.xls", ImportKind.BANK_FILE, listOf(UiText.DynamicString("2026-10-16 10:11 · 38 nya · 3 att granska")), false),
+                            ImportRowUi("2", "transaktioner.csv", ImportKind.SAVINGS_FILE, listOf(UiText.DynamicString("Ångrad · 645 borttagna")), true),
                         ),
                     ),
                 ),

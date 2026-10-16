@@ -57,7 +57,9 @@
     <string name="history_title">Importhistorik</string>
     <string name="history_intro_title">Alla importer</string>
     <string name="history_intro_body">Varje transaktion vet vilken import den kom från. Ångra tar bara bort det den importen lade till, även långt senare.</string>
-    <string name="history_line">%1$s · %2$d nya · %3$d dubbletter · %4$d att granska</string>
+    <plurals name="history_new"><item quantity="one">%d ny</item><item quantity="other">%d nya</item></plurals>
+    <plurals name="history_dups"><item quantity="one">%d dubblett</item><item quantity="other">%d dubbletter</item></plurals>
+    <plurals name="history_review"><item quantity="one">%d att granska</item><item quantity="other">%d att granska</item></plurals>
     <string name="history_line_undone">Ångrad · %1$d borttagna</string>
     <string name="history_footer">Ångrade rader läggs undan, så importen kan göras om. Importerar du samma fil igen kommer de tillbaka. Rader du tagit bort kommer aldrig tillbaka.</string>
     <string name="history_kind_bank">Kontoutdrag</string>
