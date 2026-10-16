@@ -26,7 +26,8 @@ import app.cashflow.core.database.entity.TransactionFtsEntity
 /**
  * Version 2 (step 2) adds savings movements, hide, undo and duplicate flags on transactions,
  * named savings accounts, tombstones for deleted rows, rule limits and saved CSV profiles.
- * Every change is additive, so 1 → 2 is an auto-migration.
+ * Version 3 adds the sign flag of saved CSV profiles. Every change is additive, so both steps
+ * are auto-migrations.
  */
 @Database(
     entities = [
@@ -41,9 +42,9 @@ import app.cashflow.core.database.entity.TransactionFtsEntity
         TombstoneEntity::class,
         CsvProfileEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 1, to = 2)],
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3)],
 )
 abstract class CashFlowDatabase : RoomDatabase() {
     abstract fun transactionDao(): TransactionDao

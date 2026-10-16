@@ -12,6 +12,9 @@ import java.nio.charset.CodingErrorAction
  */
 object CsvGridReader {
 
+    /** The separator the reader would use for these bytes. */
+    fun separatorOf(bytes: ByteArray): Char = detectSeparator(decode(bytes).lineSequence().filter { it.isNotBlank() }.take(5).toList())
+
     fun read(bytes: ByteArray): List<List<Cell?>> {
         val text = decode(bytes)
         val lines = text.lineSequence().filter { it.isNotBlank() }.toList()

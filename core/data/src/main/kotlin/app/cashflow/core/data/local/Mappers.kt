@@ -154,6 +154,7 @@ fun CsvProfileEntity.toProfile() = CsvProfile(
     balanceColumn = balanceColumn,
     createdAt = Instant.fromEpochMilliseconds(createdAtEpochMillis),
     lastUsedAt = lastUsedAtEpochMillis?.let(Instant::fromEpochMilliseconds),
+    negateAmounts = negateAmounts,
 )
 
 fun CsvProfile.toEntity() = CsvProfileEntity(
@@ -170,6 +171,7 @@ fun CsvProfile.toEntity() = CsvProfileEntity(
     balanceColumn = balanceColumn,
     createdAtEpochMillis = createdAt.toEpochMilliseconds(),
     lastUsedAtEpochMillis = lastUsedAt?.toEpochMilliseconds(),
+    negateAmounts = negateAmounts,
 )
 
 fun ImportBatchEntity.toBatch() = ImportBatch(

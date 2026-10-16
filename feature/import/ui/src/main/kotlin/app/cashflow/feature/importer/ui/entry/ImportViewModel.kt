@@ -52,7 +52,7 @@ data class AccountTypeQuestionUi(
 data class AccountTypeOptionUi(val type: AccountType, val label: UiText, val selected: Boolean)
 
 @Immutable
-data class FileFailureUi(val fileName: String, val reason: UiText)
+data class FileFailureUi(val fileName: String, val reason: UiText, val mapUri: String? = null)
 
 @Stable
 data class ImportState(
@@ -73,12 +73,14 @@ sealed interface ImportAction {
     data class OnAccountType(val key: String, val type: AccountType) : ImportAction
     data object OnImportClick : ImportAction
     data object OnCloseClick : ImportAction
+    data class OnMapColumnsClick(val uri: String) : ImportAction
 }
 
 sealed interface ImportEvent {
     data object LaunchPicker : ImportEvent
     data class ShowReceipt(val importIds: List<String>) : ImportEvent
     data object Close : ImportEvent
+    data class OpenMapping(val uri: String) : ImportEvent
 }
 
 /**
@@ -130,6 +132,7 @@ class ImportViewModel(
             }
             ImportAction.OnImportClick -> execute()
             ImportAction.OnCloseClick -> send(ImportEvent.Close)
+            is ImportAction.OnMapColumnsClick -> send(ImportEvent.OpenMapping(action.uri))
         }
     }
 
@@ -145,7 +148,7 @@ class ImportViewModel(
                 is Result.Error -> _state.update { it.copy(phase = ImportPhase.FAILED, error = r.error.toUiText()) }
                 is Result.Success -> {
                     val prepared = r.data
-                    val failures = prepared.failures.map { FileFailureUi(it.fileName, it.error.toUiText()) }
+                    val failures = prepared.failures.map { FileFailureUi(it.fileName, it.error.toUiText(), it.uri.takeIf { _ -> it.error == app.cashflow.core.domain.ImportError.UNSUPPORTED_FORMAT }) }
                     plan = prepared.plan
                     val questions = prepared.plan?.questions.orEmpty()
                     val typeQuestions = prepared.plan?.typeQuestions.orEmpty()

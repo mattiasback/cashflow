@@ -80,4 +80,35 @@
     <string name="history_undone_body">Transaktionerna togs bort och flödet räknades om.</string>
     <string name="history_redo">Gör om importen</string>
     <string name="receipt_undo">Ångra importen (%1$d s)</string>
+    <string name="import_map_columns">Mappa kolumner</string>
+    <string name="mapping_intro">Vi kände inte igen formatet, så vi har gissat kolumnerna. Kontrollera förhandsvisningen. Nästa fil som ser ut så här importeras direkt.</string>
+    <string name="mapping_meta">%1$d rader · %2$s – %3$s</string>
+    <plurals name="mapping_rows"><item quantity="one">%d rad</item><item quantity="other">%d rader</item></plurals>
+    <string name="mapping_chip_separator">Avgränsare %1$s</string>
+    <string name="mapping_chip_decimal_comma">Decimalkomma</string>
+    <string name="mapping_chip_decimal_point">Decimalpunkt</string>
+    <string name="mapping_step_columns">1 · Kolumner</string>
+    <string name="mapping_step_preview">2 · Förhandsvisning</string>
+    <string name="mapping_step_account">3 · Konto</string>
+    <string name="mapping_step_save">4 · Spara formatet</string>
+    <string name="mapping_sample">t.ex. %1$s</string>
+    <string name="mapping_sure">Säker</string>
+    <string name="mapping_guess">Gissning</string>
+    <string name="mapping_role_date">Datum</string>
+    <string name="mapping_role_tx_date">Transaktionsdatum</string>
+    <string name="mapping_role_text">Text</string>
+    <string name="mapping_role_amount">Belopp</string>
+    <string name="mapping_role_in">Insättning</string>
+    <string name="mapping_role_out">Uttag</string>
+    <string name="mapping_role_balance">Saldo</string>
+    <string name="mapping_role_ignore">Ignorera</string>
+    <string name="mapping_negate">Utgifter står som positiva tal i filen</string>
+    <string name="mapping_warn_missing">Välj minst Datum, Text och Belopp (eller Insättning och Uttag).</string>
+    <string name="mapping_warn_nothing">Inga rader gick att läsa med de här kolumnerna.</string>
+    <string name="mapping_warn_unsigned">Nästan alla rader blir inkomster. Står utgifterna som positiva tal? Slå i så fall på reglaget ovan.</string>
+    <string name="mapping_summary">%1$d rader: %2$d utgifter och %3$d inkomster.</string>
+    <string name="mapping_account_question">Filen saknar kontonummer. Vilket konto gäller den?</string>
+    <string name="mapping_profile_name">Namn på importprofilen</string>
+    <string name="mapping_profile_hint">Profilen sparas och känns igen på kolumnerna nästa gång.</string>
+    <string name="mapping_import">Importera</string>
 </resources>

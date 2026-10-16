@@ -23,7 +23,7 @@ class SavingsProfilesTest {
 
     private val reader = ProfileStatementReader(listOf(LansforsakringarProfile(), LysaProfile(), AvanzaProfile()))
 
-    private fun read(name: String, bytes: ByteArray) = (reader.read(PickedFile(name, bytes)) as Result.Success<ParsedStatement>).data
+    private fun read(name: String, bytes: ByteArray) = (reader.readNow(PickedFile(name, bytes)) as Result.Success<ParsedStatement>).data
 
     @Test
     fun `reads a lysa export with the sign taken from the type`() {

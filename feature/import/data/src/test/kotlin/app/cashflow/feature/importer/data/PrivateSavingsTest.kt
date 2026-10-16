@@ -47,7 +47,7 @@ class PrivateSavingsTest {
     private fun all(): List<ParsedStatement> {
         assumeTrue(dir != null && dir.isDirectory, "no private statements folder")
         val files = dir!!.listFiles { f -> f.name.endsWith(".xls") || f.name.endsWith(".csv") }.orEmpty()
-        val parsed = files.map { (reader.read(PickedFile(it.name, it.readBytes())) as Result.Success).data }
+        val parsed = files.map { (reader.readNow(PickedFile(it.name, it.readBytes())) as Result.Success).data }
         assumeTrue(parsed.any { it.hasNamedAccounts }, "no savings exports")
         return parsed
     }

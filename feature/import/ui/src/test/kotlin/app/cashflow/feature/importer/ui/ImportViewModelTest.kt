@@ -52,7 +52,7 @@ class ImportViewModelTest {
             if (uri in files) Result.Success(PickedFile(uri, ByteArray(1))) else Result.Error(ImportError.UNREADABLE_FILE)
     }
     private val reader = object : StatementReader {
-        override fun read(file: PickedFile) = Result.Success(files.getValue(file.name))
+        override suspend fun read(file: PickedFile) = Result.Success(files.getValue(file.name))
     }
     private val transactions = InMemoryTransactionDataSource()
     private val accounts = InMemoryAccountDataSource()

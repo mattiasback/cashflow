@@ -21,6 +21,8 @@ data class CsvProfile(
     val outColumn: Int?,
     val transactionDateColumn: Int? = null,
     val balanceColumn: Int? = null,
+    /** The file lists money out as positive numbers, so every amount is negated. */
+    val negateAmounts: Boolean = false,
     val createdAt: Instant,
     val lastUsedAt: Instant? = null,
 )

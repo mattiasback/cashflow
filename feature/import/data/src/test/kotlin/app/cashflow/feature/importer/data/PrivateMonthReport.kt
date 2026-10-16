@@ -40,7 +40,7 @@ class PrivateMonthReport {
         assumeTrue(dir != null && dir.isDirectory)
         val reader = ProfileStatementReader(listOf(LansforsakringarProfile()))
         val statements = dir!!.listFiles { f -> f.name.startsWith("Kontoutdrag") && f.name.endsWith(".xls") }!!
-            .map { (reader.read(PickedFile(it.name, it.readBytes())) as Result.Success).data }
+            .map { (reader.readNow(PickedFile(it.name, it.readBytes())) as Result.Success).data }
         val txs = InMemoryTransactionDataSource()
         val accounts = InMemoryAccountDataSource()
         val normalizer = PayeeNormalizer()

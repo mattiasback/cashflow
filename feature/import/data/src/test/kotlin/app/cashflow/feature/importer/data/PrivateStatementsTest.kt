@@ -31,7 +31,7 @@ class PrivateStatementsTest {
     @Test
     fun `every export reads without warnings and its running balance chains`() {
         val statements = lfFiles().map { file ->
-            val result = reader.read(PickedFile(file.name, file.readBytes()))
+            val result = reader.readNow(PickedFile(file.name, file.readBytes()))
             check(result is Result.Success) { "could not read a file: $result" }
             result.data
         }

@@ -11,6 +11,10 @@ data class ImportRoute(val uris: List<String> = emptyList()) : NavKey
 @Serializable
 data class ImportReceiptRoute(val importIds: List<String>) : NavKey
 
+/** "Mappa kolumner" for a file whose format the app does not know. */
+@Serializable
+data class ColumnMappingRoute(val uri: String) : NavKey
+
 /** Importhistorik: every import, with undo and redo. */
 @Serializable
 data object ImportHistoryRoute : NavKey

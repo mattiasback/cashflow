@@ -37,6 +37,7 @@ import app.cashflow.feature.flow.ui.FlowRoute
 import app.cashflow.feature.flow.ui.flowEntries
 import app.cashflow.feature.importer.ui.ImportReceiptRoute
 import app.cashflow.feature.importer.ui.ImportRoute
+import app.cashflow.feature.importer.ui.ColumnMappingRoute
 import app.cashflow.feature.importer.ui.ImportHistoryRoute
 import app.cashflow.feature.importer.ui.importEntries
 import app.cashflow.feature.profile.ui.AccountRoute
@@ -118,12 +119,13 @@ fun CashFlowAppShell(
             sheetMetadata = BottomSheetSceneStrategy.sheet,
             onShowReceipt = { ids -> navigator.replace(ImportReceiptRoute(ids)) },
             onOpenReview = { navigator.replace(ReviewRoute) },
+            onOpenMapping = { navigator.replace(ColumnMappingRoute(it)) },
             onBack = { navigator.goBack() },
         )
     }
 
     val current = state.currentKey
-    val showNav = current !is ImportRoute
+    val showNav = current !is ImportRoute && current !is ColumnMappingRoute
     val items = listOf(
         NavItem(FlowRoute.toString(), stringResource(R.string.nav_flow), CfIcons.Cashflow, Accent.Cashflow),
         NavItem(EventsRoute.toString(), stringResource(R.string.nav_events), CfIcons.Transfer, Accent.Events),

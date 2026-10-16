@@ -45,7 +45,7 @@ class PrivatePipelineTest {
         assumeTrue(dir != null && dir.isDirectory, "no private statements folder")
         val files = dir!!.listFiles { f -> f.name.startsWith("Kontoutdrag") && f.name.endsWith(".xls") }.orEmpty()
         assumeTrue(files.isNotEmpty(), "no Länsförsäkringar exports")
-        return files.map { (reader.read(PickedFile(it.name, it.readBytes())) as Result.Success).data }
+        return files.map { (reader.readNow(PickedFile(it.name, it.readBytes())) as Result.Success).data }
     }
 
     private class Pipeline {

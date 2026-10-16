@@ -86,7 +86,7 @@ class ImportFlowTest {
         }
         single<StatementReader> {
             object : StatementReader {
-                override fun read(file: PickedFile): Result<ParsedStatement, ImportError> = Result.Success(statement)
+                override suspend fun read(file: PickedFile): Result<ParsedStatement, ImportError> = Result.Success(statement)
             }
         }
     }

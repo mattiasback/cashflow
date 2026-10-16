@@ -31,7 +31,7 @@ class PrivateUncategorizedReport {
         val categorizer = Categorizer(normalizer)
         val ctx = CategorizationContext(emptyList(), emptyList(), BundledCatalog.load().builtInRules())
         val rows = dir!!.listFiles { f -> f.name.endsWith(".xls") && f.name.startsWith("Kontoutdrag") }!!
-            .flatMap { (reader.read(PickedFile(it.name, it.readBytes())) as Result.Success).data.rows }
+            .flatMap { (reader.readNow(PickedFile(it.name, it.readBytes())) as Result.Success).data.rows }
             .distinct()
         val misses = rows.filter {
             categorizer.categorize(it.rawText, it.amount, TransferKind.NONE, false, ctx).categorizedBy == CategorizedBy.NONE

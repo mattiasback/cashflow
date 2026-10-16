@@ -150,4 +150,6 @@ data class CsvProfileEntity(
     val balanceColumn: Int?,
     val createdAtEpochMillis: Long,
     val lastUsedAtEpochMillis: Long?,
+    /** v3: the file lists money out as positive numbers. */
+    @ColumnInfo(defaultValue = "0") val negateAmounts: Boolean = false,
 )

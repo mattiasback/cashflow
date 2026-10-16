@@ -12,7 +12,7 @@ class PickedFile(
 
 /** Reads any supported bank export (`.xls` BIFF8, CSV) through the bank profiles. */
 interface StatementReader {
-    fun read(file: PickedFile): Result<ParsedStatement, ImportError>
+    suspend fun read(file: PickedFile): Result<ParsedStatement, ImportError>
 }
 
 /**

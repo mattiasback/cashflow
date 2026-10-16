@@ -58,6 +58,7 @@ fun ImportRoot(
     sharedUris: List<String>,
     onShowReceipt: (List<String>) -> Unit,
     onClose: () -> Unit,
+    onOpenMapping: (String) -> Unit = {},
     viewModel: ImportViewModel = koinViewModel { parametersOf(sharedUris) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -69,6 +70,7 @@ fun ImportRoot(
             ImportEvent.LaunchPicker -> picker.launch(StatementMimeTypes)
             is ImportEvent.ShowReceipt -> onShowReceipt(event.importIds)
             ImportEvent.Close -> onClose()
+            is ImportEvent.OpenMapping -> onOpenMapping(event.uri)
         }
     }
     ImportScreen(state, viewModel::onAction)
@@ -148,6 +150,14 @@ fun ImportScreen(
                         Column {
                             Text(f.fileName, style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary)
                             Text(f.reason.asString(), style = CashFlowTheme.typography.label, color = c.textSecondary)
+                            f.mapUri?.let { uri ->
+                                CfButton(
+                                    stringResource(R.string.import_map_columns),
+                                    { onAction(ImportAction.OnMapColumnsClick(uri)) },
+                                    Modifier.fillMaxWidth().padding(top = Spacing.s3),
+                                    variant = CfButtonVariant.Outline,
+                                )
+                            }
                         }
                     }
                 }

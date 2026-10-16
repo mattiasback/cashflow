@@ -80,4 +80,35 @@
     <string name="history_undone_body">The transactions were removed and the flow recalculated.</string>
     <string name="history_redo">Redo the import</string>
     <string name="receipt_undo">Undo the import (%1$d s)</string>
+    <string name="import_map_columns">Map the columns</string>
+    <string name="mapping_intro">We did not recognize the format, so we guessed the columns. Check the preview. The next file that looks like this imports directly.</string>
+    <string name="mapping_meta">%1$d rows · %2$s – %3$s</string>
+    <plurals name="mapping_rows"><item quantity="one">%d row</item><item quantity="other">%d rows</item></plurals>
+    <string name="mapping_chip_separator">Separator %1$s</string>
+    <string name="mapping_chip_decimal_comma">Decimal comma</string>
+    <string name="mapping_chip_decimal_point">Decimal point</string>
+    <string name="mapping_step_columns">1 · Columns</string>
+    <string name="mapping_step_preview">2 · Preview</string>
+    <string name="mapping_step_account">3 · Account</string>
+    <string name="mapping_step_save">4 · Save the format</string>
+    <string name="mapping_sample">e.g. %1$s</string>
+    <string name="mapping_sure">Sure</string>
+    <string name="mapping_guess">Guess</string>
+    <string name="mapping_role_date">Date</string>
+    <string name="mapping_role_tx_date">Transaction date</string>
+    <string name="mapping_role_text">Text</string>
+    <string name="mapping_role_amount">Amount</string>
+    <string name="mapping_role_in">Deposit</string>
+    <string name="mapping_role_out">Withdrawal</string>
+    <string name="mapping_role_balance">Balance</string>
+    <string name="mapping_role_ignore">Ignore</string>
+    <string name="mapping_negate">Expenses are positive numbers in the file</string>
+    <string name="mapping_warn_missing">Pick at least Date, Text and Amount (or Deposit and Withdrawal).</string>
+    <string name="mapping_warn_nothing">No rows could be read with these columns.</string>
+    <string name="mapping_warn_unsigned">Almost every row becomes income. Are expenses listed as positive numbers? Then turn on the switch above.</string>
+    <string name="mapping_summary">%1$d rows: %2$d expenses and %3$d income.</string>
+    <string name="mapping_account_question">The file has no account number. Which account is it?</string>
+    <string name="mapping_profile_name">Name of the import profile</string>
+    <string name="mapping_profile_hint">The profile is saved and recognized by its columns next time.</string>
+    <string name="mapping_import">Import</string>
 </resources>

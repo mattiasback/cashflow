@@ -10,7 +10,7 @@ import app.cashflow.core.importengine.ImportPlan
 import app.cashflow.core.importengine.ImportStatementUseCase
 
 /** A file that could not be read at all, shown by name with the reason. */
-data class FileFailure(val fileName: String, val error: ImportError)
+data class FileFailure(val fileName: String, val error: ImportError, val uri: String? = null)
 
 data class PreparedImport(
     val plan: ImportPlan?,
@@ -34,18 +34,20 @@ class ImportFilesUseCase(
         for (uri in uris) {
             val file = when (val r = fileSource.open(uri)) {
                 is Result.Error -> {
-                    failures += FileFailure(uri.substringAfterLast('/'), r.error)
+                    failures += FileFailure(uri.substringAfterLast('/'), r.error, uri)
                     continue
                 }
                 is Result.Success -> r.data
             }
             when (val r = reader.read(file)) {
-                is Result.Error -> failures += FileFailure(file.name, r.error)
+                is Result.Error -> failures += FileFailure(file.name, r.error, uri)
                 is Result.Success -> statements += r.data
             }
         }
         if (statements.isEmpty()) {
-            return if (failures.size == 1) Result.Error(failures.single().error) else Result.Success(PreparedImport(null, failures))
+            // An unknown format can still be imported through "Mappa kolumner", so the failures are returned.
+            val mappable = failures.any { it.error == ImportError.UNSUPPORTED_FORMAT }
+            return if (failures.size == 1 && !mappable) Result.Error(failures.single().error) else Result.Success(PreparedImport(null, failures))
         }
         return when (val plan = engine.plan(statements)) {
             is Result.Error -> plan
