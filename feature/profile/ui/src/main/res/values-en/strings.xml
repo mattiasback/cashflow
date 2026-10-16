@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_back">Back</string>
+
+    <string name="profile_title">Profile</string>
+    <string name="profile_intro_title">Settings and accounts</string>
+    <string name="profile_intro_body">Everything stays on the phone and is never part of a cloud backup.</string>
+    <string name="profile_group_accounts">Accounts and import</string>
+    <string name="profile_accounts">Accounts</string>
+    <string name="profile_accounts_line">%1$d accounts · own savings %2$s</string>
+    <string name="profile_import_history">Import history</string>
+    <plurals name="profile_imports_line">
+        <item quantity="one">%d import · undo a whole import at any time</item>
+        <item quantity="other">%d imports · undo a whole import at any time</item>
+    </plurals>
+    <string name="profile_group_calc">Calculations</string>
+    <string name="profile_mortgage_switch">Count amortization as savings</string>
+    <string name="profile_mortgage_hint">Splits each mortgage payment into interest (expense, Housing) and amortization (savings). Off means the whole payment is an expense.</string>
+    <string name="profile_mortgage_split">Mortgage split</string>
+    <string name="profile_mortgage_amount">Amortization %1$s per payment</string>
+    <string name="profile_mortgage_share">Interest is %1$d %% of each payment</string>
+    <string name="profile_group_categories">Categories</string>
+    <string name="profile_rules">Category rules</string>
+    <string name="profile_rules_line">%1$d own rules · %2$d remembered payees</string>
+    <string name="profile_group_display">Display</string>
+    <string name="profile_percent_decimals">Show percentages with a decimal</string>
+    <string name="profile_percent_example">Example: savings rate %1$s</string>
+    <string name="profile_theme">Theme</string>
+    <string name="profile_theme_system">System</string>
+    <string name="profile_theme_light">Light</string>
+    <string name="profile_theme_dark">Dark</string>
+    <string name="profile_footer">CashFlow 0.2.0 · step 2</string>
+
+    <string name="accounts_title">Accounts</string>
+    <string name="accounts_savings_title">Own savings</string>
+    <string name="accounts_savings_body">Savings accounts, ISK and endowment insurance. Pension is not included; your employer pays it.</string>
+    <plurals name="accounts_missing_value">
+        <item quantity="one">%d investment account has no market value, so it counts at the amount put in.</item>
+        <item quantity="other">%d investment accounts have no market value, so they count at the amount put in.</item>
+    </plurals>
+    <string name="accounts_group_bank">Bank accounts</string>
+    <string name="accounts_group_savings">Savings and investments</string>
+    <string name="accounts_group_pension">Pension</string>
+    <string name="accounts_row_sub">%1$s · %2$d rows</string>
+    <string name="accounts_footer">Only money moving between the bank and savings counts in cash flow. Trades, fees and return inside the accounts show here.</string>
+
+    <string name="account_eyebrow">Account</string>
+    <string name="account_name">Name</string>
+    <string name="account_type">Account type</string>
+    <string name="account_market_value">Market value</string>
+    <string name="account_market_value_hint">From Avanza or Lysa</string>
+    <string name="account_market_value_why">The exports have no market value. Enter it, or the account counts at the amount put in plus return.</string>
+    <string name="account_value_updated">Updated %1$s</string>
+    <string name="account_rows">Transactions</string>
+    <string name="account_balance">Balance without trades</string>
+    <string name="account_deposits">Deposits</string>
+    <string name="account_withdrawals">Withdrawals</string>
+    <string name="account_return">Return %1$d</string>
+    <string name="account_cost">Fees and tax %1$d</string>
+    <string name="account_save">Save</string>
+
+    <string name="mortgage_eyebrow">Calculations</string>
+    <string name="mortgage_title">Amortization as savings</string>
+    <string name="mortgage_body">Enter either how much you amortize per payment or how much of each payment is interest. The rest becomes savings.</string>
+    <string name="mortgage_mode_amount">Amortization in kr</string>
+    <string name="mortgage_mode_share">Interest share in %</string>
+    <string name="mortgage_amount">Amortization per payment</string>
+    <string name="mortgage_share">Interest share of the payment</string>
+    <string name="mortgage_pattern">Text that marks the mortgage payment</string>
+    <string name="mortgage_no_match">No payment matches the text yet.</string>
+    <string name="mortgage_preview">%1$d payments match. Latest %2$s: %3$s becomes interest %4$s and amortization %5$s.</string>
+    <string name="mortgage_save">Save</string>
+</resources>

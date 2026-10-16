@@ -76,11 +76,13 @@ sealed interface FlowAction {
     data object OnNextPeriod : FlowAction
     data class OnCategoryClick(val categoryId: String) : FlowAction
     data object OnImportClick : FlowAction
+    data object OnProfileClick : FlowAction
 }
 
 sealed interface FlowEvent {
     data class OpenCategory(val categoryId: String, val period: String) : FlowEvent
     data object OpenImport : FlowEvent
+    data object OpenProfile : FlowEvent
 }
 
 /** Basic Kassaflöde for one month: net, four tiles and category bars, all pre-formatted. */
@@ -117,6 +119,7 @@ class FlowViewModel(
             FlowAction.OnNextPeriod -> step(1)
             is FlowAction.OnCategoryClick -> shown?.let { p -> send(FlowEvent.OpenCategory(action.categoryId, p.toString())) }
             FlowAction.OnImportClick -> send(FlowEvent.OpenImport)
+            FlowAction.OnProfileClick -> send(FlowEvent.OpenProfile)
         }
     }
 

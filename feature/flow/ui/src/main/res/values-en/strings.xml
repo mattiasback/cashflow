@@ -19,4 +19,5 @@
     <string name="flow_empty_title">No cash flow yet</string>
     <string name="flow_empty_body">Import your bank statements to see income, spending and savings per month.</string>
     <string name="flow_empty_button">Import statements</string>
+    <string name="cd_profile">Profile and settings</string>
 </resources>

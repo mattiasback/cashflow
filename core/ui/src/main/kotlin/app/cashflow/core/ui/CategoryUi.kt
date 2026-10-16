@@ -90,3 +90,15 @@ fun CategoryKind.groupName(): UiText = when (this) {
     CategoryKind.INVESTMENT -> UiText.StringResource(R.string.group_investment)
     CategoryKind.UNCATEGORIZED -> UiText.StringResource(R.string.group_uncategorized)
 }
+
+/** Display name of an account type ("Sparkonto", "ISK" …). */
+fun app.cashflow.core.domain.model.AccountType.label(): UiText = UiText.StringResource(
+    when (this) {
+        app.cashflow.core.domain.model.AccountType.TRANSACTION -> R.string.account_type_transaction
+        app.cashflow.core.domain.model.AccountType.SAVINGS -> R.string.account_type_savings
+        app.cashflow.core.domain.model.AccountType.ISK -> R.string.account_type_isk
+        app.cashflow.core.domain.model.AccountType.KF -> R.string.account_type_kf
+        app.cashflow.core.domain.model.AccountType.PENSION -> R.string.account_type_pension
+        app.cashflow.core.domain.model.AccountType.OTHER -> R.string.account_type_other
+    },
+)

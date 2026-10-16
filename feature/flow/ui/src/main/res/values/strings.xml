@@ -19,4 +19,5 @@
     <string name="flow_empty_title">Inget flöde än</string>
     <string name="flow_empty_body">Importera dina kontoutdrag så visar vi inkomster, utgifter och sparande per månad.</string>
     <string name="flow_empty_button">Importera kontoutdrag</string>
+    <string name="cd_profile">Profil och inställningar</string>
 </resources>

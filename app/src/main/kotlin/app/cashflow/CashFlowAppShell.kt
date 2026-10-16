@@ -38,6 +38,11 @@ import app.cashflow.feature.flow.ui.flowEntries
 import app.cashflow.feature.importer.ui.ImportReceiptRoute
 import app.cashflow.feature.importer.ui.ImportRoute
 import app.cashflow.feature.importer.ui.importEntries
+import app.cashflow.feature.profile.ui.AccountRoute
+import app.cashflow.feature.profile.ui.AccountsRoute
+import app.cashflow.feature.profile.ui.MortgageRoute
+import app.cashflow.feature.profile.ui.ProfileRoute
+import app.cashflow.feature.profile.ui.profileEntries
 import app.cashflow.navigation.BottomSheetSceneStrategy
 import app.cashflow.navigation.Navigator
 import app.cashflow.navigation.rememberNavigationState
@@ -76,6 +81,7 @@ fun CashFlowAppShell(
             scrollToTop = flowReselect,
             onOpenCategory = { id, period -> navigator.navigateIn(EventsRoute, CategoryEventsRoute(id, period)) },
             onOpenImport = { navigator.navigateIn(EventsRoute, ImportRoute()) },
+            onOpenProfile = { navigator.navigate(ProfileRoute) },
         )
         eventsEntries(
             contentPadding = contentPadding,
@@ -84,6 +90,17 @@ fun CashFlowAppShell(
             onOpenDetail = { navigator.navigate(TransactionDetailRoute(it)) },
             onOpenImport = { navigator.navigate(ImportRoute()) },
             onOpenReview = { navigator.navigate(ReviewRoute) },
+            onOpenProfile = { navigator.navigate(ProfileRoute) },
+            onBack = { navigator.goBack() },
+        )
+        profileEntries(
+            contentPadding = contentPadding,
+            sheetMetadata = BottomSheetSceneStrategy.sheet,
+            onOpenAccounts = { navigator.navigate(AccountsRoute) },
+            onOpenAccount = { navigator.navigate(AccountRoute(it)) },
+            onOpenMortgage = { navigator.navigate(MortgageRoute) },
+            onOpenImportHistory = { },
+            onOpenRules = { },
             onBack = { navigator.goBack() },
         )
         importEntries(
@@ -109,7 +126,11 @@ fun CashFlowAppShell(
         )
         // Status-bar protection: lists scroll behind the status bar, so keep the tab's accent band
         // there; the light status-bar icons stay legible over any content.
-        val band = if (state.topLevelRoute == FlowRoute) Accent.Cashflow else Accent.Events
+        val band = when {
+            current is ProfileRoute || current is AccountsRoute || current is AccountRoute || current is MortgageRoute -> Accent.Settings
+            state.topLevelRoute == FlowRoute -> Accent.Cashflow
+            else -> Accent.Events
+        }
         Spacer(
             Modifier
                 .fillMaxWidth()

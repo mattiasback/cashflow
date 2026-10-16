@@ -9,6 +9,7 @@ import app.cashflow.feature.events.ui.di.eventsUiModule
 import app.cashflow.feature.flow.ui.flowUiModule
 import app.cashflow.feature.importer.data.di.importDataModule
 import app.cashflow.feature.importer.ui.importUiModule
+import app.cashflow.feature.profile.ui.profileUiModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -21,6 +22,7 @@ val cashFlowModules = listOf(
     importUiModule,
     eventsUiModule,
     flowUiModule,
+    profileUiModule,
     appModule,
 )
 

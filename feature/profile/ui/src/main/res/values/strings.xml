@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_back">Tillbaka</string>
+
+    <string name="profile_title">Profil</string>
+    <string name="profile_intro_title">Inställningar och konton</string>
+    <string name="profile_intro_body">Allt sparas bara på telefonen och följer inte med i molnbackup.</string>
+    <string name="profile_group_accounts">Konton och import</string>
+    <string name="profile_accounts">Konton</string>
+    <string name="profile_accounts_line">%1$d konton · eget sparande %2$s</string>
+    <string name="profile_import_history">Importhistorik</string>
+    <plurals name="profile_imports_line">
+        <item quantity="one">%d import · ångra en hel import när som helst</item>
+        <item quantity="other">%d importer · ångra en hel import när som helst</item>
+    </plurals>
+    <string name="profile_group_calc">Beräkningar</string>
+    <string name="profile_mortgage_switch">Räkna amortering som sparande</string>
+    <string name="profile_mortgage_hint">Delar varje bolånebetalning i ränta (utgift, Boende) och amortering (sparande). Av betyder att hela betalningen är en utgift.</string>
+    <string name="profile_mortgage_split">Delning av bolånet</string>
+    <string name="profile_mortgage_amount">Amortering %1$s per betalning</string>
+    <string name="profile_mortgage_share">Räntan är %1$d %% av varje betalning</string>
+    <string name="profile_group_categories">Kategorier</string>
+    <string name="profile_rules">Kategoriregler</string>
+    <string name="profile_rules_line">%1$d egna regler · %2$d ihågkomna mottagare</string>
+    <string name="profile_group_display">Visning</string>
+    <string name="profile_percent_decimals">Visa procent med decimal</string>
+    <string name="profile_percent_example">Exempel: sparkvot %1$s</string>
+    <string name="profile_theme">Tema</string>
+    <string name="profile_theme_system">System</string>
+    <string name="profile_theme_light">Ljust</string>
+    <string name="profile_theme_dark">Mörkt</string>
+    <string name="profile_footer">CashFlow 0.2.0 · steg 2</string>
+
+    <string name="accounts_title">Konton</string>
+    <string name="accounts_savings_title">Eget sparande</string>
+    <string name="accounts_savings_body">Sparkonton, ISK och kapitalförsäkringar. Pension räknas inte, den betalas av arbetsgivaren.</string>
+    <plurals name="accounts_missing_value">
+        <item quantity="one">%d investeringskonto saknar marknadsvärde, så det räknas med insatt belopp.</item>
+        <item quantity="other">%d investeringskonton saknar marknadsvärde, så de räknas med insatt belopp.</item>
+    </plurals>
+    <string name="accounts_group_bank">Bankkonton</string>
+    <string name="accounts_group_savings">Sparande och investeringar</string>
+    <string name="accounts_group_pension">Pension</string>
+    <string name="accounts_row_sub">%1$s · %2$d rader</string>
+    <string name="accounts_footer">Bara pengar som går mellan banken och sparandet räknas i kassaflödet. Köp, avgifter och avkastning inne på kontona syns här.</string>
+
+    <string name="account_eyebrow">Konto</string>
+    <string name="account_name">Namn</string>
+    <string name="account_type">Typ av konto</string>
+    <string name="account_market_value">Marknadsvärde</string>
+    <string name="account_market_value_hint">Från Avanza eller Lysa</string>
+    <string name="account_market_value_why">Exporterna saknar marknadsvärde. Ange det, annars räknas kontot med insatt belopp plus avkastning.</string>
+    <string name="account_value_updated">Uppdaterat %1$s</string>
+    <string name="account_rows">Transaktioner</string>
+    <string name="account_balance">Saldo utan köp och sälj</string>
+    <string name="account_deposits">Insättningar</string>
+    <string name="account_withdrawals">Uttag</string>
+    <string name="account_return">Avkastning %1$d</string>
+    <string name="account_cost">Avgifter och skatt %1$d</string>
+    <string name="account_save">Spara</string>
+
+    <string name="mortgage_eyebrow">Beräkningar</string>
+    <string name="mortgage_title">Amortering som sparande</string>
+    <string name="mortgage_body">Ange antingen hur mycket du amorterar per betalning eller hur stor del av betalningen som är ränta. Resten blir sparande.</string>
+    <string name="mortgage_mode_amount">Amortering i kr</string>
+    <string name="mortgage_mode_share">Räntedel i %</string>
+    <string name="mortgage_amount">Amortering per betalning</string>
+    <string name="mortgage_share">Räntans andel av betalningen</string>
+    <string name="mortgage_pattern">Texten som visar att det är bolånet</string>
+    <string name="mortgage_no_match">Ingen betalning matchar texten ännu.</string>
+    <string name="mortgage_preview">%1$d betalningar matchar. Senaste %2$s: %3$s blir ränta %4$s och amortering %5$s.</string>
+    <string name="mortgage_save">Spara</string>
+</resources>

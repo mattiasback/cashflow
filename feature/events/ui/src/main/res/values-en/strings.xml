@@ -95,4 +95,6 @@
     <string name="detail_cancel">Cancel</string>
     <string name="review_undo">Undo</string>
     <string name="review_pick_first">Choose a category first</string>
+    <string name="cd_profile">Profile and settings</string>
+    <string name="events_title">Activity</string>
 </resources>

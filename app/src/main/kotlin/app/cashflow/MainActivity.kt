@@ -11,12 +11,20 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.content.IntentCompat
 import app.cashflow.core.designsystem.theme.CashFlowTheme
+import app.cashflow.core.domain.datasource.SettingsDataSource
+import app.cashflow.core.domain.model.AppSettings
+import app.cashflow.core.domain.model.ThemeMode
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.android.ext.android.inject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
 class MainActivity : ComponentActivity() {
 
     private val sharedFiles = Channel<List<String>>(Channel.BUFFERED)
+    private val settings: SettingsDataSource by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Every screen draws an accent band behind the status bar, so its icons are always light.
@@ -29,7 +37,13 @@ class MainActivity : ComponentActivity() {
         }
         if (savedInstanceState == null) handleShare(intent)
         setContent {
-            CashFlowTheme {
+            val prefs by settings.settings.collectAsStateWithLifecycle(initialValue = AppSettings())
+            val dark = when (prefs.theme) {
+                ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+            }
+            CashFlowTheme(darkTheme = dark) {
                 CashFlowAppShell(sharedUris = sharedFiles.receiveAsFlow())
             }
         }

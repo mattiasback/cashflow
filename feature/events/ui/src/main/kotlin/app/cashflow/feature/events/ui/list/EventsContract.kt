@@ -67,10 +67,12 @@ sealed interface EventsAction {
     data class OnTransactionClick(val id: String) : EventsAction
     data object OnImportClick : EventsAction
     data object OnReviewClick : EventsAction
+    data object OnProfileClick : EventsAction
 }
 
 sealed interface EventsEvent {
     data class NavigateToDetail(val txId: String) : EventsEvent
     data object OpenImport : EventsEvent
     data object OpenReview : EventsEvent
+    data object OpenProfile : EventsEvent
 }

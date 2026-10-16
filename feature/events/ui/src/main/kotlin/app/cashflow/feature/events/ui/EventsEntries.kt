@@ -20,6 +20,7 @@ fun EntryProviderScope<NavKey>.eventsEntries(
     onOpenDetail: (String) -> Unit,
     onOpenImport: () -> Unit,
     onOpenReview: () -> Unit,
+    onOpenProfile: () -> Unit,
     onBack: () -> Unit,
 ) {
     entry<EventsRoute> {
@@ -28,6 +29,7 @@ fun EntryProviderScope<NavKey>.eventsEntries(
             onOpenDetail = onOpenDetail,
             onOpenImport = onOpenImport,
             onOpenReview = onOpenReview,
+            onOpenProfile = onOpenProfile,
             scrollToTop = scrollToTop,
         )
     }
@@ -37,6 +39,7 @@ fun EntryProviderScope<NavKey>.eventsEntries(
             onOpenDetail = onOpenDetail,
             onOpenImport = onOpenImport,
             onOpenReview = onOpenReview,
+            onOpenProfile = onOpenProfile,
             initialCategory = key.categoryId,
             initialPeriod = key.period,
         )

@@ -117,3 +117,20 @@ object PeriodFormatter {
         }
     }
 }
+
+/** Reads an amount typed by the user: "2 500", "2500,50", "−1 200 kr". Null when it is not a number. */
+object MoneyParser {
+    fun parse(text: String): Money? {
+        var s = text.trim().replace(MINUS, '-').replace(NBSP.toString(), "").replace(" ", "").removeSuffix("kr").removeSuffix("SEK")
+        if (s.isEmpty()) return null
+        if (s.contains(',')) s = s.replace(".", "").replace(',', '.')
+        return s.toBigDecimalOrNull()?.movePointRight(2)?.setScale(0, java.math.RoundingMode.HALF_UP)?.toLong()?.let(::Money)
+    }
+
+    /** The plain editable form of an amount: "2500" or "2500,50". */
+    fun editable(money: Money): String {
+        val whole = money.ore / 100
+        val ore = kotlin.math.abs(money.ore % 100)
+        return if (ore == 0L) whole.toString() else "$whole,${ore.toString().padStart(2, '0')}"
+    }
+}

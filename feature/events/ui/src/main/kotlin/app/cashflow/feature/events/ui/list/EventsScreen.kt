@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
 import app.cashflow.core.designsystem.component.CfCard
@@ -73,6 +74,7 @@ fun EventsRoot(
     onOpenDetail: (String) -> Unit,
     onOpenImport: () -> Unit,
     onOpenReview: () -> Unit,
+    onOpenProfile: () -> Unit = {},
     scrollToTop: Flow<Unit> = emptyFlow(),
     initialCategory: String? = null,
     initialPeriod: String? = null,
@@ -86,6 +88,7 @@ fun EventsRoot(
             is EventsEvent.NavigateToDetail -> onOpenDetail(event.txId)
             EventsEvent.OpenImport -> onOpenImport()
             EventsEvent.OpenReview -> onOpenReview()
+            EventsEvent.OpenProfile -> onOpenProfile()
         }
     }
     EventsScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding, scrollToTop = scrollToTop)
@@ -108,7 +111,11 @@ fun EventsScreen(
         contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
     ) {
         item(key = "header") {
-            AccentHeader(accent = Accent.Events) {
+            AccentHeader(
+                accent = Accent.Events,
+                title = stringResource(R.string.events_title),
+                actions = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(EventsAction.OnProfileClick) }) },
+            ) {
                 ImportCard(state, onAction)
             }
         }

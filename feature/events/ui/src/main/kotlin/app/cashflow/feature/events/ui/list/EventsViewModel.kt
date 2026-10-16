@@ -91,6 +91,7 @@ class EventsViewModel(
             is EventsAction.OnTransactionClick -> send(EventsEvent.NavigateToDetail(action.id))
             EventsAction.OnImportClick -> send(EventsEvent.OpenImport)
             EventsAction.OnReviewClick -> send(EventsEvent.OpenReview)
+            EventsAction.OnProfileClick -> send(EventsEvent.OpenProfile)
         }
     }
 

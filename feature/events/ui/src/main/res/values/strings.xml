@@ -97,4 +97,6 @@
     <string name="detail_cancel">Avbryt</string>
     <string name="review_undo">Ångra</string>
     <string name="review_pick_first">Välj en kategori först</string>
+    <string name="cd_profile">Profil och inställningar</string>
+    <string name="events_title">Händelser</string>
 </resources>

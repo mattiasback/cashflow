@@ -22,6 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.BandIconButton
+import app.cashflow.core.designsystem.icon.CfIcons
 import app.cashflow.core.designsystem.component.BandPeriodStepper
 import app.cashflow.core.designsystem.component.CategoryBar
 import app.cashflow.core.designsystem.component.CfButton
@@ -45,6 +47,7 @@ fun FlowRoot(
     contentPadding: PaddingValues,
     onOpenCategory: (categoryId: String, period: String) -> Unit,
     onOpenImport: () -> Unit,
+    onOpenProfile: () -> Unit = {},
     scrollToTop: Flow<Unit> = emptyFlow(),
     viewModel: FlowViewModel = koinViewModel(),
 ) {
@@ -53,6 +56,7 @@ fun FlowRoot(
         when (event) {
             is FlowEvent.OpenCategory -> onOpenCategory(event.categoryId, event.period)
             FlowEvent.OpenImport -> onOpenImport()
+            FlowEvent.OpenProfile -> onOpenProfile()
         }
     }
     FlowScreen(state, viewModel::onAction, contentPadding, scrollToTop)
@@ -89,6 +93,7 @@ fun FlowScreen(
                             onNext = { onAction(FlowAction.OnNextPeriod) },
                         )
                     }
+                    BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(FlowAction.OnProfileClick) })
                 },
             ) {
                 if (state.hasData) {
