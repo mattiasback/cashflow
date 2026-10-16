@@ -110,10 +110,9 @@ fun StatTile(
             valueColor,
             Modifier.padding(top = 6.dp),
         )
-        Spacer(Modifier.weight(1f, fill = false))
-        if (sub != null) {
-            Text(sub, style = CashFlowTheme.typography.label, color = c.textSecondary, maxLines = 4, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = Spacing.s2))
-        }
+        Spacer(Modifier.weight(1f))
+        // The supporting line is always laid out (empty when absent) so tiles in a grid share one height.
+        Text(sub.orEmpty(), style = CashFlowTheme.typography.label, color = c.textSecondary, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = Spacing.s2))
     }
 }
 

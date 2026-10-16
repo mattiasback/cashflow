@@ -175,11 +175,7 @@ class FlowViewModel(
             ),
             TileUi(
                 UiText.StringResource(R.string.tile_expenses), fmt(s.expenses),
-                if (s.uncategorizedExpenses.isPositive) {
-                    UiText.StringResource(R.string.tile_expenses_sub_uncat, arrayOf(fmt(s.fixedExpenses), fmt(s.variableExpenses), fmt(s.uncategorizedExpenses)))
-                } else {
-                    UiText.StringResource(R.string.tile_expenses_sub, arrayOf(fmt(s.fixedExpenses), fmt(s.variableExpenses)))
-                },
+                null,
                 FlowTone.Fixed, MoneyFormatter.spoken(s.expenses, locale),
             ),
             TileUi(

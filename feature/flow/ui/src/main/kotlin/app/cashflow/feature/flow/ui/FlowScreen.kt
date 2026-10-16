@@ -3,6 +3,9 @@ package app.cashflow.feature.flow.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -118,7 +121,8 @@ fun FlowScreen(
                     // From 1.5× font scale the tiles stack in one column (design system scaling rule).
                     val perRow = if (LocalDensity.current.fontScale >= 1.5f) 1 else 2
                     state.tiles.chunked(perRow).forEach { row ->
-                        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+                        // Every tile in a row stretches to the tallest, so the grid reads as one size.
+                        Row(Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(Spacing.s3)) {
                             row.forEach { t ->
                                 val label = t.label.asString()
                                 StatTile(
@@ -127,7 +131,7 @@ fun FlowScreen(
                                     sub = t.sub?.asString(),
                                     accentDot = t.tone.colors().strong,
                                     accessibilityText = "$label, ${t.spoken}" + (t.sub?.asString()?.let { ", $it" } ?: ""),
-                                    modifier = Modifier.weight(1f),
+                                    modifier = Modifier.weight(1f).fillMaxHeight(),
                                 )
                             }
                         }
