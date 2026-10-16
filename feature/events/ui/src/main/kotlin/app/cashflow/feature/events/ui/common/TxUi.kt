@@ -57,7 +57,7 @@ internal fun Transaction.toRowUi(categories: Map<CategoryId, Category>, locale: 
 }
 
 internal fun Transaction.statusText(): UiText = when {
-    transferKind == TransferKind.INTERNAL || (transferKind == TransferKind.LONE_LEG && loneLegConfirmed) ->
+    transferKind == TransferKind.INTERNAL || (transferKind == TransferKind.LONE_LEG && loneLegConfirmed) || categoryId == CategoryId.TRANSFER ->
         UiText.StringResource(R.string.status_transfer)
     transferKind == TransferKind.TO_SAVINGS || transferKind == TransferKind.FROM_SAVINGS -> UiText.StringResource(R.string.status_savings)
     status == TransactionStatus.TO_REVIEW -> UiText.StringResource(R.string.status_review)
@@ -66,7 +66,7 @@ internal fun Transaction.statusText(): UiText = when {
 }
 
 internal fun Transaction.badgeKind(): BadgeKind = when {
-    transferKind == TransferKind.INTERNAL || (transferKind == TransferKind.LONE_LEG && loneLegConfirmed) -> BadgeKind.Transfer
+    transferKind == TransferKind.INTERNAL || (transferKind == TransferKind.LONE_LEG && loneLegConfirmed) || categoryId == CategoryId.TRANSFER -> BadgeKind.Transfer
     transferKind == TransferKind.TO_SAVINGS || transferKind == TransferKind.FROM_SAVINGS -> BadgeKind.Transfer
     status == TransactionStatus.TO_REVIEW -> BadgeKind.Review
     status == TransactionStatus.MANUAL -> BadgeKind.Manual

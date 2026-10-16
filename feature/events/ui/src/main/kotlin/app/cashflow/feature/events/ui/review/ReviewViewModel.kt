@@ -206,14 +206,17 @@ class ReviewViewModel(
 
     private fun options(cats: List<Category>, income: Boolean, expanded: Boolean): List<Category> {
         val suggested = if (income) INCOME_SUGGESTIONS else EXPENSE_SUGGESTIONS
+        // Moving cash is never income or spending: a transfer between own accounts, or money
+        // to or from savings (a buffer withdrawal counts as negative savings), is offered both ways.
         val pool = cats.filter { c ->
-            if (income) c.kind == CategoryKind.INCOME else c.kind == CategoryKind.FIXED || c.kind == CategoryKind.VARIABLE || c.kind == CategoryKind.SAVINGS
+            c.kind == CategoryKind.TRANSFER || c.kind == CategoryKind.SAVINGS ||
+                if (income) c.kind == CategoryKind.INCOME else c.kind == CategoryKind.FIXED || c.kind == CategoryKind.VARIABLE
         }
         return if (expanded) pool else suggested.mapNotNull { id -> pool.firstOrNull { it.id.value == id } }
     }
 
     private companion object {
-        val EXPENSE_SUGGESTIONS = listOf("mat", "restaurang", "shopping", "transport", "noje", "halsa", "hem_bygg", "ovrigt_rorligt")
-        val INCOME_SUGGESTIONS = listOf("inkomst_ovrig", "lon", "ersattning", "barnbidrag")
+        val EXPENSE_SUGGESTIONS = listOf("overforing", "mat", "restaurang", "shopping", "transport", "noje", "halsa", "hem_bygg", "ovrigt_rorligt", "sparande")
+        val INCOME_SUGGESTIONS = listOf("overforing", "sparuttag", "inkomst_ovrig", "lon", "ersattning", "barnbidrag")
     }
 }

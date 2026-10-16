@@ -47,4 +47,5 @@
     <string name="nav_flow">Flöde</string>
     <string name="cd_profile">Profil</string>
     <string name="cd_close">Stäng</string>
+    <string name="category_sparuttag">Uttag från sparande</string>
 </resources>

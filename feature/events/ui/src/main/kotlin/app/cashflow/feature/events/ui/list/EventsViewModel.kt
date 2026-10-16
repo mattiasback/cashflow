@@ -163,7 +163,7 @@ class EventsViewModel(
         StatusFilter.REVIEW -> tx.status == TransactionStatus.TO_REVIEW
         StatusFilter.AUTO -> tx.status == TransactionStatus.AUTO && tx.transferKind == TransferKind.NONE
         StatusFilter.MANUAL -> tx.status == TransactionStatus.MANUAL
-        StatusFilter.TRANSFER -> tx.transferKind != TransferKind.NONE && tx.status != TransactionStatus.TO_REVIEW
+        StatusFilter.TRANSFER -> (tx.transferKind != TransferKind.NONE || tx.categoryId == CategoryId.TRANSFER) && tx.status != TransactionStatus.TO_REVIEW
     }
 
     private fun groupOrder(kind: CategoryKind) = when (kind) {

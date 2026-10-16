@@ -120,7 +120,7 @@ class TransactionDetailViewModel(
                 canMarkHousehold = tx.transferKind == TransferKind.LONE_LEG && !tx.loneLegConfirmed,
                 picking = p.open,
                 options = cats
-                    .filter { it.kind != CategoryKind.TRANSFER && it.kind != CategoryKind.UNCATEGORIZED }
+                    .filter { it.kind != CategoryKind.UNCATEGORIZED }
                     .sortedWith(compareBy({ it.kind.ordinal }, { it.sortOrder }))
                     .map { PickOptionUi(it.id.value, categoryName(it.id, it.name), it.kind.groupName(), it.kind.tone(), it.id == selected) },
                 remember = p.remember,

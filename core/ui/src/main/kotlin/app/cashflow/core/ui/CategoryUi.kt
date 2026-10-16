@@ -64,6 +64,7 @@ fun categoryName(id: CategoryId, fallback: String): UiText = when (id.value) {
     "resa" -> UiText.StringResource(R.string.category_resa)
     "ovrigt_rorligt" -> UiText.StringResource(R.string.category_ovrigt_rorligt)
     "sparande" -> UiText.StringResource(R.string.category_sparande)
+    "sparuttag" -> UiText.StringResource(R.string.category_sparuttag)
     "fonder" -> UiText.StringResource(R.string.category_fonder)
     "buffert" -> UiText.StringResource(R.string.category_buffert)
     "pension" -> UiText.StringResource(R.string.category_pension)

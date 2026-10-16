@@ -24,6 +24,7 @@
     { "id": "ovrigt_rorligt", "name": "Övrigt rörligt", "kind": "VARIABLE" },
 
     { "id": "sparande", "name": "Sparande", "kind": "SAVINGS" },
+    { "id": "sparuttag", "name": "Uttag från sparande", "kind": "SAVINGS" },
     { "id": "fonder", "name": "Fonder", "kind": "SAVINGS" },
     { "id": "buffert", "name": "Buffert", "kind": "SAVINGS" },
     { "id": "pension", "name": "Pension & barnspar", "kind": "SAVINGS" },
