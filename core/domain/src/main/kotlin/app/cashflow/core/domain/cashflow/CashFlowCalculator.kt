@@ -31,6 +31,8 @@ data class CashFlowSummary(
     /** Share of income saved, 0..100; null when there is no income. */
     val savingsRatePercent: Double?
         get() = if (income.ore <= 0) null else savings.ore.toDouble() / income.ore * 100.0
+
+    companion object
 }
 
 /**
