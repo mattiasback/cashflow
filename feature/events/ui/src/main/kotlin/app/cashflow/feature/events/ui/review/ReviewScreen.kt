@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -231,16 +232,20 @@ private fun SwipeDeck(
                     scaleY = appear.value
                 }
                 .pointerInput(cardKey) {
+                    val tracker = VelocityTracker()
                     detectHorizontalDragGestures(
+                        onDragStart = { tracker.resetTracking() },
                         onDragEnd = {
+                            // A quick flick counts even when the card has not travelled far.
+                            val velocity = tracker.calculateVelocity().x
                             scope.launch {
                                 val x = offset.value
                                 when {
-                                    x > threshold && currentCanAccept -> {
+                                    (x > threshold || velocity > FLICK) && x > 0 && currentCanAccept -> {
                                         offset.animateTo(size.width * 1.5f, tween(220))
                                         currentAccept()
                                     }
-                                    x < -threshold -> {
+                                    (x < -threshold || velocity < -FLICK) && x < 0 -> {
                                         offset.animateTo(-size.width * 1.5f, tween(220))
                                         currentSkip()
                                     }
@@ -250,6 +255,7 @@ private fun SwipeDeck(
                         },
                         onDragCancel = { scope.launch { offset.animateTo(0f, spring()) } },
                     ) { change, dx ->
+                        tracker.addPosition(change.uptimeMillis, change.position)
                         change.consume()
                         scope.launch { offset.snapTo(offset.value + dx) }
                     }
@@ -402,3 +408,6 @@ private fun ReviewScreenPreview() {
         )
     }
 }
+
+/** Pixels per second that make a short swipe count as a flick. */
+private const val FLICK = 1_500f
