@@ -20,7 +20,6 @@ class CashFlowCalculatorTest {
         "mat" to CategoryKind.VARIABLE,
         "boende" to CategoryKind.FIXED,
         "fonder" to CategoryKind.SAVINGS,
-        "sparuttag" to CategoryKind.SAVINGS,
         "overforing" to CategoryKind.TRANSFER,
         "okat" to CategoryKind.UNCATEGORIZED,
     )
@@ -71,15 +70,15 @@ class CashFlowCalculatorTest {
             // Cash moved between two own accounts, categorized by hand as a transfer.
             tx("m1", kronor = -3000.0, category = CategoryId("overforing"), categorizedBy = CategorizedBy.MANUAL),
             tx("m2", account = "acc-b", kronor = 3000.0, category = CategoryId("overforing"), categorizedBy = CategorizedBy.MANUAL),
-            // Buffer money taken back to pay for something: negative savings, not income.
-            tx("b1", kronor = 5000.0, category = CategoryId("sparuttag"), categorizedBy = CategorizedBy.MANUAL),
+            // Buffer money taken back to pay for something is also just moved cash.
+            tx("b1", kronor = 5000.0, category = CategoryId("overforing"), categorizedBy = CategorizedBy.MANUAL),
             tx("e1", kronor = -5000.0, category = CategoryId("mat")),
         )
         val s = calculator.summarize(may, rows, kindOf)
         assertThat(s.income).isEqualTo(Money.ZERO)
         assertThat(s.expenses).isEqualTo(Money.kr(5000))
-        assertThat(s.savings).isEqualTo(Money.kr(-5000))
-        assertThat(s.left).isEqualTo(Money.ZERO)
+        assertThat(s.savings).isEqualTo(Money.ZERO)
+        assertThat(s.left).isEqualTo(Money.kr(-5000))
     }
 
     @Test
