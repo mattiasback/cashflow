@@ -12,8 +12,31 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import app.cashflow.core.designsystem.component.BadgeKind
+import app.cashflow.core.designsystem.component.StatusBadge
+import app.cashflow.core.designsystem.theme.Radius
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarResult
@@ -85,42 +108,200 @@ fun ReviewScreen(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val c = CashFlowTheme.colors
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().background(c.bgCanvas),
-        contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
+    val total = state.decided + state.duplicates.size + state.groups.size
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(c.bgCanvas)
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
         verticalArrangement = Arrangement.spacedBy(Spacing.s3),
     ) {
-        item(key = "header") {
-            AccentHeader(
-                accent = Accent.Events,
-                title = stringResource(R.string.review_title),
-                actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ReviewAction.OnBackClick) }) },
-            ) {
-                CfCard(Modifier.fillMaxWidth()) {
-                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
-                        Text(
-                            UiText.PluralResource(R.plurals.review_left, state.remainingRows).asString(),
-                            style = CashFlowTheme.typography.headlineL,
-                            color = c.textPrimary,
-                        )
-                        Text(stringResource(R.string.review_intro), style = CashFlowTheme.typography.body, color = c.textSecondary)
-                    }
+        AccentHeader(
+            accent = Accent.Events,
+            title = stringResource(R.string.review_title),
+            actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ReviewAction.OnBackClick) }) },
+        ) {
+            CfCard(Modifier.fillMaxWidth()) {
+                Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
+                    Text(
+                        UiText.PluralResource(R.plurals.review_left, state.remainingRows).asString(),
+                        style = CashFlowTheme.typography.headlineL,
+                        color = c.textPrimary,
+                    )
+                    Text(stringResource(R.string.review_intro), style = CashFlowTheme.typography.body, color = c.textSecondary)
                 }
             }
         }
-        if (!state.isLoading && state.groups.isEmpty()) {
-            item(key = "done") {
-                CfCard(Modifier.fillMaxWidth().padding(horizontal = Spacing.gutter), color = c.surfaceStatus) {
+        val duplicate = state.duplicates.firstOrNull()
+        val group = state.groups.firstOrNull()
+        Column(Modifier.padding(horizontal = Spacing.gutter), verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+            when {
+                state.isLoading -> Unit
+                duplicate == null && group == null -> CfCard(Modifier.fillMaxWidth(), color = c.surfaceStatus) {
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text(stringResource(R.string.review_done_title), style = CashFlowTheme.typography.title, color = c.textOnStatus)
                         Text(stringResource(R.string.review_done_body), style = CashFlowTheme.typography.body, color = c.textOnStatus)
                     }
                 }
+                else -> {
+                    DeckProgress(done = state.decided, total = total)
+                    val key = duplicate?.id ?: group!!.key
+                    SwipeDeck(
+                        cardKey = key,
+                        backCards = (state.duplicates.size + state.groups.size - 1).coerceIn(0, 2),
+                        canAccept = duplicate != null || group?.selectedId != null,
+                        onAccept = { if (duplicate != null) onAction(ReviewAction.OnMerge(duplicate.id)) else onAction(ReviewAction.OnApprove(group!!.key)) },
+                        onSkip = { onAction(ReviewAction.OnSkip(key)) },
+                    ) {
+                        if (duplicate != null) DuplicateCard(duplicate, onAction) else ReviewGroupCard(group!!, onAction)
+                    }
+                    Row(Modifier.fillMaxWidth().clearAndSetSemantics { }) {
+                        Text(stringResource(R.string.review_swipe_left), style = CashFlowTheme.typography.caption, color = c.textSecondary, modifier = Modifier.weight(1f))
+                        Text(stringResource(R.string.review_swipe_right), style = CashFlowTheme.typography.caption, color = c.textSecondary)
+                    }
+                }
             }
         }
-        items(state.groups, key = { it.key }) { group ->
-            ReviewGroupCard(group, onAction, Modifier.padding(horizontal = Spacing.gutter).animateItem())
+    }
+}
+
+@Composable
+private fun DeckProgress(done: Int, total: Int) {
+    val c = CashFlowTheme.colors
+    val fraction = if (total == 0) 0f else done.toFloat() / total
+    val animated by animateFloatAsState(fraction, label = "progress")
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+        Box(
+            Modifier
+                .weight(1f)
+                .height(6.dp)
+                .clip(Radius.pill)
+                .background(c.surfaceControl)
+                .semantics { progressBarRangeInfo = ProgressBarRangeInfo(fraction, 0f..1f) },
+        ) {
+            Box(Modifier.fillMaxWidth(animated).fillMaxHeight().clip(Radius.pill).background(c.accentEventsInk))
         }
+        Text(stringResource(R.string.review_progress, (done + 1).coerceAtMost(total), total), style = CashFlowTheme.typography.caption, color = c.textSecondary)
+    }
+}
+
+/**
+ * The card deck: the top card follows the finger with a slight tilt, springs back when let go
+ * early, and flies out when flicked: right accepts, left skips. The edges of the next cards peek
+ * out underneath. The buttons on the card do the same for TalkBack and for those who prefer taps.
+ */
+@Composable
+private fun SwipeDeck(
+    cardKey: String,
+    backCards: Int,
+    canAccept: Boolean,
+    onAccept: () -> Unit,
+    onSkip: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    val c = CashFlowTheme.colors
+    val scope = rememberCoroutineScope()
+    val offset = remember(cardKey) { Animatable(0f) }
+    val appear = remember(cardKey) { Animatable(0.96f) }
+    LaunchedEffect(cardKey) { appear.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow)) }
+    val threshold = with(LocalDensity.current) { 110.dp.toPx() }
+    val currentAccept by rememberUpdatedState(onAccept)
+    val currentSkip by rememberUpdatedState(onSkip)
+    val currentCanAccept by rememberUpdatedState(canAccept)
+    Box(Modifier.fillMaxWidth().padding(bottom = (backCards * 8).dp)) {
+        // The next cards peek out below the top card.
+        for (i in backCards downTo 1) {
+            Box(
+                Modifier
+                    .matchParentSize()
+                    .padding(horizontal = (i * 6).dp)
+                    .offset(y = (i * 8).dp)
+                    .clip(Radius.lg)
+                    .background(c.surfaceCard.copy(alpha = if (i == 1) 0.8f else 0.55f)),
+            )
+        }
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .graphicsLayer {
+                    translationX = offset.value
+                    rotationZ = offset.value / 40f
+                    scaleX = appear.value
+                    scaleY = appear.value
+                }
+                .pointerInput(cardKey) {
+                    detectHorizontalDragGestures(
+                        onDragEnd = {
+                            scope.launch {
+                                val x = offset.value
+                                when {
+                                    x > threshold && currentCanAccept -> {
+                                        offset.animateTo(size.width * 1.5f, tween(220))
+                                        currentAccept()
+                                    }
+                                    x < -threshold -> {
+                                        offset.animateTo(-size.width * 1.5f, tween(220))
+                                        currentSkip()
+                                    }
+                                    else -> offset.animateTo(0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+                                }
+                            }
+                        },
+                        onDragCancel = { scope.launch { offset.animateTo(0f, spring()) } },
+                    ) { change, dx ->
+                        change.consume()
+                        scope.launch { offset.snapTo(offset.value + dx) }
+                    }
+                },
+        ) { content() }
+    }
+}
+
+@Composable
+private fun DuplicateCard(card: DuplicateCardUi, onAction: (ReviewAction) -> Unit) {
+    val c = CashFlowTheme.colors
+    CfCard(Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.s4)) {
+            Row {
+                Column(Modifier.weight(1f).semantics(mergeDescendants = true) { heading() }, verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
+                    StatusBadge(stringResource(R.string.review_duplicate_badge), BadgeKind.Review)
+                    Text(card.title, style = CashFlowTheme.typography.title, color = c.textPrimary, maxLines = 2)
+                }
+                Spacer(Modifier.width(Spacing.s3))
+                Text(card.amount, style = CashFlowTheme.typography.title.copy(fontFeatureSettings = "tnum"), color = c.textPrimary)
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+                DuplicateSide(card.earlier, stringResource(R.string.review_duplicate_earlier), Modifier.weight(1f))
+                DuplicateSide(card.newer, stringResource(R.string.review_duplicate_newer), Modifier.weight(1f))
+            }
+            Text(stringResource(R.string.review_duplicate_body), style = CashFlowTheme.typography.body, color = c.textPrimary)
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+                CfButton(stringResource(R.string.review_keep_both), { onAction(ReviewAction.OnKeepBoth(card.id)) }, Modifier.weight(1f), variant = CfButtonVariant.Outline, enabled = !card.isSaving)
+                CfButton(
+                    stringResource(R.string.review_merge),
+                    { onAction(ReviewAction.OnMerge(card.id)) },
+                    Modifier.weight(1f),
+                    variant = CfButtonVariant.Accent,
+                    accent = c.actionEvents,
+                    enabled = !card.isSaving,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DuplicateSide(side: DuplicateSideUi, label: String, modifier: Modifier = Modifier) {
+    val c = CashFlowTheme.colors
+    Column(
+        modifier.clip(Radius.sm).background(if (c.isDark) c.surfaceGroup else c.surfaceGroup).padding(Spacing.s3),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        Text(label, style = CashFlowTheme.typography.caption, color = c.textSecondary)
+        Text(side.date, style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary)
+        Text(side.text, style = CashFlowTheme.typography.label, color = c.textSecondary, maxLines = 2)
+        if (side.source.isNotEmpty()) Text(side.source, style = CashFlowTheme.typography.label, color = c.textSecondary, maxLines = 1)
     }
 }
 
@@ -176,16 +357,24 @@ private fun ReviewGroupCard(group: ReviewGroupUi, onAction: (ReviewAction) -> Un
                 checked = group.remember,
                 onCheckedChange = { onAction(ReviewAction.OnRememberToggle(group.key, it)) },
             )
-            CfButton(
-                // Until a category is picked the button says what is missing instead of looking faded.
-                text = stringResource(if (group.selectedId == null) R.string.review_pick_first else R.string.review_approve),
-                onClick = { onAction(ReviewAction.OnApprove(group.key)) },
-                variant = CfButtonVariant.Accent,
-                accent = c.actionEvents,
-                icon = if (group.selectedId == null) null else CfIcons.Check,
-                enabled = group.selectedId != null && !group.isSaving,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+                CfButton(
+                    text = stringResource(R.string.review_skip),
+                    onClick = { onAction(ReviewAction.OnSkip(group.key)) },
+                    variant = CfButtonVariant.Outline,
+                    enabled = !group.isSaving,
+                )
+                CfButton(
+                    // Until a category is picked the button says what is missing instead of looking faded.
+                    text = stringResource(if (group.selectedId == null) R.string.review_pick_first else R.string.review_approve),
+                    onClick = { onAction(ReviewAction.OnApprove(group.key)) },
+                    variant = CfButtonVariant.Accent,
+                    accent = c.actionEvents,
+                    icon = if (group.selectedId == null) null else CfIcons.Check,
+                    enabled = group.selectedId != null && !group.isSaving,
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
     }
 }

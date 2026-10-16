@@ -15,6 +15,9 @@ import app.cashflow.core.domain.model.TransactionStatus
 import app.cashflow.core.domain.model.TransferKind
 import app.cashflow.core.domain.model.sum
 import app.cashflow.core.importengine.CategorizeUseCase
+import app.cashflow.core.importengine.HideDeleteUseCase
+import app.cashflow.core.domain.datasource.ImportBatchLocalDataSource
+import app.cashflow.core.domain.model.TxId
 import app.cashflow.core.importengine.CategorizeUndo
 import app.cashflow.feature.events.ui.R
 import app.cashflow.core.ui.FlowTone
@@ -56,9 +59,27 @@ data class ReviewGroupUi(
     val canExpand: Boolean = true,
 )
 
+/** "Möjlig dubblett": the new row next to the earlier one it looks like. */
+@Immutable
+data class DuplicateCardUi(
+    val id: String,
+    val title: String,
+    val amount: String,
+    val earlier: DuplicateSideUi,
+    val newer: DuplicateSideUi,
+    val isSaving: Boolean,
+)
+
+@Immutable
+data class DuplicateSideUi(val source: String, val date: String, val text: String)
+
 @Stable
 data class ReviewState(
     val groups: List<ReviewGroupUi> = emptyList(),
+    /** Possible duplicates come first in the deck. */
+    val duplicates: List<DuplicateCardUi> = emptyList(),
+    /** Decisions made since the deck opened, for "3 av 40". */
+    val decided: Int = 0,
     val remainingRows: Int = 0,
     val isLoading: Boolean = true,
     val error: UiText? = null,
@@ -70,6 +91,10 @@ sealed interface ReviewAction {
     data class OnExpandToggle(val groupKey: String) : ReviewAction
     data class OnApprove(val groupKey: String) : ReviewAction
     data class OnHousehold(val groupKey: String) : ReviewAction
+    /** "Hoppa över" or a swipe left: the card goes to the back of the deck. */
+    data class OnSkip(val key: String) : ReviewAction
+    data class OnKeepBoth(val id: String) : ReviewAction
+    data class OnMerge(val id: String) : ReviewAction
     data object OnUndoClick : ReviewAction
     data object OnBackClick : ReviewAction
 }
@@ -89,10 +114,16 @@ private data class Choice(val categoryId: CategoryId? = null, val remember: Bool
  * by row count, so one decision ("Kom ihåg" is on by default) clears many rows.
  */
 class ReviewViewModel(
-    transactions: TransactionLocalDataSource,
+    private val transactions: TransactionLocalDataSource,
     categories: CategoryLocalDataSource,
     private val categorize: CategorizeUseCase,
+    private val hideDelete: HideDeleteUseCase,
+    batches: ImportBatchLocalDataSource,
 ) : ViewModel() {
+
+    /** Cards skipped this session go to the back of the deck. */
+    private val skipped = MutableStateFlow<List<String>>(emptyList())
+    private val decided = MutableStateFlow(0)
 
     private val _state = MutableStateFlow(ReviewState())
     val state: StateFlow<ReviewState> = _state.asStateFlow()
@@ -109,8 +140,9 @@ class ReviewViewModel(
     private val locale = AppLocale.current()
 
     init {
-        combine(transactions.observeAll(), categories.observeCategories(), choices, saving) { txs, cats, ch, sv ->
-            build(txs, cats, ch, sv)
+        val session = combine(choices, saving, skipped, decided) { ch, sv, sk, d -> Session(ch, sv, sk, d) }
+        combine(transactions.observeAll(), categories.observeCategories(), batches.observeBatches(), session) { txs, cats, imports, s ->
+            build(txs, cats, s.choices, s.saving, imports.associate { it.id to it.fileName }, s.skipped, s.decided)
         }.onEach { s -> _state.update { s } }.launchIn(viewModelScope)
     }
 
@@ -121,6 +153,9 @@ class ReviewViewModel(
             is ReviewAction.OnExpandToggle -> choose(action.groupKey) { it.copy(expanded = !it.expanded) }
             is ReviewAction.OnApprove -> approve(action.groupKey)
             is ReviewAction.OnHousehold -> household(action.groupKey)
+            is ReviewAction.OnSkip -> skipped.update { (it - action.key) + action.key }
+            is ReviewAction.OnKeepBoth -> decide(action.id) { transactions.setDuplicateChecked(TxId(action.id)) }
+            is ReviewAction.OnMerge -> decide(action.id) { hideDelete.delete(TxId(action.id)) }
             ReviewAction.OnUndoClick -> undo()
             ReviewAction.OnBackClick -> viewModelScope.launch { _events.send(ReviewEvent.NavigateBack) }
         }
@@ -132,6 +167,17 @@ class ReviewViewModel(
         viewModelScope.launch {
             val r = categorize.undo(token)
             if (r is Result.Error) _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
+        }
+    }
+
+    private fun decide(key: String, block: suspend () -> app.cashflow.core.domain.EmptyResult<app.cashflow.core.domain.DataError.Local>) {
+        viewModelScope.launch {
+            saving.update { it + key }
+            when (val r = block()) {
+                is Result.Error -> _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
+                is Result.Success -> decided.update { it + 1 }
+            }
+            saving.update { it - key }
         }
     }
 
@@ -148,6 +194,7 @@ class ReviewViewModel(
                 is Result.Error -> _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
                 is Result.Success -> {
                     choices.update { it - key }
+                    decided.update { it + 1 }
                     lastUndo = r.data
                     _events.send(ReviewEvent.ShowUndo(UiText.StringResource(R.string.review_saved, arrayOf(rows.first().normalizedText.ifBlank { rows.first().rawText }))))
                 }
@@ -163,6 +210,7 @@ class ReviewViewModel(
             when (val r = categorize.confirmHouseholdTransfer(rows)) {
                 is Result.Error -> _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
                 is Result.Success -> {
+                    decided.update { it + 1 }
                     lastUndo = r.data
                     _events.send(ReviewEvent.ShowUndo(UiText.StringResource(R.string.review_saved, arrayOf(rows.first().normalizedText.ifBlank { rows.first().rawText }))))
                 }
@@ -171,8 +219,29 @@ class ReviewViewModel(
         }
     }
 
-    private fun build(txs: List<Transaction>, cats: List<Category>, ch: Map<String, Choice>, sv: Set<String>): ReviewState {
-        val waiting = txs.filter { it.status == TransactionStatus.TO_REVIEW }
+    private fun build(
+        txs: List<Transaction>,
+        cats: List<Category>,
+        ch: Map<String, Choice>,
+        sv: Set<String>,
+        fileOf: Map<app.cashflow.core.domain.model.ImportId, String>,
+        sk: List<String>,
+        done: Int,
+    ): ReviewState {
+        val waiting = txs.filter { it.status == TransactionStatus.TO_REVIEW && !it.isPossibleDuplicate }
+        val byTxId = txs.associateBy { it.id }
+        fun side(t: Transaction) = DuplicateSideUi(fileOf[t.importId] ?: "", PeriodFormatter.iso(t.transactionDate, locale), t.rawText)
+        val duplicates = txs.filter { it.isPossibleDuplicate }.mapNotNull { t ->
+            val earlier = t.duplicateOf?.let { byTxId[it] } ?: return@mapNotNull null
+            DuplicateCardUi(
+                id = t.id.value,
+                title = t.normalizedText.ifBlank { t.rawText },
+                amount = MoneyFormatter.format(t.amount, signed = true, locale = locale),
+                earlier = side(earlier),
+                newer = side(t),
+                isSaving = t.id.value in sv,
+            )
+        }.sortedBy { it.id in sk }
         val groups = waiting.groupBy { categorize.payeeKey(it) }
         rowsByGroup = groups
         val byId = cats.associateBy { it.id }
@@ -204,7 +273,9 @@ class ReviewViewModel(
                     isSaving = key in sv,
                 )
             }
-        return ReviewState(groups = ui, remainingRows = waiting.size, isLoading = false)
+        // Skipped cards go to the back, in the order they were skipped.
+        val ordered = ui.sortedBy { g -> sk.indexOf(g.key).let { if (it < 0) -1 else it } }
+        return ReviewState(groups = ordered, duplicates = duplicates, decided = done, remainingRows = waiting.size + duplicates.size, isLoading = false)
     }
 
     private fun options(cats: List<Category>, income: Boolean, expanded: Boolean): List<Category> {
@@ -225,3 +296,5 @@ class ReviewViewModel(
         val INCOME_SUGGESTIONS = listOf("overforing", "inkomst_ovrig", "lon", "utdelning", "ersattning", "barnbidrag")
     }
 }
+
+private data class Session(val choices: Map<String, Choice>, val saving: Set<String>, val skipped: List<String>, val decided: Int)

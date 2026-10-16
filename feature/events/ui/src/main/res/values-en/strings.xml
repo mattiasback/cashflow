@@ -107,4 +107,13 @@
     <string name="detail_duplicate_body">An earlier import has a matching row: %1$s. Delete this one if it is the same purchase.</string>
     <string name="detail_not_duplicate">Not a duplicate</string>
     <string name="status_hidden">Hidden</string>
+    <string name="review_swipe_left">← Swipe left: skip</string>
+    <string name="review_swipe_right">Swipe right: approve →</string>
+    <string name="review_progress">%1$d of %2$d</string>
+    <string name="review_duplicate_badge">Possible duplicate</string>
+    <string name="review_duplicate_earlier">Earlier import</string>
+    <string name="review_duplicate_newer">New file</string>
+    <string name="review_duplicate_body">Same account and amount, with a slightly different date or text. Probably the same purchase in two exports.</string>
+    <string name="review_keep_both">Keep both</string>
+    <string name="review_merge">Merge</string>
 </resources>

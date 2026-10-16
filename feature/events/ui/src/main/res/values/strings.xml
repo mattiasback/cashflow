@@ -109,4 +109,13 @@
     <string name="detail_duplicate_body">En tidigare import har en likadan rad: %1$s. Ta bort den här om det är samma köp.</string>
     <string name="detail_not_duplicate">Inte en dubblett</string>
     <string name="status_hidden">Dold</string>
+    <string name="review_swipe_left">← Svep vänster: hoppa över</string>
+    <string name="review_swipe_right">Svep höger: godkänn →</string>
+    <string name="review_progress">%1$d av %2$d</string>
+    <string name="review_duplicate_badge">Möjlig dubblett</string>
+    <string name="review_duplicate_earlier">Tidigare import</string>
+    <string name="review_duplicate_newer">Nya filen</string>
+    <string name="review_duplicate_body">Samma konto och belopp, och datum eller text skiljer sig lite. Troligen samma köp i två exporter.</string>
+    <string name="review_keep_both">Behåll båda</string>
+    <string name="review_merge">Slå ihop</string>
 </resources>

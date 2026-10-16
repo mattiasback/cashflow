@@ -16,6 +16,7 @@ import app.cashflow.core.domain.testing.InMemoryMerchantMemoryDataSource
 import app.cashflow.core.domain.testing.InMemoryRuleDataSource
 import app.cashflow.core.domain.testing.InMemoryTransactionDataSource
 import app.cashflow.core.importengine.CategorizeUseCase
+import app.cashflow.core.importengine.HideDeleteUseCase
 import app.cashflow.core.importengine.ReclassifyUseCase
 import app.cashflow.core.importengine.TransferMatcher
 import app.cashflow.feature.events.ui.list.EventsAction
@@ -56,10 +57,8 @@ class EventsAndReviewViewModelTest {
     private val memories = InMemoryMerchantMemoryDataSource()
     private val catalog = BundledCatalog.load()
     private val normalizer = PayeeNormalizer()
-    private val categorize = CategorizeUseCase(
-        transactions, memories, normalizer,
-        ReclassifyUseCase(transactions, InMemoryAccountDataSource(), memories, InMemoryRuleDataSource(), catalog, TransferMatcher(), Categorizer(normalizer)),
-    )
+    private val reclassify = ReclassifyUseCase(transactions, InMemoryAccountDataSource(), memories, InMemoryRuleDataSource(), catalog, TransferMatcher(), Categorizer(normalizer))
+    private val categorize = CategorizeUseCase(transactions, memories, normalizer, reclassify)
 
     @BeforeEach
     fun setUp() {
@@ -109,7 +108,7 @@ class EventsAndReviewViewModelTest {
 
     @Test
     fun `review groups by payee, most rows first, and one approval clears the group`() = runTest {
-        val vm = ReviewViewModel(transactions, categories, categorize)
+        val vm = ReviewViewModel(transactions, categories, categorize, HideDeleteUseCase(transactions, reclassify), batches)
         val groups = vm.state.value.groups
         assertThat(groups.map { it.title }).containsExactly("Swish till Vän A", "OKÄND HANDLARE")
 
@@ -124,7 +123,7 @@ class EventsAndReviewViewModelTest {
 
     @Test
     fun `more categories keeps the suggested chips in place and only adds after them`() = runTest {
-        val vm = ReviewViewModel(transactions, categories, categorize)
+        val vm = ReviewViewModel(transactions, categories, categorize, HideDeleteUseCase(transactions, reclassify), batches)
         val key = vm.state.value.groups.first().key
         val suggested = vm.state.value.groups.first().chips.map { it.id }
 
@@ -138,7 +137,7 @@ class EventsAndReviewViewModelTest {
     @Test
     fun `no more categories option when the suggestions already cover them all`() = runTest {
         transactions.rows.update { it + (TxId("g") to tx("g", date = "2026-05-13", kronor = 300.0, text = "INSATTNING EXEMPEL")) }
-        val vm = ReviewViewModel(transactions, categories, categorize)
+        val vm = ReviewViewModel(transactions, categories, categorize, HideDeleteUseCase(transactions, reclassify), batches)
         val groups = vm.state.value.groups
 
         assertThat(groups.first { it.title == "INSATTNING EXEMPEL" }.canExpand).isFalse()
@@ -146,8 +145,24 @@ class EventsAndReviewViewModelTest {
     }
 
     @Test
+    fun `skipping moves a card to the back, and a possible duplicate comes first and can be merged`() = runTest {
+        val vm = ReviewViewModel(transactions, categories, categorize, HideDeleteUseCase(transactions, reclassify), batches)
+        val first = vm.state.value.groups.first().key
+        vm.onAction(ReviewAction.OnSkip(first))
+        assertThat(vm.state.value.groups.last().key).isEqualTo(first)
+
+        transactions.rows.update {
+            it + (TxId("dup") to tx("dup", date = "2026-05-03", kronor = -120.0, text = "Swish till Vän A", importId = "import-2").copy(duplicateOf = TxId("a")))
+        }
+        assertThat(vm.state.value.duplicates.map { it.id }).isEqualTo(listOf("dup"))
+        vm.onAction(ReviewAction.OnMerge("dup"))
+        assertThat(transactions.rows.value.containsKey(TxId("dup"))).isFalse()
+        assertThat(vm.state.value.decided).isEqualTo(1)
+    }
+
+    @Test
     fun `undo after a wrong choice restores the rows and forgets the payee`() = runTest {
-        val vm = ReviewViewModel(transactions, categories, categorize)
+        val vm = ReviewViewModel(transactions, categories, categorize, HideDeleteUseCase(transactions, reclassify), batches)
         val before = transactions.rows.value
         val key = vm.state.value.groups.first().key
 
