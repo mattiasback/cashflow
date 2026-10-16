@@ -109,7 +109,7 @@ class FlowViewModel(
 
     init {
         combine(transactions.observeAll(), categories.observeCategories(), settings.settings, selected) { txs, cats, prefs, sel ->
-            build(txs, cats, prefs.mortgage, sel)
+            build(txs, cats, prefs.mortgage, prefs.percentDecimals, sel)
         }.onEach { s -> _state.update { s } }.launchIn(viewModelScope)
     }
 
@@ -135,7 +135,7 @@ class FlowViewModel(
         selected.value = target
     }
 
-    private fun build(txs: List<Transaction>, cats: List<Category>, mortgage: MortgageSplit, sel: Period?): FlowState {
+    private fun build(txs: List<Transaction>, cats: List<Category>, mortgage: MortgageSplit, percentDecimals: Boolean, sel: Period?): FlowState {
         periods = calculator.periodsWithData(txs)
         val period = sel?.takeIf { it in periods } ?: periods.lastOrNull()
         shown = period
@@ -163,7 +163,7 @@ class FlowViewModel(
             netSpoken = MoneyFormatter.spoken(s.net, locale),
             delta = delta,
             deltaPositive = prevSummary == null || s.net >= prevSummary.net,
-            tiles = tiles(s, fmt),
+            tiles = tiles(s, fmt, percentDecimals),
             expenseBars = bars(s.expensesByCategory, s.expenses, byId),
             incomeBars = bars(s.incomeByCategory, s.income, byId),
             savingsBars = bars(s.savingsByCategory, s.savings, byId),
@@ -172,7 +172,7 @@ class FlowViewModel(
         )
     }
 
-    private fun tiles(s: CashFlowSummary, fmt: (Money) -> String): List<TileUi> {
+    private fun tiles(s: CashFlowSummary, fmt: (Money) -> String, percentDecimals: Boolean): List<TileUi> {
         val rate = s.savingsRatePercent
         return listOf(
             TileUi(
@@ -186,7 +186,7 @@ class FlowViewModel(
             ),
             TileUi(
                 UiText.StringResource(R.string.tile_savings), fmt(s.savings),
-                rate?.let { UiText.StringResource(R.string.tile_savings_sub, arrayOf(PercentFormatter.format(it, locale = locale))) },
+                rate?.let { UiText.StringResource(R.string.tile_savings_sub, arrayOf(PercentFormatter.format(it, decimals = if (percentDecimals) 1 else 0, locale = locale))) },
                 FlowTone.Savings, MoneyFormatter.spoken(s.savings, locale),
             ),
             TileUi(
