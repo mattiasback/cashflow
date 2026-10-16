@@ -94,4 +94,5 @@
     <string name="detail_save">Spara</string>
     <string name="detail_cancel">Avbryt</string>
     <string name="review_undo">Ångra</string>
+    <string name="review_pick_first">Välj en kategori först</string>
 </resources>

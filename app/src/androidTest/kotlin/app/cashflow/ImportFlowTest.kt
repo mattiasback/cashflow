@@ -139,7 +139,8 @@ class ImportFlowRobot(private val compose: ComposeContentTestRule) {
     fun openReview() = apply {
         // The Händelser review card behind the sheet has the same label; the sheet is drawn last.
         compose.onAllNodesWithText(s(app.cashflow.feature.importer.ui.R.string.receipt_review_now)).onLast().performClick()
-        compose.waitUntil(5_000) { compose.onAllNodesWithText(s(app.cashflow.feature.events.ui.R.string.review_approve)).fetchSemanticsNodes().isNotEmpty() }
+        // Before a category is picked the approve button reads "Välj en kategori först".
+        compose.waitUntil(5_000) { compose.onAllNodesWithText(s(app.cashflow.feature.events.ui.R.string.review_pick_first)).fetchSemanticsNodes().isNotEmpty() }
     }
 
     fun approveFirstGroup(categoryRes: Int) = apply {

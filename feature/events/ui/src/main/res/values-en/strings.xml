@@ -92,4 +92,5 @@
     <string name="detail_save">Save</string>
     <string name="detail_cancel">Cancel</string>
     <string name="review_undo">Undo</string>
+    <string name="review_pick_first">Choose a category first</string>
 </resources>

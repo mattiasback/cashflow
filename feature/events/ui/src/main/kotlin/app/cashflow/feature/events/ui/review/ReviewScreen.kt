@@ -177,11 +177,12 @@ private fun ReviewGroupCard(group: ReviewGroupUi, onAction: (ReviewAction) -> Un
                 onCheckedChange = { onAction(ReviewAction.OnRememberToggle(group.key, it)) },
             )
             CfButton(
-                text = stringResource(R.string.review_approve),
+                // Until a category is picked the button says what is missing instead of looking faded.
+                text = stringResource(if (group.selectedId == null) R.string.review_pick_first else R.string.review_approve),
                 onClick = { onAction(ReviewAction.OnApprove(group.key)) },
                 variant = CfButtonVariant.Accent,
                 accent = c.actionEvents,
-                icon = CfIcons.Check,
+                icon = if (group.selectedId == null) null else CfIcons.Check,
                 enabled = group.selectedId != null && !group.isSaving,
                 modifier = Modifier.fillMaxWidth(),
             )

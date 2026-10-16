@@ -91,18 +91,21 @@ fun CfButton(
     icon: ImageVector? = null,
 ) {
     val c = CashFlowTheme.colors
-    val (bg, fg, border) = when (variant) {
+    val (bg, fg, border) = when {
+        // Disabled is one neutral look for every variant: grey fill, grey label and icon, no border.
+        // textSecondary (not textDisabled) so a label that says what to do first stays readable.
+        !enabled -> Triple(c.surfaceControl, c.textSecondary, null)
+        else -> when (variant) {
         CfButtonVariant.Primary -> Triple(c.brand, c.textOnAccent, null)
         // Accent fills are dark enough for a white label in both themes (e.g. actionEvents).
         CfButtonVariant.Accent -> Triple(accent ?: c.brand, Color.White, null)
         CfButtonVariant.Outline -> Triple(Color.Transparent, c.textPrimary, BorderStroke(1.5.dp, c.borderStrong))
         CfButtonVariant.Danger -> Triple(Color.Transparent, c.textDanger, BorderStroke(1.5.dp, c.textDanger))
+        }
     }
     Row(
         modifier = modifier
             .heightIn(min = Sizes.buttonHeight)
-            // Disabled is the whole control at opacity-disabled, never a recoloured label.
-            .alpha(if (enabled) 1f else 0.38f)
             .clip(Radius.xs)
             .background(bg)
             .then(if (border != null) Modifier.border(border, Radius.xs) else Modifier)
