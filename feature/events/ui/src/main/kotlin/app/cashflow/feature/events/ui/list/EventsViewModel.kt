@@ -99,12 +99,15 @@ class EventsViewModel(
     }
 
     private fun buildState(
-        all: List<Transaction>,
+        everything: List<Transaction>,
         categories: Map<CategoryId, Category>,
         imports: List<ImportBatch>,
         f: Filters,
         hits: Set<TxId>?,
     ): EventsState {
+        // Händelser is the money flow: bank rows, plus savings rows only while they need a decision
+        // ("Möjlig dubblett"). Everything inside savings is listed per account instead.
+        val all = everything.filter { it.countsInCashFlow || it.status == TransactionStatus.TO_REVIEW }
         val inPeriod = all.filter { f.period == null || it.period == f.period }
         val rows = inPeriod
             .filter { hits == null || it.id in hits }
@@ -148,7 +151,7 @@ class EventsViewModel(
             reviewCount = review.size,
             reviewPayees = review.map { it.normalizedText.uppercase() }.distinct().size,
             lastImport = latest?.let {
-                LastImportUi(it.fileName, UiText.StringResource(R.string.last_import_meta, arrayOf(imports.size, all.map { t -> t.accountId }.distinct().size)))
+                LastImportUi(it.fileName, UiText.StringResource(R.string.last_import_meta, arrayOf(imports.size, everything.map { t -> t.accountId }.distinct().size)))
             },
             hasTransactions = all.isNotEmpty(),
             sheet = f.sheet,

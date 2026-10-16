@@ -13,6 +13,10 @@
     <string name="import_new_account">+ Nytt konto</string>
     <string name="import_account_name">Namn på kontot</string>
     <string name="import_remember_hint">Nästa fil som fortsätter kontots saldo hamnar här automatiskt.</string>
+    <string name="import_type_title">Vilken typ av konto?</string>
+    <string name="import_type_body">Filen namnger sina konton, men namnet säger inte vilken sorts konto det är. Du svarar en gång per konto.</string>
+    <string name="import_type_question">Vad är %1$s?</string>
+    <string name="import_type_hint">Pension räknas inte som hushållets eget sparande. Inget på kontot räknas i kassaflödet, bara insättningar och uttag via banken.</string>
     <string name="import_button_go">Importera</string>
     <string name="import_failed_title">Importen gick inte</string>
     <string name="import_nothing_readable">Ingen av filerna gick att läsa.</string>

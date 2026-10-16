@@ -13,6 +13,10 @@
     <string name="import_new_account">+ New account</string>
     <string name="import_account_name">Account name</string>
     <string name="import_remember_hint">The next file that continues this account\'s balance goes here automatically.</string>
+    <string name="import_type_title">Which kind of account?</string>
+    <string name="import_type_body">The file names its accounts, but the name does not say what kind of account it is. You answer once per account.</string>
+    <string name="import_type_question">What is %1$s?</string>
+    <string name="import_type_hint">Pension does not count as the household\'s own savings. Nothing on the account counts in cash flow, only deposits and withdrawals through the bank.</string>
     <string name="import_button_go">Import</string>
     <string name="import_failed_title">The import didn\'t work</string>
     <string name="import_nothing_readable">None of the files could be read.</string>

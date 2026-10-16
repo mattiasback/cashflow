@@ -113,8 +113,20 @@ fun ImportScreen(
                             )
                         }
                         ImportPhase.QUESTIONS -> {
-                            Text(stringResource(R.string.import_questions_title), style = CashFlowTheme.typography.title, color = c.textPrimary)
-                            Text(stringResource(R.string.import_questions_body), style = CashFlowTheme.typography.body, color = c.textSecondary)
+                            val onlyTypes = state.questions.isEmpty()
+                            Text(
+                                stringResource(if (onlyTypes) R.string.import_type_title else R.string.import_questions_title),
+                                style = CashFlowTheme.typography.title,
+                                color = c.textPrimary,
+                            )
+                            Text(
+                                stringResource(if (onlyTypes) R.string.import_type_body else R.string.import_questions_body),
+                                style = CashFlowTheme.typography.body,
+                                color = c.textSecondary,
+                            )
+                            if (state.typeQuestions.isNotEmpty()) {
+                                Text(stringResource(R.string.import_type_hint), style = CashFlowTheme.typography.label, color = c.textSecondary)
+                            }
                         }
                         ImportPhase.FAILED -> {
                             Text(stringResource(R.string.import_failed_title), style = CashFlowTheme.typography.title, color = c.textPrimary)
@@ -128,6 +140,7 @@ fun ImportScreen(
 
         Column(Modifier.padding(horizontal = Spacing.gutter), verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
             state.questions.forEach { q -> QuestionCard(q, onAction) }
+            state.typeQuestions.forEach { q -> TypeQuestionCard(q, onAction) }
             if (state.failures.isNotEmpty()) {
                 Text(stringResource(R.string.import_skipped_files), style = CashFlowTheme.typography.overline, color = c.textSecondary, modifier = Modifier.padding(top = Spacing.s4))
                 state.failures.forEach { f ->
@@ -188,6 +201,31 @@ private fun QuestionCard(q: AccountQuestionUi, onAction: (ImportAction) -> Unit)
                 )
             }
             Text(stringResource(R.string.import_remember_hint), style = CashFlowTheme.typography.label, color = c.textSecondary)
+        }
+    }
+}
+
+@Composable
+private fun TypeQuestionCard(q: AccountTypeQuestionUi, onAction: (ImportAction) -> Unit) {
+    val c = CashFlowTheme.colors
+    CfCard(Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+            Text(
+                stringResource(R.string.import_type_question, q.name),
+                style = CashFlowTheme.typography.title,
+                color = c.textPrimary,
+                modifier = Modifier.semantics { heading() },
+            )
+            Text(q.institution, style = CashFlowTheme.typography.label, color = c.textSecondary)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.s2), verticalArrangement = Arrangement.spacedBy(Spacing.s2)) {
+                q.options.forEach { option ->
+                    CfChip(
+                        label = option.label.asString(),
+                        selected = option.selected,
+                        onClick = { onAction(ImportAction.OnAccountType(q.key, option.type)) },
+                    )
+                }
+            }
         }
     }
 }

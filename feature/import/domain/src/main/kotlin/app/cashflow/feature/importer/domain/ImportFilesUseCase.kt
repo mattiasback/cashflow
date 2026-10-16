@@ -2,6 +2,7 @@ package app.cashflow.feature.importer.domain
 
 import app.cashflow.core.domain.ImportError
 import app.cashflow.core.domain.Result
+import app.cashflow.core.domain.model.AccountType
 import app.cashflow.core.domain.model.ParsedStatement
 import app.cashflow.core.importengine.AccountAnswer
 import app.cashflow.core.importengine.ImportOutcome
@@ -52,6 +53,9 @@ class ImportFilesUseCase(
         }
     }
 
-    suspend fun execute(plan: ImportPlan, answers: Map<Int, AccountAnswer>): Result<ImportOutcome, ImportError> =
-        engine.execute(plan, answers)
+    suspend fun execute(
+        plan: ImportPlan,
+        answers: Map<Int, AccountAnswer>,
+        types: Map<String, AccountType> = emptyMap(),
+    ): Result<ImportOutcome, ImportError> = engine.execute(plan, answers, types)
 }

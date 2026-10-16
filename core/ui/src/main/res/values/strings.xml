@@ -54,4 +54,10 @@
     <string name="category_barnspar">Barnsparande</string>
     <string name="category_utdelning">Utdelning</string>
     <string name="category_ovrigt_fast">Övrigt fast</string>
+    <string name="account_type_transaction">Bankkonto</string>
+    <string name="account_type_savings">Sparkonto</string>
+    <string name="account_type_isk">ISK</string>
+    <string name="account_type_kf">Kapitalförsäkring</string>
+    <string name="account_type_pension">Pension</string>
+    <string name="account_type_other">Annat</string>
 </resources>

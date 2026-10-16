@@ -39,6 +39,18 @@ data class AccountQuestionUi(
     val newName: String,
 )
 
+/** "Vilken typ av konto?" for a named savings account whose name does not tell. */
+@Immutable
+data class AccountTypeQuestionUi(
+    val key: String,
+    val name: String,
+    val institution: String,
+    val options: List<AccountTypeOptionUi>,
+)
+
+@Immutable
+data class AccountTypeOptionUi(val type: AccountType, val label: UiText, val selected: Boolean)
+
 @Immutable
 data class FileFailureUi(val fileName: String, val reason: UiText)
 
@@ -47,6 +59,7 @@ data class ImportState(
     val phase: ImportPhase = ImportPhase.PICKING,
     val fileCount: Int = 0,
     val questions: List<AccountQuestionUi> = emptyList(),
+    val typeQuestions: List<AccountTypeQuestionUi> = emptyList(),
     val failures: List<FileFailureUi> = emptyList(),
     val canImport: Boolean = false,
     val error: UiText? = null,
@@ -57,6 +70,7 @@ sealed interface ImportAction {
     data object OnPickFilesClick : ImportAction
     data class OnAccountChoice(val group: Int, val accountId: String?) : ImportAction
     data class OnNewNameChange(val group: Int, val name: String) : ImportAction
+    data class OnAccountType(val key: String, val type: AccountType) : ImportAction
     data object OnImportClick : ImportAction
     data object OnCloseClick : ImportAction
 }
@@ -91,6 +105,9 @@ class ImportViewModel(
     private val answers = HashMap<Int, String?>()
     private val newNames = HashMap<Int, String>()
 
+    /** Account type per named savings account whose name did not tell. */
+    private val types = HashMap<String, AccountType>()
+
     init {
         if (sharedUris.isNotEmpty()) prepare(sharedUris) else send(ImportEvent.LaunchPicker)
     }
@@ -105,6 +122,10 @@ class ImportViewModel(
             }
             is ImportAction.OnNewNameChange -> {
                 newNames[action.group] = action.name
+                refreshQuestions()
+            }
+            is ImportAction.OnAccountType -> {
+                types[action.key] = action.type
                 refreshQuestions()
             }
             ImportAction.OnImportClick -> execute()
@@ -127,17 +148,21 @@ class ImportViewModel(
                     val failures = prepared.failures.map { FileFailureUi(it.fileName, it.error.toUiText()) }
                     plan = prepared.plan
                     val questions = prepared.plan?.questions.orEmpty()
+                    val typeQuestions = prepared.plan?.typeQuestions.orEmpty()
                     when {
                         prepared.plan == null -> _state.update {
                             it.copy(phase = ImportPhase.FAILED, failures = failures, error = UiText.StringResource(R.string.import_nothing_readable))
                         }
-                        questions.isEmpty() -> {
+                        questions.isEmpty() && typeQuestions.isEmpty() -> {
                             _state.update { it.copy(failures = failures) }
                             execute()
                         }
                         else -> {
                             answers.clear()
                             newNames.clear()
+                            types.clear()
+                            // A savings account is the safe default: it never counts in cash flow either way.
+                            typeQuestions.forEach { types[it.source.key] = AccountType.SAVINGS }
                             questions.forEachIndexed { i, q ->
                                 answers[q.group] = q.candidates.firstOrNull()?.value
                                 newNames[q.group] = defaultName(known.size + i + 1)
@@ -167,8 +192,17 @@ class ImportViewModel(
                 newName = newNames[q.group].orEmpty(),
             )
         }
+        val typeQuestions = plan?.typeQuestions.orEmpty().map { q ->
+            val chosen = types[q.source.key] ?: AccountType.SAVINGS
+            AccountTypeQuestionUi(
+                key = q.source.key,
+                name = q.source.name,
+                institution = q.source.institution,
+                options = TYPE_CHOICES.map { (type, label) -> AccountTypeOptionUi(type, UiText.StringResource(label), type == chosen) },
+            )
+        }
         val ready = questions.all { !it.isNew || it.newName.isNotBlank() }
-        _state.update { it.copy(questions = questions, canImport = ready) }
+        _state.update { it.copy(questions = questions, typeQuestions = typeQuestions, canImport = ready) }
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -184,10 +218,20 @@ class ImportViewModel(
         }
         _state.update { it.copy(phase = ImportPhase.IMPORTING) }
         viewModelScope.launch {
-            when (val r = importFiles.execute(p, accountAnswers)) {
+            when (val r = importFiles.execute(p, accountAnswers, types.toMap())) {
                 is Result.Error -> _state.update { it.copy(phase = ImportPhase.FAILED, error = r.error.toUiText()) }
                 is Result.Success -> _events.send(ImportEvent.ShowReceipt(r.data.importIds.map { it.value }))
             }
         }
+    }
+
+    private companion object {
+        val TYPE_CHOICES = listOf(
+            AccountType.SAVINGS to app.cashflow.core.ui.R.string.account_type_savings,
+            AccountType.ISK to app.cashflow.core.ui.R.string.account_type_isk,
+            AccountType.KF to app.cashflow.core.ui.R.string.account_type_kf,
+            AccountType.PENSION to app.cashflow.core.ui.R.string.account_type_pension,
+            AccountType.OTHER to app.cashflow.core.ui.R.string.account_type_other,
+        )
     }
 }

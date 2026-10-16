@@ -54,4 +54,10 @@
     <string name="category_barnspar">Child savings</string>
     <string name="category_utdelning">Dividends</string>
     <string name="category_ovrigt_fast">Other fixed</string>
+    <string name="account_type_transaction">Bank account</string>
+    <string name="account_type_savings">Savings account</string>
+    <string name="account_type_isk">ISK</string>
+    <string name="account_type_kf">Endowment insurance</string>
+    <string name="account_type_pension">Pension</string>
+    <string name="account_type_other">Other</string>
 </resources>
