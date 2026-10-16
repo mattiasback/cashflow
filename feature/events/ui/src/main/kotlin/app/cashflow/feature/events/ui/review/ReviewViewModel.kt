@@ -212,7 +212,9 @@ class ReviewViewModel(
             c.kind == CategoryKind.TRANSFER ||
                 if (income) c.kind == CategoryKind.INCOME else c.kind == CategoryKind.FIXED || c.kind == CategoryKind.VARIABLE || c.kind == CategoryKind.SAVINGS
         }
-        return if (expanded) pool else suggested.mapNotNull { id -> pool.firstOrNull { it.id.value == id } }
+        val top = suggested.mapNotNull { id -> pool.firstOrNull { it.id.value == id } }
+        // "Fler" only appends the rest, so the suggested chips never move.
+        return if (expanded) top + pool.filter { it !in top } else top
     }
 
     private companion object {

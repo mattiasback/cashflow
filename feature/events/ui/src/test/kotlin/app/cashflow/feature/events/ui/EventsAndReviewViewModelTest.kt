@@ -122,6 +122,19 @@ class EventsAndReviewViewModelTest {
     }
 
     @Test
+    fun `more categories keeps the suggested chips in place and only adds after them`() = runTest {
+        val vm = ReviewViewModel(transactions, categories, categorize)
+        val key = vm.state.value.groups.first().key
+        val suggested = vm.state.value.groups.first().chips.map { it.id }
+
+        vm.onAction(ReviewAction.OnExpandToggle(key))
+        val expanded = vm.state.value.groups.first().chips.map { it.id }
+
+        assertThat(expanded.take(suggested.size)).isEqualTo(suggested)
+        assertThat(expanded.size > suggested.size).isTrue()
+    }
+
+    @Test
     fun `undo after a wrong choice restores the rows and forgets the payee`() = runTest {
         val vm = ReviewViewModel(transactions, categories, categorize)
         val before = transactions.rows.value
