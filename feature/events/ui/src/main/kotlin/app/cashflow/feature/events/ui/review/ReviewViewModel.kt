@@ -15,6 +15,8 @@ import app.cashflow.core.domain.model.TransactionStatus
 import app.cashflow.core.domain.model.TransferKind
 import app.cashflow.core.domain.model.sum
 import app.cashflow.core.importengine.CategorizeUseCase
+import app.cashflow.core.importengine.CategorizeUndo
+import app.cashflow.feature.events.ui.R
 import app.cashflow.core.ui.FlowTone
 import app.cashflow.core.ui.UiText
 import app.cashflow.core.ui.categoryName
@@ -66,12 +68,16 @@ sealed interface ReviewAction {
     data class OnExpandToggle(val groupKey: String) : ReviewAction
     data class OnApprove(val groupKey: String) : ReviewAction
     data class OnHousehold(val groupKey: String) : ReviewAction
+    data object OnUndoClick : ReviewAction
     data object OnBackClick : ReviewAction
 }
 
 sealed interface ReviewEvent {
     data object NavigateBack : ReviewEvent
     data class ShowMessage(val text: UiText) : ReviewEvent
+
+    /** Shown after a decision, with an "Ångra" action that sends [ReviewAction.OnUndoClick]. */
+    data class ShowUndo(val text: UiText) : ReviewEvent
 }
 
 private data class Choice(val categoryId: CategoryId? = null, val remember: Boolean = true, val expanded: Boolean = false)
@@ -95,6 +101,9 @@ class ReviewViewModel(
     private val choices = MutableStateFlow<Map<String, Choice>>(emptyMap())
     private val saving = MutableStateFlow<Set<String>>(emptySet())
     private var rowsByGroup: Map<String, List<Transaction>> = emptyMap()
+
+    /** The latest decision, so "Ångra" can put it back. */
+    private var lastUndo: CategorizeUndo? = null
     private val locale = AppLocale.current()
 
     init {
@@ -110,7 +119,17 @@ class ReviewViewModel(
             is ReviewAction.OnExpandToggle -> choose(action.groupKey) { it.copy(expanded = !it.expanded) }
             is ReviewAction.OnApprove -> approve(action.groupKey)
             is ReviewAction.OnHousehold -> household(action.groupKey)
+            ReviewAction.OnUndoClick -> undo()
             ReviewAction.OnBackClick -> viewModelScope.launch { _events.send(ReviewEvent.NavigateBack) }
+        }
+    }
+
+    private fun undo() {
+        val token = lastUndo ?: return
+        lastUndo = null
+        viewModelScope.launch {
+            val r = categorize.undo(token)
+            if (r is Result.Error) _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
         }
     }
 
@@ -125,7 +144,11 @@ class ReviewViewModel(
             saving.update { it + key }
             when (val r = categorize.categorize(rows, category, choice.remember)) {
                 is Result.Error -> _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
-                is Result.Success -> choices.update { it - key }
+                is Result.Success -> {
+                    choices.update { it - key }
+                    lastUndo = r.data
+                    _events.send(ReviewEvent.ShowUndo(UiText.StringResource(R.string.review_saved, arrayOf(rows.first().normalizedText.ifBlank { rows.first().rawText }))))
+                }
             }
             saving.update { it - key }
         }
@@ -135,8 +158,13 @@ class ReviewViewModel(
         val rows = rowsByGroup[key] ?: return
         viewModelScope.launch {
             saving.update { it + key }
-            val r = categorize.confirmHouseholdTransfer(rows)
-            if (r is Result.Error) _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
+            when (val r = categorize.confirmHouseholdTransfer(rows)) {
+                is Result.Error -> _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
+                is Result.Success -> {
+                    lastUndo = r.data
+                    _events.send(ReviewEvent.ShowUndo(UiText.StringResource(R.string.review_saved, arrayOf(rows.first().normalizedText.ifBlank { rows.first().rawText }))))
+                }
+            }
             saving.update { it - key }
         }
     }

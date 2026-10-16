@@ -122,6 +122,7 @@ class RoomMerchantMemoryDataSource(db: CashFlowDatabase) : MerchantMemoryLocalDa
     private val dao = db.merchantMemoryDao()
     override suspend fun getAll() = dbCall { dao.getAll().map { it.toMemory() } }
     override suspend fun remember(memory: MerchantMemory): EmptyResult<DataError.Local> = dbCall { dao.upsert(memory.toEntity()) }
+    override suspend fun forget(payeeKey: String): EmptyResult<DataError.Local> = dbCall { dao.delete(payeeKey) }
 }
 
 class RoomImportBatchDataSource(db: CashFlowDatabase) : ImportBatchLocalDataSource {

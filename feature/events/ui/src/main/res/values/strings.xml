@@ -95,4 +95,5 @@
     <string name="detail_mark_household">Markera som hushållsöverföring</string>
     <string name="detail_save">Spara</string>
     <string name="detail_cancel">Avbryt</string>
+    <string name="review_undo">Ångra</string>
 </resources>

@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -62,6 +64,14 @@ fun ReviewRoot(
         when (event) {
             ReviewEvent.NavigateBack -> onBack()
             is ReviewEvent.ShowMessage -> scope.launch { snackbar.showSnackbar(event.text.asString(context)) }
+            is ReviewEvent.ShowUndo -> scope.launch {
+                val result = snackbar.showSnackbar(
+                    message = event.text.asString(context),
+                    actionLabel = context.getString(R.string.review_undo),
+                    duration = SnackbarDuration.Long,
+                )
+                if (result == SnackbarResult.ActionPerformed) viewModel.onAction(ReviewAction.OnUndoClick)
+            }
         }
     }
     ReviewScreen(state, viewModel::onAction, contentPadding)

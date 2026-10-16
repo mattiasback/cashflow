@@ -120,6 +120,9 @@ interface MerchantMemoryDao {
 
     @Upsert
     suspend fun upsert(memory: MerchantMemoryEntity)
+
+    @Query("DELETE FROM merchant_memory WHERE payeeKey = :payeeKey")
+    suspend fun delete(payeeKey: String)
 }
 
 @Dao

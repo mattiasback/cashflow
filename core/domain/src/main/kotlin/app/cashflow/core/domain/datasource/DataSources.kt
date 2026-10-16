@@ -71,6 +71,7 @@ interface RuleLocalDataSource {
 interface MerchantMemoryLocalDataSource {
     suspend fun getAll(): Result<List<MerchantMemory>, DataError.Local>
     suspend fun remember(memory: MerchantMemory): EmptyResult<DataError.Local>
+    suspend fun forget(payeeKey: String): EmptyResult<DataError.Local>
 }
 
 interface ImportBatchLocalDataSource {

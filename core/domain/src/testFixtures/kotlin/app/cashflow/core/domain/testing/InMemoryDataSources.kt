@@ -133,6 +133,11 @@ class InMemoryMerchantMemoryDataSource : MerchantMemoryLocalDataSource {
         memories.update { list -> list.filterNot { it.payeeKey == memory.payeeKey } + memory }
         return Result.Success(Unit)
     }
+
+    override suspend fun forget(payeeKey: String): EmptyResult<DataError.Local> {
+        memories.update { list -> list.filterNot { it.payeeKey == payeeKey } }
+        return Result.Success(Unit)
+    }
 }
 
 class FixedRuleCatalog(

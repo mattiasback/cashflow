@@ -4,6 +4,7 @@ import app.cashflow.core.categorization.PayeeNormalizer
 import app.cashflow.core.domain.DataError
 import app.cashflow.core.domain.EmptyResult
 import app.cashflow.core.domain.Result
+import app.cashflow.core.domain.datasource.Classification
 import app.cashflow.core.domain.datasource.MerchantMemoryLocalDataSource
 import app.cashflow.core.domain.datasource.TransactionLocalDataSource
 import app.cashflow.core.domain.model.CategorizedBy
@@ -11,6 +12,15 @@ import app.cashflow.core.domain.model.CategoryId
 import app.cashflow.core.domain.model.MerchantMemory
 import app.cashflow.core.domain.model.Transaction
 import app.cashflow.core.domain.model.TransferKind
+
+/**
+ * What a review decision changed, so "Ångra" can put it back exactly: the classification of
+ * every row before the change, and each touched payee's remembered category (null = none).
+ */
+class CategorizeUndo internal constructor(
+    internal val before: List<Classification>,
+    internal val memoriesBefore: Map<String, CategoryId?>,
+)
 
 /**
  * Sets a category on rows. With "Kom ihåg" the payee is remembered, so every matching row
@@ -23,36 +33,36 @@ class CategorizeUseCase(
     private val reclassify: ReclassifyUseCase,
 ) {
 
-    suspend fun categorize(rows: List<Transaction>, categoryId: CategoryId, remember: Boolean): EmptyResult<DataError.Local> {
-        if (rows.isEmpty()) return Result.Success(Unit)
-        if (remember) {
-            rows.map { normalizer.key(it.rawText) }.distinct().forEach { key ->
-                val r = memories.remember(MerchantMemory(key, categoryId))
-                if (r is Result.Error) return r
-            }
-            // Rows the user had set by hand for this payee follow the new decision too.
-            val manual = rows.filter { it.categorizedBy == CategorizedBy.MANUAL }
-            if (manual.isNotEmpty()) {
-                val r = transactions.updateClassifications(manual.map { it.toClassification().copy(categoryId = categoryId, categorizedBy = CategorizedBy.MEMORY) })
-                if (r is Result.Error) return r
-            }
-            return reclassify()
+    suspend fun categorize(rows: List<Transaction>, categoryId: CategoryId, remember: Boolean): Result<CategorizeUndo, DataError.Local> {
+        val undo = snapshot(if (remember) rows.map { normalizer.key(it.rawText) }.toSet() else emptySet())
+        if (undo is Result.Error) return undo
+        val token = (undo as Result.Success).data
+        if (rows.isEmpty()) return Result.Success(token)
+        val result = if (remember) {
+            rememberPayees(rows, categoryId)
+        } else {
+            transactions.updateClassifications(
+                rows.map {
+                    it.toClassification().copy(
+                        categoryId = categoryId,
+                        categorizedBy = CategorizedBy.MANUAL,
+                        // Choosing a real category means the row is not a household transfer.
+                        transferKind = if (it.transferKind == TransferKind.LONE_LEG) TransferKind.NONE else it.transferKind,
+                    )
+                },
+            )
         }
-        return transactions.updateClassifications(
-            rows.map {
-                it.toClassification().copy(
-                    categoryId = categoryId,
-                    categorizedBy = CategorizedBy.MANUAL,
-                    // Choosing a real category means the row is not a household transfer.
-                    transferKind = if (it.transferKind == TransferKind.LONE_LEG) TransferKind.NONE else it.transferKind,
-                )
-            },
-        )
+        return when (result) {
+            is Result.Error -> result
+            is Result.Success -> Result.Success(token)
+        }
     }
 
     /** Marks lone legs (transfers to a partner's account) as neutral household transfers. */
-    suspend fun confirmHouseholdTransfer(rows: List<Transaction>): EmptyResult<DataError.Local> =
-        transactions.updateClassifications(
+    suspend fun confirmHouseholdTransfer(rows: List<Transaction>): Result<CategorizeUndo, DataError.Local> {
+        val undo = snapshot(emptySet())
+        if (undo is Result.Error) return undo
+        val r = transactions.updateClassifications(
             rows.map {
                 it.toClassification().copy(
                     categoryId = CategoryId.TRANSFER,
@@ -62,7 +72,54 @@ class CategorizeUseCase(
                 )
             },
         )
+        return if (r is Result.Error) r else undo
+    }
+
+    /** Puts rows and remembered payees back exactly as they were before the decision. */
+    suspend fun undo(token: CategorizeUndo): EmptyResult<DataError.Local> {
+        for ((key, previous) in token.memoriesBefore) {
+            val r = if (previous == null) memories.forget(key) else memories.remember(MerchantMemory(key, previous))
+            if (r is Result.Error) return r
+        }
+        val current = when (val r = transactions.getAll()) {
+            is Result.Error -> return r
+            is Result.Success -> r.data.associate { it.id to it.toClassification() }
+        }
+        val changed = token.before.filter { current[it.id] != null && current[it.id] != it }
+        return if (changed.isEmpty()) Result.Success(Unit) else transactions.updateClassifications(changed)
+    }
 
     /** Payee key for grouping the review queue, shared with merchant memory. */
     fun payeeKey(tx: Transaction): String = normalizer.key(tx.rawText)
+
+    private suspend fun rememberPayees(rows: List<Transaction>, categoryId: CategoryId): EmptyResult<DataError.Local> {
+        rows.map { normalizer.key(it.rawText) }.distinct().forEach { key ->
+            val r = memories.remember(MerchantMemory(key, categoryId))
+            if (r is Result.Error) return r
+        }
+        // Rows the user had set by hand for this payee follow the new decision too.
+        val manual = rows.filter { it.categorizedBy == CategorizedBy.MANUAL }
+        if (manual.isNotEmpty()) {
+            val r = transactions.updateClassifications(manual.map { it.toClassification().copy(categoryId = categoryId, categorizedBy = CategorizedBy.MEMORY) })
+            if (r is Result.Error) return r
+        }
+        return reclassify()
+    }
+
+    private suspend fun snapshot(payeeKeys: Set<String>): Result<CategorizeUndo, DataError.Local> {
+        val all = when (val r = transactions.getAll()) {
+            is Result.Error -> return r
+            is Result.Success -> r.data
+        }
+        val remembered = when (val r = memories.getAll()) {
+            is Result.Error -> return r
+            is Result.Success -> r.data.associate { it.payeeKey to it.categoryId }
+        }
+        return Result.Success(
+            CategorizeUndo(
+                before = all.map { it.toClassification() },
+                memoriesBefore = payeeKeys.associateWith { remembered[it] },
+            ),
+        )
+    }
 }

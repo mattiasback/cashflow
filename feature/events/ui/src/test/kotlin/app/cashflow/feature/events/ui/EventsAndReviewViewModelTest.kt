@@ -23,9 +23,13 @@ import app.cashflow.feature.events.ui.list.EventsEvent
 import app.cashflow.feature.events.ui.list.EventsViewModel
 import app.cashflow.feature.events.ui.list.StatusFilter
 import app.cashflow.feature.events.ui.review.ReviewAction
+import app.cashflow.feature.events.ui.review.ReviewEvent
 import app.cashflow.feature.events.ui.review.ReviewViewModel
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
+import assertk.assertions.isInstanceOf
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isTrue
@@ -115,5 +119,25 @@ class EventsAndReviewViewModelTest {
         assertThat(vm.state.value.groups).hasSize(1)
         assertThat(transactions.rows.value.getValue(TxId("a")).categoryId).isEqualTo(CategoryId("noje"))
         assertThat(transactions.rows.value.getValue(TxId("b")).categorizedBy).isEqualTo(CategorizedBy.MEMORY)
+    }
+
+    @Test
+    fun `undo after a wrong choice restores the rows and forgets the payee`() = runTest {
+        val vm = ReviewViewModel(transactions, categories, categorize)
+        val before = transactions.rows.value
+        val key = vm.state.value.groups.first().key
+
+        vm.events.test {
+            vm.onAction(ReviewAction.OnCategorySelect(key, "resa"))
+            vm.onAction(ReviewAction.OnApprove(key))
+            assertThat(awaitItem()).isInstanceOf(ReviewEvent.ShowUndo::class)
+        }
+        assertThat(memories.memories.value).hasSize(1)
+
+        vm.onAction(ReviewAction.OnUndoClick)
+
+        assertThat(transactions.rows.value).isEqualTo(before)
+        assertThat(memories.memories.value).isEmpty()
+        assertThat(vm.state.value.groups.map { it.key }).contains(key)
     }
 }
