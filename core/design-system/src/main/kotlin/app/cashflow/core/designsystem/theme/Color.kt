@@ -53,6 +53,8 @@ data class CashFlowColors(
     val accentGoalsInk: Color,
     val accentSettingsInk: Color,
     val accentEventsInk: Color,
+    /** Fill of the events tab's primary action; white label in both themes. */
+    val actionEvents: Color,
     val accentEventsTint: Color,
     val textOnEventsTint: Color,
     val accentInsightsInk: Color,
@@ -121,6 +123,7 @@ val LightCashFlowColors = CashFlowColors(
     accentGoalsInk = Color(0xFFCF380B),
     accentSettingsInk = Color(0xFF4E4A55),
     accentEventsInk = Color(0xFF0B7550),
+    actionEvents = Color(0xFF0B7550),
     accentEventsTint = Color(0xFFD3F2E4),
     textOnEventsTint = Color(0xFF0B5A3E),
     accentInsightsInk = Color(0xFF8A2FA6),

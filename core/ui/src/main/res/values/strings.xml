@@ -18,20 +18,20 @@
     <string name="category_barnomsorg">Barnomsorg</string>
     <string name="category_forsakringar">Försäkringar</string>
     <string name="category_abonnemang">Abonnemang</string>
-    <string name="category_lan">Lån &amp; CSN</string>
-    <string name="category_fack">Fack &amp; a-kassa</string>
+    <string name="category_lan">Lån</string>
+    <string name="category_fack">Fack</string>
     <string name="category_mat">Mat</string>
     <string name="category_restaurang">Restaurang</string>
     <string name="category_shopping">Shopping</string>
-    <string name="category_hem_bygg">Hem &amp; bygg</string>
+    <string name="category_hem_bygg">Hem</string>
     <string name="category_halsa">Hälsa</string>
     <string name="category_noje">Nöje</string>
     <string name="category_resa">Resa</string>
     <string name="category_ovrigt_rorligt">Övrigt rörligt</string>
-    <string name="category_sparande">Sparande</string>
+    <string name="category_sparande">Övrigt sparande</string>
     <string name="category_fonder">Fonder</string>
     <string name="category_buffert">Buffert</string>
-    <string name="category_pension">Pension &amp; barnspar</string>
+    <string name="category_pension">Pension</string>
     <string name="category_amortering">Amortering</string>
     <string name="category_overforing">Överföring</string>
     <string name="category_okat">Ej kategoriserat</string>
@@ -47,4 +47,7 @@
     <string name="nav_flow">Flöde</string>
     <string name="cd_profile">Profil</string>
     <string name="cd_close">Stäng</string>
+    <string name="category_barnspar">Barnsparande</string>
+    <string name="category_utdelning">Utdelning</string>
+    <string name="category_ovrigt_fast">Övrigt fast</string>
 </resources>

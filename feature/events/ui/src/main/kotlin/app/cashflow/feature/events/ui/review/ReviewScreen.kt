@@ -179,7 +179,7 @@ private fun ReviewGroupCard(group: ReviewGroupUi, onAction: (ReviewAction) -> Un
                 text = stringResource(R.string.review_approve),
                 onClick = { onAction(ReviewAction.OnApprove(group.key)) },
                 variant = CfButtonVariant.Accent,
-                accent = c.accentEventsInk,
+                accent = c.actionEvents,
                 icon = CfIcons.Check,
                 enabled = group.selectedId != null && !group.isSaving,
                 modifier = Modifier.fillMaxWidth(),

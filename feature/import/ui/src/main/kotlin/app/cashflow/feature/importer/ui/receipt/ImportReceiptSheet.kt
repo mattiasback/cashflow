@@ -112,7 +112,7 @@ fun ImportReceiptSheet(
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s3)) {
             CfButton(stringResource(R.string.receipt_done), { onAction(ImportReceiptAction.OnDoneClick) }, Modifier.weight(1f), variant = CfButtonVariant.Outline)
             if (state.reviewCount > 0) {
-                CfButton(stringResource(R.string.receipt_review_now), { onAction(ImportReceiptAction.OnReviewClick) }, Modifier.weight(1f), variant = CfButtonVariant.Accent, accent = c.accentEventsInk)
+                CfButton(stringResource(R.string.receipt_review_now), { onAction(ImportReceiptAction.OnReviewClick) }, Modifier.weight(1f), variant = CfButtonVariant.Accent, accent = c.actionEvents)
             }
         }
     }

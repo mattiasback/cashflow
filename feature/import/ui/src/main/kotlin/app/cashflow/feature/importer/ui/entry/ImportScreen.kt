@@ -146,7 +146,7 @@ fun ImportScreen(
                     { onAction(ImportAction.OnImportClick) },
                     Modifier.fillMaxWidth(),
                     variant = CfButtonVariant.Accent,
-                    accent = c.accentEventsInk,
+                    accent = c.actionEvents,
                     enabled = state.canImport,
                 )
             }

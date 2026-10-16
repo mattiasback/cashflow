@@ -18,20 +18,20 @@
     <string name="category_barnomsorg">Childcare</string>
     <string name="category_forsakringar">Insurance</string>
     <string name="category_abonnemang">Subscriptions</string>
-    <string name="category_lan">Loans &amp; CSN</string>
-    <string name="category_fack">Union &amp; unemployment fund</string>
+    <string name="category_lan">Loan</string>
+    <string name="category_fack">Union</string>
     <string name="category_mat">Groceries</string>
     <string name="category_restaurang">Restaurants</string>
     <string name="category_shopping">Shopping</string>
-    <string name="category_hem_bygg">Home &amp; DIY</string>
+    <string name="category_hem_bygg">Home</string>
     <string name="category_halsa">Health</string>
     <string name="category_noje">Entertainment</string>
     <string name="category_resa">Travel</string>
     <string name="category_ovrigt_rorligt">Other variable</string>
-    <string name="category_sparande">Savings</string>
+    <string name="category_sparande">Other savings</string>
     <string name="category_fonder">Funds</string>
     <string name="category_buffert">Buffer</string>
-    <string name="category_pension">Pension &amp; child savings</string>
+    <string name="category_pension">Pension</string>
     <string name="category_amortering">Mortgage repayment</string>
     <string name="category_overforing">Transfer</string>
     <string name="category_okat">Uncategorized</string>
@@ -47,4 +47,7 @@
     <string name="nav_flow">Flow</string>
     <string name="cd_profile">Profile</string>
     <string name="cd_close">Close</string>
+    <string name="category_barnspar">Child savings</string>
+    <string name="category_utdelning">Dividends</string>
+    <string name="category_ovrigt_fast">Other fixed</string>
 </resources>

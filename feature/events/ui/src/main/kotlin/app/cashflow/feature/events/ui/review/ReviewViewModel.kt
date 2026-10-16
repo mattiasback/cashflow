@@ -217,6 +217,6 @@ class ReviewViewModel(
 
     private companion object {
         val EXPENSE_SUGGESTIONS = listOf("overforing", "mat", "restaurang", "shopping", "transport", "noje", "halsa", "hem_bygg", "ovrigt_rorligt")
-        val INCOME_SUGGESTIONS = listOf("overforing", "inkomst_ovrig", "lon", "ersattning", "barnbidrag")
+        val INCOME_SUGGESTIONS = listOf("overforing", "inkomst_ovrig", "lon", "utdelning", "ersattning", "barnbidrag")
     }
 }

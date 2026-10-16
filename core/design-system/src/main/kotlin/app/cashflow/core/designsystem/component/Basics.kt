@@ -27,9 +27,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
@@ -93,22 +93,21 @@ fun CfButton(
     val c = CashFlowTheme.colors
     val (bg, fg, border) = when (variant) {
         CfButtonVariant.Primary -> Triple(c.brand, c.textOnAccent, null)
-        // Ink accents are light in dark theme, so the label flips to dark text to keep contrast.
-        CfButtonVariant.Accent -> (accent ?: c.brand).let { bg ->
-            Triple(bg, if (bg.luminance() > 0.4f) c.textOnThumb else Color.White, null)
-        }
+        // Accent fills are dark enough for a white label in both themes (e.g. actionEvents).
+        CfButtonVariant.Accent -> Triple(accent ?: c.brand, Color.White, null)
         CfButtonVariant.Outline -> Triple(Color.Transparent, c.textPrimary, BorderStroke(1.5.dp, c.borderStrong))
         CfButtonVariant.Danger -> Triple(Color.Transparent, c.textDanger, BorderStroke(1.5.dp, c.textDanger))
     }
     Row(
         modifier = modifier
             .heightIn(min = Sizes.buttonHeight)
+            // Disabled is the whole control at opacity-disabled, never a recoloured label.
+            .alpha(if (enabled) 1f else 0.38f)
             .clip(Radius.xs)
             .background(bg)
             .then(if (border != null) Modifier.border(border, Radius.xs) else Modifier)
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
-            .padding(horizontal = Spacing.s5)
-            .then(if (enabled) Modifier else Modifier.background(Color.Transparent)),
+            .padding(horizontal = Spacing.s5),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
@@ -116,7 +115,7 @@ fun CfButton(
             Icon(icon, contentDescription = null, tint = fg, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(Spacing.s2))
         }
-        Text(text, style = CashFlowTheme.typography.bodyStrong, color = if (enabled) fg else fg.copy(alpha = 0.38f), maxLines = 2)
+        Text(text, style = CashFlowTheme.typography.bodyStrong, color = fg, maxLines = 2)
     }
 }
 

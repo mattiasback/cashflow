@@ -4,6 +4,7 @@
     { "id": "lon", "name": "Lön", "kind": "INCOME" },
     { "id": "barnbidrag", "name": "Barnbidrag", "kind": "INCOME" },
     { "id": "ersattning", "name": "Ersättningar", "kind": "INCOME" },
+    { "id": "utdelning", "name": "Utdelning", "kind": "INCOME" },
     { "id": "inkomst_ovrig", "name": "Övrig inkomst", "kind": "INCOME" },
 
     { "id": "boende", "name": "Boende", "kind": "FIXED" },
@@ -11,23 +12,25 @@
     { "id": "barnomsorg", "name": "Barnomsorg", "kind": "FIXED" },
     { "id": "forsakringar", "name": "Försäkringar", "kind": "FIXED" },
     { "id": "abonnemang", "name": "Abonnemang", "kind": "FIXED" },
-    { "id": "lan", "name": "Lån & CSN", "kind": "FIXED" },
-    { "id": "fack", "name": "Fack & a-kassa", "kind": "FIXED" },
+    { "id": "lan", "name": "Lån", "kind": "FIXED" },
+    { "id": "fack", "name": "Fack", "kind": "FIXED" },
+    { "id": "ovrigt_fast", "name": "Övrigt fast", "kind": "FIXED" },
 
     { "id": "mat", "name": "Mat", "kind": "VARIABLE" },
     { "id": "restaurang", "name": "Restaurang", "kind": "VARIABLE" },
     { "id": "shopping", "name": "Shopping", "kind": "VARIABLE" },
-    { "id": "hem_bygg", "name": "Hem & bygg", "kind": "VARIABLE" },
+    { "id": "hem_bygg", "name": "Hem", "kind": "VARIABLE" },
     { "id": "halsa", "name": "Hälsa", "kind": "VARIABLE" },
     { "id": "noje", "name": "Nöje", "kind": "VARIABLE" },
     { "id": "resa", "name": "Resa", "kind": "VARIABLE" },
     { "id": "ovrigt_rorligt", "name": "Övrigt rörligt", "kind": "VARIABLE" },
 
-    { "id": "sparande", "name": "Sparande", "kind": "SAVINGS" },
     { "id": "fonder", "name": "Fonder", "kind": "SAVINGS" },
     { "id": "buffert", "name": "Buffert", "kind": "SAVINGS" },
-    { "id": "pension", "name": "Pension & barnspar", "kind": "SAVINGS" },
+    { "id": "pension", "name": "Pension", "kind": "SAVINGS" },
+    { "id": "barnspar", "name": "Barnsparande", "kind": "SAVINGS" },
     { "id": "amortering", "name": "Amortering", "kind": "SAVINGS" },
+    { "id": "sparande", "name": "Övrigt sparande", "kind": "SAVINGS" },
 
     { "id": "overforing", "name": "Överföring", "kind": "TRANSFER" },
     { "id": "okat", "name": "Ej kategoriserat", "kind": "UNCATEGORIZED" }
@@ -40,6 +43,8 @@
     { "p": "FKASSA", "c": "ersattning", "s": 1 },
     { "p": "FÖRSÄKRINGSKASSAN", "c": "ersattning", "s": 1 },
     { "p": "SKATTEVERKET", "c": "inkomst_ovrig", "s": 1 },
+    { "p": "UTDELNING", "c": "utdelning", "s": 1 },
+    { "p": "AKTIEUTDELNING", "c": "utdelning", "s": 1 },
     { "p": "CENTRALA STUDIESTÖDSNÄMNDEN", "c": "ersattning", "s": 1 },
 
     { "p": "ICA", "c": "mat" },
@@ -270,7 +275,8 @@
     { "p": "ISK", "c": "fonder", "s": -1 },
     { "p": "BUFFERT", "c": "buffert", "s": -1 },
     { "p": "SPARKONTO", "c": "sparande", "s": -1 },
-    { "p": "BARNSPAR", "c": "pension", "s": -1 },
+    { "p": "BARNSPAR", "c": "barnspar", "s": -1 },
+    { "p": "BARNSPARANDE", "c": "barnspar", "s": -1 },
     { "p": "PENSIONSSPAR", "c": "pension", "s": -1 },
     { "p": "AMORTERING", "c": "amortering", "s": -1 }
   ]

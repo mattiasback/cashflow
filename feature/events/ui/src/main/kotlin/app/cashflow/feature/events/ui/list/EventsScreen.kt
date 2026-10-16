@@ -295,18 +295,19 @@ private fun ImportCard(state: EventsState, onAction: (EventsAction) -> Unit) {
 @Composable
 private fun ReviewCard(state: EventsState, onAction: (EventsAction) -> Unit) {
     val c = CashFlowTheme.colors
-    CfCard(Modifier.fillMaxWidth(), color = c.surfaceCelebrate) {
+    // The peach card is a light-theme accent; in dark it is a normal card so it sits in the theme.
+    CfCard(Modifier.fillMaxWidth(), color = if (c.isDark) c.surfaceCard else c.surfaceCelebrate) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
             Text(
                 UiText.PluralResource(R.plurals.review_summary, state.reviewCount, arrayOf(state.reviewCount, state.reviewPayees)).asString(),
                 style = Theme.typography.body,
-                color = c.textOnCelebrate,
+                color = if (c.isDark) c.textPrimary else c.textOnCelebrate,
             )
             CfButton(
                 text = stringResource(R.string.review_now),
                 onClick = { onAction(EventsAction.OnReviewClick) },
                 variant = CfButtonVariant.Accent,
-                accent = c.accentEventsInk,
+                accent = c.actionEvents,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
