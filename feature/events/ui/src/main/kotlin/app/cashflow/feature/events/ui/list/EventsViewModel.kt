@@ -161,9 +161,8 @@ class EventsViewModel(
     private fun matches(tx: Transaction, filter: StatusFilter) = when (filter) {
         StatusFilter.ALL -> true
         StatusFilter.REVIEW -> tx.status == TransactionStatus.TO_REVIEW
-        StatusFilter.AUTO -> tx.status == TransactionStatus.AUTO && tx.transferKind == TransferKind.NONE
+        StatusFilter.AUTO -> tx.status == TransactionStatus.AUTO
         StatusFilter.MANUAL -> tx.status == TransactionStatus.MANUAL
-        StatusFilter.TRANSFER -> (tx.transferKind != TransferKind.NONE || tx.categoryId == CategoryId.TRANSFER) && tx.status != TransactionStatus.TO_REVIEW
     }
 
     private fun groupOrder(kind: CategoryKind) = when (kind) {

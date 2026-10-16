@@ -3,8 +3,6 @@
     <string name="status_auto">Automatic</string>
     <string name="status_manual">Manual</string>
     <string name="status_review">To review</string>
-    <string name="status_transfer">Transfer</string>
-    <string name="status_savings">Savings</string>
 
     <string name="filter_all">All</string>
     <string name="filter_all_categories">All categories</string>

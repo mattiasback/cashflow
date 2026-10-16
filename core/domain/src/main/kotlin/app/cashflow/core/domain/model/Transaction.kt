@@ -67,6 +67,8 @@ data class Transaction(
     val status: TransactionStatus
         get() = when {
             transferKind == TransferKind.LONE_LEG && !loneLegConfirmed -> TransactionStatus.TO_REVIEW
+            // The user marked it as a household transfer, so it was set by hand.
+            transferKind == TransferKind.LONE_LEG -> TransactionStatus.MANUAL
             categorizedBy == CategorizedBy.NONE -> TransactionStatus.TO_REVIEW
             categorizedBy == CategorizedBy.MANUAL -> TransactionStatus.MANUAL
             else -> TransactionStatus.AUTO

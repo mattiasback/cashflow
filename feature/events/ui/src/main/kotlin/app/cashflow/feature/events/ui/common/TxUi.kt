@@ -49,7 +49,7 @@ internal fun Transaction.toRowUi(categories: Map<CategoryId, Category>, locale: 
         category = categoryName(categoryId, category?.name ?: categoryId.value),
         amount = MoneyFormatter.format(amount, signed = true, locale = locale),
         // Only categorized income is shown as a gain. Transfers and money still to review stay neutral.
-        isIncome = amount.isPositive && kind == CategoryKind.INCOME && badgeKind() != BadgeKind.Transfer,
+        isIncome = amount.isPositive && kind == CategoryKind.INCOME && !isTransfer(),
         tone = kind.tone(),
         badge = statusText(),
         badgeKind = badgeKind(),
@@ -57,19 +57,20 @@ internal fun Transaction.toRowUi(categories: Map<CategoryId, Category>, locale: 
     )
 }
 
-internal fun Transaction.statusText(): UiText = when {
-    transferKind == TransferKind.INTERNAL || (transferKind == TransferKind.LONE_LEG && loneLegConfirmed) || categoryId == CategoryId.TRANSFER ->
-        UiText.StringResource(R.string.status_transfer)
-    transferKind == TransferKind.TO_SAVINGS || transferKind == TransferKind.FROM_SAVINGS -> UiText.StringResource(R.string.status_savings)
-    status == TransactionStatus.TO_REVIEW -> UiText.StringResource(R.string.status_review)
-    status == TransactionStatus.MANUAL -> UiText.StringResource(R.string.status_manual)
-    else -> UiText.StringResource(R.string.status_auto)
+/** Three statuses only: how the category was set, not what it is (the category line says that). */
+internal fun Transaction.statusText(): UiText = when (status) {
+    TransactionStatus.TO_REVIEW -> UiText.StringResource(R.string.status_review)
+    TransactionStatus.MANUAL -> UiText.StringResource(R.string.status_manual)
+    TransactionStatus.AUTO -> UiText.StringResource(R.string.status_auto)
 }
 
-internal fun Transaction.badgeKind(): BadgeKind = when {
-    transferKind == TransferKind.INTERNAL || (transferKind == TransferKind.LONE_LEG && loneLegConfirmed) || categoryId == CategoryId.TRANSFER -> BadgeKind.Transfer
-    transferKind == TransferKind.TO_SAVINGS || transferKind == TransferKind.FROM_SAVINGS -> BadgeKind.Transfer
-    status == TransactionStatus.TO_REVIEW -> BadgeKind.Review
-    status == TransactionStatus.MANUAL -> BadgeKind.Manual
-    else -> BadgeKind.Auto
+internal fun Transaction.badgeKind(): BadgeKind = when (status) {
+    TransactionStatus.TO_REVIEW -> BadgeKind.Review
+    TransactionStatus.MANUAL -> BadgeKind.Manual
+    TransactionStatus.AUTO -> BadgeKind.Auto
 }
+
+/** Money moved between accounts: never income or spending, so its amount stays neutral. */
+internal fun Transaction.isTransfer(): Boolean =
+    transferKind == TransferKind.INTERNAL || transferKind == TransferKind.TO_SAVINGS || transferKind == TransferKind.FROM_SAVINGS ||
+        (transferKind == TransferKind.LONE_LEG && loneLegConfirmed) || categoryId == CategoryId.TRANSFER

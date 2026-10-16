@@ -6,7 +6,7 @@ import app.cashflow.core.ui.FlowTone
 import app.cashflow.core.ui.UiText
 import app.cashflow.feature.events.ui.common.TxDayUi
 
-enum class StatusFilter { ALL, REVIEW, AUTO, MANUAL, TRANSFER }
+enum class StatusFilter { ALL, REVIEW, AUTO, MANUAL }
 
 enum class EventsSheet { CATEGORY, PERIOD }
 

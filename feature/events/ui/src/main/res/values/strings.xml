@@ -3,8 +3,6 @@
     <string name="status_auto">Automatisk</string>
     <string name="status_manual">Manuell</string>
     <string name="status_review">Att granska</string>
-    <string name="status_transfer">Överföring</string>
-    <string name="status_savings">Sparande</string>
 
     <string name="filter_all">Alla</string>
     <string name="filter_all_categories">Alla kategorier</string>

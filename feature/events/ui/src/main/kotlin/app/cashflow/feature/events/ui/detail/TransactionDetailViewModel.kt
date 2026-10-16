@@ -1,7 +1,6 @@
 package app.cashflow.feature.events.ui.detail
 
-import app.cashflow.core.designsystem.component.BadgeKind
-import app.cashflow.feature.events.ui.common.badgeKind
+import app.cashflow.feature.events.ui.common.isTransfer
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -109,7 +108,7 @@ class TransactionDetailViewModel(
             TransactionDetailState(
                 title = tx.normalizedText.ifBlank { tx.rawText },
                 amount = MoneyFormatter.format(tx.amount, signed = true, decimals = true, locale = locale),
-                isIncome = tx.amount.isPositive && byId[tx.categoryId]?.kind == CategoryKind.INCOME && tx.badgeKind() != BadgeKind.Transfer,
+                isIncome = tx.amount.isPositive && byId[tx.categoryId]?.kind == CategoryKind.INCOME && !tx.isTransfer(),
                 category = categoryName(tx.categoryId, byId[tx.categoryId]?.name ?: tx.categoryId.value),
                 transactionDate = PeriodFormatter.iso(tx.transactionDate, locale),
                 bookingDate = PeriodFormatter.iso(tx.bookingDate, locale),

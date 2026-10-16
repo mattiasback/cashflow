@@ -150,9 +150,9 @@ fun CfChip(
     }
 }
 
-enum class BadgeKind { Auto, Manual, Review, Transfer }
+enum class BadgeKind { Auto, Manual, Review }
 
-/** Small status pill on transaction rows: Automatisk / Manuell / Att granska / Överföring. */
+/** Small status pill on transaction rows: Automatisk / Manuell / Att granska. */
 @Composable
 fun StatusBadge(text: String, kind: BadgeKind, modifier: Modifier = Modifier) {
     val c = CashFlowTheme.colors
@@ -160,8 +160,6 @@ fun StatusBadge(text: String, kind: BadgeKind, modifier: Modifier = Modifier) {
         BadgeKind.Auto -> c.accentEventsTint to c.textOnEventsTint
         BadgeKind.Manual -> c.surfaceControl to c.textPrimary
         BadgeKind.Review -> c.surfaceCelebrate to c.textOnCelebrate
-        // Teal, like the transfer category dot, so it never matches the blue of a positive amount.
-        BadgeKind.Transfer -> c.vizInvestFill to (if (c.isDark) c.vizInvest else c.accentCashflowInk)
     }
     Text(
         text = text,

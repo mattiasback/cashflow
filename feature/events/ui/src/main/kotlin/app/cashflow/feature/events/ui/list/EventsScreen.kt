@@ -242,7 +242,6 @@ private fun StatusFilter.label() = when (this) {
     StatusFilter.REVIEW -> R.string.status_review
     StatusFilter.AUTO -> R.string.status_auto
     StatusFilter.MANUAL -> R.string.status_manual
-    StatusFilter.TRANSFER -> R.string.status_transfer
 }
 
 /** The step 1 "Hämta transaktioner" card: file import (bank sync arrives in step 6). */
