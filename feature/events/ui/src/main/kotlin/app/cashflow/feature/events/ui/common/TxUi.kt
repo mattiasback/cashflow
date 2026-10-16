@@ -48,8 +48,8 @@ internal fun Transaction.toRowUi(categories: Map<CategoryId, Category>, locale: 
         date = PeriodFormatter.iso(transactionDate, locale),
         category = categoryName(categoryId, category?.name ?: categoryId.value),
         amount = MoneyFormatter.format(amount, signed = true, locale = locale),
-        // Only real income is shown as a gain; money moved between accounts stays neutral.
-        isIncome = amount.isPositive && badgeKind() != BadgeKind.Transfer,
+        // Only categorized income is shown as a gain. Transfers and money still to review stay neutral.
+        isIncome = amount.isPositive && kind == CategoryKind.INCOME && badgeKind() != BadgeKind.Transfer,
         tone = kind.tone(),
         badge = statusText(),
         badgeKind = badgeKind(),

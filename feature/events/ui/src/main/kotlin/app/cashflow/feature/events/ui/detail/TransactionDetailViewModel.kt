@@ -109,7 +109,7 @@ class TransactionDetailViewModel(
             TransactionDetailState(
                 title = tx.normalizedText.ifBlank { tx.rawText },
                 amount = MoneyFormatter.format(tx.amount, signed = true, decimals = true, locale = locale),
-                isIncome = tx.amount.isPositive && tx.badgeKind() != BadgeKind.Transfer,
+                isIncome = tx.amount.isPositive && byId[tx.categoryId]?.kind == CategoryKind.INCOME && tx.badgeKind() != BadgeKind.Transfer,
                 category = categoryName(tx.categoryId, byId[tx.categoryId]?.name ?: tx.categoryId.value),
                 transactionDate = PeriodFormatter.iso(tx.transactionDate, locale),
                 bookingDate = PeriodFormatter.iso(tx.bookingDate, locale),

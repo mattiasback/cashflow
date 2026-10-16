@@ -139,7 +139,8 @@ private fun ReviewGroupCard(group: ReviewGroupUi, onAction: (ReviewAction) -> Un
                 Text(
                     group.total,
                     style = CashFlowTheme.typography.title.copy(fontFeatureSettings = "tnum"),
-                    color = if (group.isIncome) c.textPositive else c.textPrimary,
+                    // Not categorized yet, so not known to be income: neutral like every uncategorized amount.
+                    color = c.textPrimary,
                 )
             }
             if (group.isLoneLeg) {
