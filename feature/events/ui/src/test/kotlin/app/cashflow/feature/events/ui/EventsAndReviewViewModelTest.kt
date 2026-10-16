@@ -32,6 +32,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isInstanceOf
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -132,6 +133,16 @@ class EventsAndReviewViewModelTest {
 
         assertThat(expanded.take(suggested.size)).isEqualTo(suggested)
         assertThat(expanded.size > suggested.size).isTrue()
+    }
+
+    @Test
+    fun `no more categories option when the suggestions already cover them all`() = runTest {
+        transactions.rows.update { it + (TxId("g") to tx("g", date = "2026-05-13", kronor = 300.0, text = "INSATTNING EXEMPEL")) }
+        val vm = ReviewViewModel(transactions, categories, categorize)
+        val groups = vm.state.value.groups
+
+        assertThat(groups.first { it.title == "INSATTNING EXEMPEL" }.canExpand).isFalse()
+        assertThat(groups.first { it.title == "OKÄND HANDLARE" }.canExpand).isTrue()
     }
 
     @Test

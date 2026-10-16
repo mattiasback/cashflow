@@ -165,7 +165,7 @@ private fun ReviewGroupCard(group: ReviewGroupUi, onAction: (ReviewAction) -> Un
                         onClick = { onAction(ReviewAction.OnCategorySelect(group.key, chip.id)) },
                     )
                 }
-                CfChip(
+                if (group.canExpand) CfChip(
                     label = stringResource(if (group.expanded) R.string.review_pick_fewer else R.string.review_pick_other),
                     selected = false,
                     onClick = { onAction(ReviewAction.OnExpandToggle(group.key)) },

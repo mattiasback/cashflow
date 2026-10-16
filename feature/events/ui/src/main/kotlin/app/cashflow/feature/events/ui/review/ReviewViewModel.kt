@@ -52,6 +52,8 @@ data class ReviewGroupUi(
     val selectedId: String?,
     val remember: Boolean,
     val isSaving: Boolean,
+    /** False when the suggestions already are every category, so there is nothing more to show. */
+    val canExpand: Boolean = true,
 )
 
 @Stable
@@ -196,6 +198,7 @@ class ReviewViewModel(
                     isLoneLeg = rows.any { it.transferKind == TransferKind.LONE_LEG },
                     chips = chips,
                     expanded = choice.expanded,
+                    canExpand = options(cats, isIncome, expanded = true).size > options(cats, isIncome, expanded = false).size,
                     selectedId = selected?.value,
                     remember = choice.remember,
                     isSaving = key in sv,
