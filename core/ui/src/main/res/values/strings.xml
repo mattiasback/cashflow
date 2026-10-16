@@ -3,7 +3,7 @@
     <string name="error_disk_full">Telefonen har inte plats att spara mer. Frigör utrymme och försök igen.</string>
     <string name="error_not_found">Hittade inte det du letade efter.</string>
     <string name="error_unknown">Något gick fel. Försök igen.</string>
-    <string name="error_import_unsupported">Känner inte igen filen. Välj en export från Länsförsäkringar (.xls) eller en CSV-fil.</string>
+    <string name="error_import_unsupported">Känner inte igen formatet. Mappa kolumnerna en gång, så känns nästa fil från samma bank igen.</string>
     <string name="error_import_empty">Filen innehåller inga transaktioner.</string>
     <string name="error_import_unreadable">Kunde inte läsa filen.</string>
     <string name="error_import_unknown_account">Kontot finns inte längre. Välj ett annat konto.</string>

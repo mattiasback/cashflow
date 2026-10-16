@@ -3,7 +3,7 @@
     <string name="error_disk_full">Your phone is out of storage. Free up some space and try again.</string>
     <string name="error_not_found">Couldn\'t find what you were looking for.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
-    <string name="error_import_unsupported">This file isn\'t recognised. Pick a Länsförsäkringar export (.xls) or a CSV file.</string>
+    <string name="error_import_unsupported">The format isn\'t recognised. Map the columns once and the next file from the same bank is recognised.</string>
     <string name="error_import_empty">The file has no transactions.</string>
     <string name="error_import_unreadable">Couldn\'t read the file.</string>
     <string name="error_import_unknown_account">That account no longer exists. Pick another one.</string>
