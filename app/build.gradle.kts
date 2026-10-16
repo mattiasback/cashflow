@@ -38,6 +38,7 @@ dependencies {
     implementation(projects.feature.events.ui)
     implementation(projects.feature.flow.ui)
     implementation(projects.feature.profile.ui)
+    implementation(projects.feature.rules.ui)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

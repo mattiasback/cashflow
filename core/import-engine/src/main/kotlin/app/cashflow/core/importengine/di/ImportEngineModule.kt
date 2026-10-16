@@ -6,6 +6,7 @@ import app.cashflow.core.importengine.HideDeleteUseCase
 import app.cashflow.core.importengine.UndoImportUseCase
 import app.cashflow.core.importengine.ImportStatementUseCase
 import app.cashflow.core.importengine.ReclassifyUseCase
+import app.cashflow.core.importengine.RuleUseCases
 import app.cashflow.core.importengine.TransactionHasher
 import app.cashflow.core.importengine.TransferMatcher
 import org.koin.core.module.dsl.factoryOf
@@ -21,6 +22,7 @@ val importEngineModule = module {
     // Lambda forms: the clock keeps its default.
     factory { UndoImportUseCase(get(), get()) }
     factory { HideDeleteUseCase(get(), get()) }
+    factoryOf(::RuleUseCases)
     factory {
         ImportStatementUseCase(
             transactions = get(),

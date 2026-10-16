@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_back">Back</string>
+    <string name="rules_title">Category rules</string>
+    <string name="rules_tab_mine">My rules</string>
+    <string name="rules_tab_builtin">Built-in</string>
+    <string name="rules_intro_mine">Created when you choose “Remember” in review, or here. Your rules go before the built-in ones.</string>
+    <string name="rules_intro_builtin">Basic rules that ship with the app: Swedish chains and services. Make a rule of your own for another category.</string>
+    <string name="rules_new">New rule</string>
+    <string name="rules_group_mine">My rules · %1$d</string>
+    <string name="rules_group_builtin">Built-in · updated with the app</string>
+    <string name="rules_empty">No rules of your own yet.</string>
+    <string name="rules_order">Order when categorizing: transfers → remembered payees → your rules → built-in rules. Anything uncertain goes to review in Activity.</string>
+    <string name="rules_match_starts">starts with “%1$s”</string>
+    <string name="rules_match_contains">contains “%1$s”</string>
+    <string name="rules_match_equals">is “%1$s”</string>
+    <string name="rules_match_over">over %1$s</string>
+    <string name="rules_match_under">under %1$s</string>
+    <string name="rules_match_account">on %1$s</string>
+    <string name="rules_origin_created">Created by you %1$s</string>
+    <string name="rules_origin_override">Changed built-in rule %1$s</string>
+    <string name="rules_origin_memory">Remembered</string>
+    <string name="rules_origin_memory_on">Remembered %1$s</string>
+    <plurals name="rules_uses">
+        <item quantity="one">used %d time</item>
+        <item quantity="other">used %d times</item>
+    </plurals>
+    <plurals name="rules_uses_here">
+        <item quantity="one">used %d time here</item>
+        <item quantity="other">used %d times here</item>
+    </plurals>
+    <plurals name="rules_builtin_patterns">
+        <item quantity="one">Built-in · %d name</item>
+        <item quantity="other">Built-in · %d names</item>
+    </plurals>
+
+    <string name="editor_eyebrow_new">New rule</string>
+    <string name="editor_eyebrow_edit">Edit rule</string>
+    <string name="editor_eyebrow_memory">Remembered payee</string>
+    <string name="editor_eyebrow_builtin">Built-in rule</string>
+    <string name="editor_title_new">New category rule</string>
+    <string name="editor_if_text">If the description</string>
+    <string name="editor_match_starts">starts with</string>
+    <string name="editor_match_contains">contains</string>
+    <string name="editor_match_equals">is exactly</string>
+    <string name="editor_text">Text to match</string>
+    <string name="editor_text_hint">e.g. ICA or Bolån</string>
+    <string name="editor_account">Account</string>
+    <string name="editor_all_accounts">All accounts</string>
+    <string name="editor_over">Amount over</string>
+    <string name="editor_under">Amount under</string>
+    <string name="editor_optional">Optional</string>
+    <string name="editor_category">Set category</string>
+    <string name="editor_incomplete">Type a text and pick a category.</string>
+    <string name="editor_order_note">Your rules go before the built-in ones. Rows you categorized yourself only change if you choose so below.</string>
+    <plurals name="editor_matches">
+        <item quantity="one">Matches %d transaction so far</item>
+        <item quantity="other">Matches %d transactions so far</item>
+    </plurals>
+    <string name="editor_apply">Apply to earlier purchases too</string>
+    <plurals name="editor_apply_count">
+        <item quantity="one">Apply to %d earlier purchase too</item>
+        <item quantity="other">Apply to %d earlier purchases too</item>
+    </plurals>
+    <string name="editor_save">Save</string>
+    <string name="editor_delete">Delete rule</string>
+    <string name="editor_forget">Forget the payee</string>
+    <string name="editor_memory_body">You chose “Remember” for this payee. Change the category here, or forget the payee so new purchases are reviewed again.</string>
+    <plurals name="editor_memory_uses">
+        <item quantity="one">%d purchase from the payee</item>
+        <item quantity="other">%d purchases from the payee</item>
+    </plurals>
+    <string name="editor_builtin_caption">Matches the names</string>
+    <plurals name="editor_builtin_uses">
+        <item quantity="one">Used %d time here</item>
+        <item quantity="other">Used %d times here</item>
+    </plurals>
+    <string name="editor_builtin_note">Built-in rules cannot be changed, but you can make a rule of your own that goes first.</string>
+    <string name="editor_override">Change for me</string>
+</resources>

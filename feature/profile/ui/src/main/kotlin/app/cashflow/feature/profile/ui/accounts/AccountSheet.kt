@@ -14,8 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.WindowInsetsRulers
-import androidx.compose.foundation.layout.fitInside
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -59,7 +58,7 @@ fun AccountSheet(
 ) {
     val c = CashFlowTheme.colors
     LazyColumn(
-        modifier = Modifier.fillMaxWidth().fitInside(WindowInsetsRulers.Ime.current),
+        modifier = Modifier.fillMaxWidth().imePadding(),
         contentPadding = PaddingValues(start = Spacing.s4, end = Spacing.s4, bottom = Spacing.s6),
         verticalArrangement = Arrangement.spacedBy(Spacing.s4),
     ) {

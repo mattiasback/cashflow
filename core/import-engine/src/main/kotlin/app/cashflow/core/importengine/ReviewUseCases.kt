@@ -94,7 +94,7 @@ class CategorizeUseCase(
 
     private suspend fun rememberPayees(rows: List<Transaction>, categoryId: CategoryId): EmptyResult<DataError.Local> {
         rows.map { normalizer.key(it.rawText) }.distinct().forEach { key ->
-            val r = memories.remember(MerchantMemory(key, categoryId))
+            val r = memories.remember(MerchantMemory(key, categoryId, kotlin.time.Clock.System.now()))
             if (r is Result.Error) return r
         }
         // Rows the user had set by hand for this payee follow the new decision too.

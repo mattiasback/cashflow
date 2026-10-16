@@ -44,6 +44,9 @@ import app.cashflow.feature.profile.ui.AccountsRoute
 import app.cashflow.feature.profile.ui.MortgageRoute
 import app.cashflow.feature.profile.ui.ProfileRoute
 import app.cashflow.feature.profile.ui.profileEntries
+import app.cashflow.feature.rules.ui.RuleEditorRoute
+import app.cashflow.feature.rules.ui.RulesRoute
+import app.cashflow.feature.rules.ui.rulesEntries
 import app.cashflow.navigation.BottomSheetSceneStrategy
 import app.cashflow.navigation.Navigator
 import app.cashflow.navigation.rememberNavigationState
@@ -101,7 +104,13 @@ fun CashFlowAppShell(
             onOpenAccount = { navigator.navigate(AccountRoute(it)) },
             onOpenMortgage = { navigator.navigate(MortgageRoute) },
             onOpenImportHistory = { navigator.navigate(ImportHistoryRoute) },
-            onOpenRules = { },
+            onOpenRules = { navigator.navigate(RulesRoute) },
+            onBack = { navigator.goBack() },
+        )
+        rulesEntries(
+            contentPadding = contentPadding,
+            sheetMetadata = BottomSheetSceneStrategy.sheet,
+            onOpenEditor = { navigator.navigate(it) },
             onBack = { navigator.goBack() },
         )
         importEntries(
@@ -129,7 +138,7 @@ fun CashFlowAppShell(
         // Status-bar protection: lists scroll behind the status bar, so keep the tab's accent band
         // there; the light status-bar icons stay legible over any content.
         val band = when {
-            current is ProfileRoute || current is ImportHistoryRoute || current is AccountsRoute || current is AccountRoute || current is MortgageRoute -> Accent.Settings
+            current is ProfileRoute || current is RulesRoute || current is RuleEditorRoute || current is ImportHistoryRoute || current is AccountsRoute || current is AccountRoute || current is MortgageRoute -> Accent.Settings
             state.topLevelRoute == FlowRoute -> Accent.Cashflow
             else -> Accent.Events
         }

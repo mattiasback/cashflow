@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_back">Tillbaka</string>
+    <string name="rules_title">Kategoriregler</string>
+    <string name="rules_tab_mine">Mina regler</string>
+    <string name="rules_tab_builtin">Inbyggda</string>
+    <string name="rules_intro_mine">Skapas när du väljer ”Kom ihåg” i granskningen, eller här. Dina regler går före de inbyggda.</string>
+    <string name="rules_intro_builtin">Grundregler som följer med appen: svenska kedjor och tjänster. Gör en egen regel om du vill ha en annan kategori.</string>
+    <string name="rules_new">Ny regel</string>
+    <string name="rules_group_mine">Mina regler · %1$d</string>
+    <string name="rules_group_builtin">Inbyggda · uppdateras med appen</string>
+    <string name="rules_empty">Inga egna regler ännu.</string>
+    <string name="rules_order">Ordning vid kategorisering: överföringar → ihågkomna mottagare → dina regler → inbyggda regler. Det som inte är säkert hamnar i granskningen i Händelser.</string>
+    <string name="rules_match_starts">börjar med ”%1$s”</string>
+    <string name="rules_match_contains">innehåller ”%1$s”</string>
+    <string name="rules_match_equals">är ”%1$s”</string>
+    <string name="rules_match_over">över %1$s</string>
+    <string name="rules_match_under">under %1$s</string>
+    <string name="rules_match_account">på %1$s</string>
+    <string name="rules_origin_created">Skapad av dig %1$s</string>
+    <string name="rules_origin_override">Ändrad inbyggd regel %1$s</string>
+    <string name="rules_origin_memory">Ihågkommen</string>
+    <string name="rules_origin_memory_on">Ihågkommen %1$s</string>
+    <plurals name="rules_uses">
+        <item quantity="one">använd %d gång</item>
+        <item quantity="other">använd %d gånger</item>
+    </plurals>
+    <plurals name="rules_uses_here">
+        <item quantity="one">använd %d gång hos er</item>
+        <item quantity="other">använd %d gånger hos er</item>
+    </plurals>
+    <plurals name="rules_builtin_patterns">
+        <item quantity="one">Inbyggd · %d namn</item>
+        <item quantity="other">Inbyggd · %d namn</item>
+    </plurals>
+
+    <string name="editor_eyebrow_new">Ny regel</string>
+    <string name="editor_eyebrow_edit">Redigera regel</string>
+    <string name="editor_eyebrow_memory">Ihågkommen mottagare</string>
+    <string name="editor_eyebrow_builtin">Inbyggd regel</string>
+    <string name="editor_title_new">Ny kategoriregel</string>
+    <string name="editor_if_text">Om beskrivningen</string>
+    <string name="editor_match_starts">börjar med</string>
+    <string name="editor_match_contains">innehåller</string>
+    <string name="editor_match_equals">är exakt</string>
+    <string name="editor_text">Text att matcha</string>
+    <string name="editor_text_hint">t.ex. ICA eller Bolån</string>
+    <string name="editor_account">Konto</string>
+    <string name="editor_all_accounts">Alla konton</string>
+    <string name="editor_over">Belopp över</string>
+    <string name="editor_under">Belopp under</string>
+    <string name="editor_optional">Valfritt</string>
+    <string name="editor_category">Sätt kategori</string>
+    <string name="editor_incomplete">Skriv en text och välj en kategori.</string>
+    <string name="editor_order_note">Dina regler går före de inbyggda. Rader du kategoriserat själv ändras bara om du väljer det nedan.</string>
+    <plurals name="editor_matches">
+        <item quantity="one">Matchar %d transaktion hittills</item>
+        <item quantity="other">Matchar %d transaktioner hittills</item>
+    </plurals>
+    <string name="editor_apply">Använd på tidigare köp också</string>
+    <plurals name="editor_apply_count">
+        <item quantity="one">Använd på %d tidigare köp också</item>
+        <item quantity="other">Använd på %d tidigare köp också</item>
+    </plurals>
+    <string name="editor_save">Spara</string>
+    <string name="editor_delete">Ta bort regel</string>
+    <string name="editor_forget">Glöm mottagaren</string>
+    <string name="editor_memory_body">Du valde ”Kom ihåg” för den här mottagaren. Byt kategori här, eller glöm mottagaren så att nya köp granskas igen.</string>
+    <plurals name="editor_memory_uses">
+        <item quantity="one">%d köp från mottagaren</item>
+        <item quantity="other">%d köp från mottagaren</item>
+    </plurals>
+    <string name="editor_builtin_caption">Matchar namnen</string>
+    <plurals name="editor_builtin_uses">
+        <item quantity="one">Använd %d gång hos er</item>
+        <item quantity="other">Använd %d gånger hos er</item>
+    </plurals>
+    <string name="editor_builtin_note">Du kan inte ändra inbyggda regler, men du kan göra en egen regel som går före.</string>
+    <string name="editor_override">Ändra för mig</string>
+</resources>
