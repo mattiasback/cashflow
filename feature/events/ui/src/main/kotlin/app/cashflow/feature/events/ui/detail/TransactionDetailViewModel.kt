@@ -16,6 +16,7 @@ import app.cashflow.core.domain.model.Transaction
 import app.cashflow.core.domain.model.TransferKind
 import app.cashflow.core.domain.model.TxId
 import app.cashflow.core.importengine.CategorizeUseCase
+import app.cashflow.core.importengine.HideDeleteUseCase
 import app.cashflow.core.ui.FlowTone
 import app.cashflow.core.ui.UiText
 import app.cashflow.core.ui.categoryName
@@ -55,6 +56,12 @@ data class TransactionDetailState(
     val rawText: String = "",
     val shortId: String = "",
     val canMarkHousehold: Boolean = false,
+    /** "Dölj": left out of every total but still listed. */
+    val hidden: Boolean = false,
+    /** "Ta bort" asks once more before deleting. */
+    val confirmingDelete: Boolean = false,
+    /** "Möjlig dubblett": the earlier row it looks like, e.g. "2026-05-02 · 1 000 kr". */
+    val duplicateOf: String? = null,
     val picking: Boolean = false,
     val options: List<PickOptionUi> = emptyList(),
     val remember: Boolean = false,
@@ -70,6 +77,9 @@ sealed interface TransactionDetailAction {
     data object OnSaveClick : TransactionDetailAction
     data object OnCancelClick : TransactionDetailAction
     data object OnMarkHouseholdClick : TransactionDetailAction
+    data object OnHideToggle : TransactionDetailAction
+    data object OnDeleteClick : TransactionDetailAction
+    data object OnNotDuplicateClick : TransactionDetailAction
 }
 
 sealed interface TransactionDetailEvent {
@@ -82,7 +92,11 @@ class TransactionDetailViewModel(
     categories: CategoryLocalDataSource,
     accounts: AccountLocalDataSource,
     private val categorize: CategorizeUseCase,
+    private val hideDelete: HideDeleteUseCase,
+    private val transactionsSource: TransactionLocalDataSource = transactions,
 ) : ViewModel() {
+
+    private val confirmingDelete = MutableStateFlow(false)
 
     private val _state = MutableStateFlow(TransactionDetailState())
     val state: StateFlow<TransactionDetailState> = _state.asStateFlow()
@@ -119,9 +133,13 @@ class TransactionDetailViewModel(
                 rawText = tx.rawText,
                 shortId = "#" + tx.id.value.take(8),
                 canMarkHousehold = tx.transferKind == TransferKind.LONE_LEG && !tx.loneLegConfirmed,
+                hidden = tx.hidden,
+                confirmingDelete = confirmingDelete.value,
+                duplicateOf = tx.duplicateOf?.takeIf { tx.isPossibleDuplicate }?.let { id -> all.firstOrNull { it.id == id } }
+                    ?.let { d -> PeriodFormatter.iso(d.transactionDate, locale) + " · " + MoneyFormatter.format(d.amount, signed = true, locale = locale) },
                 picking = p.open,
                 options = cats
-                    .filter { it.kind != CategoryKind.UNCATEGORIZED }
+                    .filter { it.kind != CategoryKind.UNCATEGORIZED && it.kind != CategoryKind.INVESTMENT }
                     .sortedWith(compareBy({ it.kind.ordinal }, { it.sortOrder }))
                     .map { PickOptionUi(it.id.value, categoryName(it.id, it.name), it.kind.groupName(), it.kind.tone(), it.id == selected) },
                 remember = p.remember,
@@ -139,6 +157,14 @@ class TransactionDetailViewModel(
             TransactionDetailAction.OnCancelClick -> picker.update { Picker() }
             TransactionDetailAction.OnSaveClick -> save()
             TransactionDetailAction.OnMarkHouseholdClick -> markHousehold()
+            TransactionDetailAction.OnHideToggle -> current?.let { tx -> run { hideDelete.setHidden(tx.id, !tx.hidden) } }
+            TransactionDetailAction.OnDeleteClick -> if (!confirmingDelete.value) {
+                confirmingDelete.value = true
+                _state.update { it.copy(confirmingDelete = true) }
+            } else {
+                current?.let { tx -> run(dismiss = true) { hideDelete.delete(tx.id) } }
+            }
+            TransactionDetailAction.OnNotDuplicateClick -> current?.let { tx -> run { transactionsSource.setDuplicateChecked(tx.id) } }
         }
     }
 
@@ -153,6 +179,15 @@ class TransactionDetailViewModel(
                     picker.update { Picker() }
                     _events.send(TransactionDetailEvent.Dismiss)
                 }
+            }
+        }
+    }
+
+    private fun run(dismiss: Boolean = false, block: suspend () -> app.cashflow.core.domain.EmptyResult<app.cashflow.core.domain.DataError.Local>) {
+        viewModelScope.launch {
+            when (val r = block()) {
+                is Result.Error -> _state.update { it.copy(error = r.error.toUiText()) }
+                is Result.Success -> if (dismiss) _events.send(TransactionDetailEvent.Dismiss)
             }
         }
     }

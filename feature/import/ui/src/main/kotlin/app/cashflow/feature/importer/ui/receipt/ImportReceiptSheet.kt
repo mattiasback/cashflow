@@ -115,6 +115,14 @@ fun ImportReceiptSheet(
                 CfButton(stringResource(R.string.receipt_review_now), { onAction(ImportReceiptAction.OnReviewClick) }, Modifier.weight(1f), variant = CfButtonVariant.Accent, accent = c.actionEvents)
             }
         }
+        if (state.undoSeconds > 0) {
+            CfButton(
+                stringResource(R.string.receipt_undo, state.undoSeconds),
+                { onAction(ImportReceiptAction.OnUndoClick) },
+                Modifier.fillMaxWidth(),
+                variant = CfButtonVariant.Danger,
+            )
+        }
     }
 }
 

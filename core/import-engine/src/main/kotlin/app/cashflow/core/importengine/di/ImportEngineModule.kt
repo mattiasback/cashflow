@@ -2,6 +2,8 @@ package app.cashflow.core.importengine.di
 
 import app.cashflow.core.importengine.AccountInferrer
 import app.cashflow.core.importengine.CategorizeUseCase
+import app.cashflow.core.importengine.HideDeleteUseCase
+import app.cashflow.core.importengine.UndoImportUseCase
 import app.cashflow.core.importengine.ImportStatementUseCase
 import app.cashflow.core.importengine.ReclassifyUseCase
 import app.cashflow.core.importengine.TransactionHasher
@@ -16,6 +18,9 @@ val importEngineModule = module {
     single { TransferMatcher() }
     factoryOf(::ReclassifyUseCase)
     factoryOf(::CategorizeUseCase)
+    // Lambda forms: the clock keeps its default.
+    factory { UndoImportUseCase(get(), get()) }
+    factory { HideDeleteUseCase(get(), get()) }
     factory {
         ImportStatementUseCase(
             transactions = get(),

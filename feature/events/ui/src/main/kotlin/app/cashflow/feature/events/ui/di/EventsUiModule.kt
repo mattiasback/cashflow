@@ -13,5 +13,5 @@ val eventsUiModule = module {
         EventsViewModel(get(), get(), get(), params.values.getOrNull(0) as String?, params.values.getOrNull(1) as String?)
     }
     viewModelOf(::ReviewViewModel)
-    viewModel { params -> TransactionDetailViewModel(params.get(), get(), get(), get(), get()) }
+    viewModel { params -> TransactionDetailViewModel(params.get(), get(), get(), get(), get(), get()) }
 }

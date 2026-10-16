@@ -53,4 +53,29 @@
         <item quantity="one">%d rad kunde inte läsas och hoppades över.</item>
         <item quantity="other">%d rader kunde inte läsas och hoppades över.</item>
     </plurals>
+    <string name="cd_back">Tillbaka</string>
+    <string name="history_title">Importhistorik</string>
+    <string name="history_intro_title">Alla importer</string>
+    <string name="history_intro_body">Varje transaktion vet vilken import den kom från. Ångra tar bara bort det den importen lade till, även långt senare.</string>
+    <string name="history_line">%1$s · %2$d nya · %3$d dubbletter · %4$d att granska</string>
+    <string name="history_line_undone">Ångrad · %1$d borttagna</string>
+    <string name="history_footer">Ångrade rader läggs undan, så importen kan göras om. Importerar du samma fil igen kommer de tillbaka. Rader du tagit bort kommer aldrig tillbaka.</string>
+    <string name="history_kind_bank">Kontoutdrag</string>
+    <string name="history_kind_savings">Sparexport</string>
+    <string name="history_kind_mapped">Fil med egen kolumnmappning</string>
+    <string name="history_stat_added">nya transaktioner</string>
+    <string name="history_stat_dups">dubbletter överhoppade</string>
+    <string name="history_stat_review">att granska</string>
+    <string name="history_stat_edited">ändrade av dig efteråt</string>
+    <string name="history_details">Detaljer</string>
+    <string name="history_details_line">Import-ID %1$s · transaktioner %2$s</string>
+    <string name="history_confirm_title">Ångra hela importen?</string>
+    <string name="history_confirm">%1$d transaktioner tas bort och flödet räknas om.</string>
+    <string name="history_confirm_edited">%1$d transaktioner tas bort och flödet räknas om. %2$d av dem har du kategoriserat, dolt eller ändrat själv – de ändringarna försvinner också.</string>
+    <string name="history_undo">Ångra import</string>
+    <string name="history_undo_confirm">Ja, ångra importen</string>
+    <string name="history_undone_title">Ångrad %1$s</string>
+    <string name="history_undone_body">Transaktionerna togs bort och flödet räknades om.</string>
+    <string name="history_redo">Gör om importen</string>
+    <string name="receipt_undo">Ångra importen (%1$d s)</string>
 </resources>

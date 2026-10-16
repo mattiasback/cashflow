@@ -97,4 +97,14 @@
     <string name="review_pick_first">Choose a category first</string>
     <string name="cd_profile">Profile and settings</string>
     <string name="events_title">Activity</string>
+    <string name="detail_hide">Hide from the flow</string>
+    <string name="detail_unhide">Show in the flow again</string>
+    <string name="detail_hidden_note">Hidden: the row stays but counts in no totals.</string>
+    <string name="detail_delete">Delete</string>
+    <string name="detail_delete_confirm">Yes, delete</string>
+    <string name="detail_delete_confirm_text">The row is deleted and will not come back if you import the same file again.</string>
+    <string name="detail_duplicate_title">Possible duplicate</string>
+    <string name="detail_duplicate_body">An earlier import has a matching row: %1$s. Delete this one if it is the same purchase.</string>
+    <string name="detail_not_duplicate">Not a duplicate</string>
+    <string name="status_hidden">Hidden</string>
 </resources>

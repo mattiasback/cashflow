@@ -99,4 +99,14 @@
     <string name="review_pick_first">Välj en kategori först</string>
     <string name="cd_profile">Profil och inställningar</string>
     <string name="events_title">Händelser</string>
+    <string name="detail_hide">Dölj i flödet</string>
+    <string name="detail_unhide">Visa i flödet igen</string>
+    <string name="detail_hidden_note">Dold: raden finns kvar men räknas inte i några summor.</string>
+    <string name="detail_delete">Ta bort</string>
+    <string name="detail_delete_confirm">Ja, ta bort</string>
+    <string name="detail_delete_confirm_text">Raden tas bort och kommer inte tillbaka om du importerar samma fil igen.</string>
+    <string name="detail_duplicate_title">Möjlig dubblett</string>
+    <string name="detail_duplicate_body">En tidigare import har en likadan rad: %1$s. Ta bort den här om det är samma köp.</string>
+    <string name="detail_not_duplicate">Inte en dubblett</string>
+    <string name="status_hidden">Dold</string>
 </resources>

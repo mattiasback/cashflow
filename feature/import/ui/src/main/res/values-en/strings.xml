@@ -53,4 +53,29 @@
         <item quantity="one">%d row couldn\'t be read and was skipped.</item>
         <item quantity="other">%d rows couldn\'t be read and were skipped.</item>
     </plurals>
+    <string name="cd_back">Back</string>
+    <string name="history_title">Import history</string>
+    <string name="history_intro_title">All imports</string>
+    <string name="history_intro_body">Every transaction knows which import it came from. Undo removes only what that import added, even much later.</string>
+    <string name="history_line">%1$s · %2$d new · %3$d duplicates · %4$d to review</string>
+    <string name="history_line_undone">Undone · %1$d removed</string>
+    <string name="history_footer">Undone rows are set aside so the import can be redone. Importing the same file again brings them back. Rows you deleted never come back.</string>
+    <string name="history_kind_bank">Bank statement</string>
+    <string name="history_kind_savings">Savings export</string>
+    <string name="history_kind_mapped">File with your own column mapping</string>
+    <string name="history_stat_added">new transactions</string>
+    <string name="history_stat_dups">duplicates skipped</string>
+    <string name="history_stat_review">to review</string>
+    <string name="history_stat_edited">changed by you since</string>
+    <string name="history_details">Details</string>
+    <string name="history_details_line">Import ID %1$s · transactions %2$s</string>
+    <string name="history_confirm_title">Undo the whole import?</string>
+    <string name="history_confirm">%1$d transactions are removed and the flow is recalculated.</string>
+    <string name="history_confirm_edited">%1$d transactions are removed and the flow is recalculated. You categorized, hid or changed %2$d of them; those changes go too.</string>
+    <string name="history_undo">Undo import</string>
+    <string name="history_undo_confirm">Yes, undo the import</string>
+    <string name="history_undone_title">Undone %1$s</string>
+    <string name="history_undone_body">The transactions were removed and the flow recalculated.</string>
+    <string name="history_redo">Redo the import</string>
+    <string name="receipt_undo">Undo the import (%1$d s)</string>
 </resources>

@@ -11,6 +11,10 @@ data class ImportRoute(val uris: List<String> = emptyList()) : NavKey
 @Serializable
 data class ImportReceiptRoute(val importIds: List<String>) : NavKey
 
+/** Importhistorik: every import, with undo and redo. */
+@Serializable
+data object ImportHistoryRoute : NavKey
+
 /** MIME types the picker offers: Excel 97–2003, .xlsx (rejected with a clear error for now) and CSV. */
 val StatementMimeTypes = arrayOf(
     "application/vnd.ms-excel",

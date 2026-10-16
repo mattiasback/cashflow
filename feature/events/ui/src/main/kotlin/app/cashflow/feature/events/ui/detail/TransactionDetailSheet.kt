@@ -75,6 +75,21 @@ fun TransactionDetailSheet(
             SheetHeader(title = state.title, eyebrow = stringResource(R.string.detail_eyebrow), figure = state.amount)
         }
         if (!state.picking) {
+            state.duplicateOf?.let { original ->
+                item {
+                    Column(
+                        Modifier.fillMaxWidth().clip(Radius.sm).background(c.surfaceCelebrate).padding(Spacing.s4),
+                        verticalArrangement = Arrangement.spacedBy(Spacing.s2),
+                    ) {
+                        Text(stringResource(R.string.detail_duplicate_title), style = CashFlowTheme.typography.bodyStrong, color = c.textOnCelebrate)
+                        Text(stringResource(R.string.detail_duplicate_body, original), style = CashFlowTheme.typography.body, color = c.textOnCelebrate)
+                        CfButton(stringResource(R.string.detail_not_duplicate), { onAction(TransactionDetailAction.OnNotDuplicateClick) }, Modifier.fillMaxWidth(), variant = CfButtonVariant.Outline)
+                    }
+                }
+            }
+            if (state.hidden) {
+                item { Text(stringResource(R.string.detail_hidden_note), style = CashFlowTheme.typography.label, color = c.textSecondary) }
+            }
             item {
                 Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s3)) {
                     KeyValue(stringResource(R.string.detail_category), state.category?.asString().orEmpty(), Modifier.weight(1f))
@@ -118,6 +133,21 @@ fun TransactionDetailSheet(
                             variant = CfButtonVariant.Outline,
                         )
                     }
+                    CfButton(
+                        stringResource(if (state.hidden) R.string.detail_unhide else R.string.detail_hide),
+                        { onAction(TransactionDetailAction.OnHideToggle) },
+                        Modifier.fillMaxWidth(),
+                        variant = CfButtonVariant.Outline,
+                    )
+                    if (state.confirmingDelete) {
+                        Text(stringResource(R.string.detail_delete_confirm_text), style = CashFlowTheme.typography.body, color = c.textPrimary)
+                    }
+                    CfButton(
+                        stringResource(if (state.confirmingDelete) R.string.detail_delete_confirm else R.string.detail_delete),
+                        { onAction(TransactionDetailAction.OnDeleteClick) },
+                        Modifier.fillMaxWidth(),
+                        variant = CfButtonVariant.Danger,
+                    )
                 }
             }
         } else {

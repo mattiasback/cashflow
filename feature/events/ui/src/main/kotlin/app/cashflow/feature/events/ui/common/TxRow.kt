@@ -2,6 +2,7 @@ package app.cashflow.feature.events.ui.common
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -22,7 +23,7 @@ fun TxRow(
     showDivider: Boolean = false,
 ) {
     val colors = row.tone.colors()
-    val category = row.category.asString()
+    val category = row.category.asString().let { if (row.hidden) stringResource(R.string.status_hidden) + " · " + it else it }
     val badge = row.badge.asString()
     val description = stringResource(R.string.cd_tx_row, row.title, row.spokenAmount, row.date, category, badge)
     val openLabel = stringResource(R.string.cd_show_details)
@@ -35,7 +36,7 @@ fun TxRow(
         trailing = { StatusBadge(badge, row.badgeKind) },
         showDivider = showDivider,
         onClick = onClick,
-        modifier = modifier.clearAndSetSemantics {
+        modifier = modifier.alpha(if (row.hidden) 0.55f else 1f).clearAndSetSemantics {
             contentDescription = description
             onClick(label = openLabel) { onClick(); true }
         },

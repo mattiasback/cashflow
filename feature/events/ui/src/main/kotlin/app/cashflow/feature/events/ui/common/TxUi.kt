@@ -30,6 +30,8 @@ data class TxRowUi(
     val badge: UiText,
     val badgeKind: BadgeKind,
     val spokenAmount: String,
+    /** Hidden rows stay listed, dimmed, but leave every total. */
+    val hidden: Boolean = false,
 )
 
 @Immutable
@@ -54,6 +56,7 @@ internal fun Transaction.toRowUi(categories: Map<CategoryId, Category>, locale: 
         badge = statusText(),
         badgeKind = badgeKind(),
         spokenAmount = MoneyFormatter.spoken(amount, locale),
+        hidden = hidden,
     )
 }
 
