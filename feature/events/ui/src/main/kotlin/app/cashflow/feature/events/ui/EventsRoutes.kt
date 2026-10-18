@@ -9,7 +9,7 @@ data object EventsRoute : NavKey
 
 /** Händelser filtered on one category and month, opened from Flöde's category bars. */
 @Serializable
-data class CategoryEventsRoute(val categoryId: String, val period: String?) : NavKey
+data class CategoryEventsRoute(val categoryId: String?, val period: String?) : NavKey
 
 /** Review by payee: one decision clears many rows. */
 @Serializable

@@ -13,7 +13,10 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import app.cashflow.core.designsystem.theme.band
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -68,6 +71,8 @@ fun CashFlowAppShell(
     val state = rememberNavigationState(startRoute = FlowRoute, topLevelRoutes = TopLevel)
     val navigator = remember(state) { Navigator(state) }
     val sheet = remember { BottomSheetSceneStrategy<NavKey>() }
+    // Flöde paints its band in the sub-tab's accent; the status-bar strip follows it.
+    var flowAccent by remember { mutableStateOf(Accent.Cashflow) }
 
     LaunchedEffect(sharedUris) {
         sharedUris.collect { uris -> navigator.navigateIn(EventsRoute, ImportRoute(uris)) }
@@ -84,9 +89,10 @@ fun CashFlowAppShell(
         flowEntries(
             contentPadding = contentPadding,
             scrollToTop = flowReselect,
-            onOpenCategory = { id, period -> navigator.navigateIn(EventsRoute, CategoryEventsRoute(id, period)) },
+            onOpenEvents = { id, period -> navigator.navigateIn(EventsRoute, CategoryEventsRoute(id, period)) },
             onOpenImport = { navigator.navigateIn(EventsRoute, ImportRoute()) },
             onOpenProfile = { navigator.navigate(ProfileRoute) },
+            onAccentChange = { flowAccent = it },
         )
         eventsEntries(
             contentPadding = contentPadding,
@@ -141,7 +147,7 @@ fun CashFlowAppShell(
         // there; the light status-bar icons stay legible over any content.
         val band = when {
             current is ProfileRoute || current is RulesRoute || current is RuleEditorRoute || current is ImportHistoryRoute || current is AccountsRoute || current is AccountRoute || current is MortgageRoute -> Accent.Settings
-            state.topLevelRoute == FlowRoute -> Accent.Cashflow
+            state.topLevelRoute == FlowRoute -> flowAccent
             else -> Accent.Events
         }
         Spacer(

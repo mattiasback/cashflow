@@ -1,23 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="flow_title">Kassaflöde</string>
-    <string name="flow_net_label">Nettokassaflöde · %1$s</string>
-    <string name="flow_net_spoken">Nettokassaflöde %1$s, %2$s</string>
+    <!-- Header and tabs -->
+    <string name="flow_title">Flöde</string>
+    <string name="flow_net_title">Nettokassaflöde</string>
+    <string name="flow_summary_label">%1$s · %2$s</string>
     <string name="flow_delta_vs">%1$s mot %2$s</string>
-    <string name="cd_previous_month">Föregående månad, %1$s</string>
-    <string name="cd_next_month">Nästa månad, %1$s</string>
-    <string name="tile_income">Inkomster</string>
-    <string name="tile_expenses">Utgifter</string>
-    <string name="tile_savings">Sparande</string>
-    <string name="tile_savings_sub">Sparkvot %1$s</string>
-    <string name="tile_left">Kvar på kontot</string>
-    <string name="tile_left_sub">Efter sparande</string>
-    <string name="flow_expenses_by_category">Utgifter per kategori</string>
-    <string name="flow_income_by_category">Inkomster</string>
-    <string name="flow_savings_by_category">Sparande</string>
-    <string name="cd_category_bar">%1$s, %2$s, %3$s. Visa transaktioner</string>
+    <string name="flow_delta_avg">Snitt %1$s per månad</string>
+    <string name="cd_summary">%1$s: %2$s. %3$s</string>
+    <string name="cd_info">Om %1$s</string>
+    <string name="cd_profile">Profil och inställningar</string>
+    <string name="cd_period_pick">Period %1$s. Välj period</string>
+    <string name="cd_mode">Period för alla flikar: månad, år eller hela tiden</string>
+    <string name="cd_previous">Föregående period</string>
+    <string name="cd_next">Nästa period</string>
+    <string name="mode_month">Månad</string>
+    <string name="mode_year">År</string>
+    <string name="mode_all">Alla</string>
+    <string name="tab_cashflow">Kassaflöde</string>
+    <string name="tab_income">Inkomster</string>
+    <string name="tab_expense">Utgifter</string>
+    <string name="tab_savings">Sparande</string>
+
+    <!-- Sections -->
+    <string name="section_over_time">Över tid</string>
+    <string name="section_distribution">Fördelning</string>
+    <string name="section_flow">Så flödade pengarna</string>
+    <string name="section_by_category">Per kategori</string>
+    <string name="section_latest">Senaste transaktioner</string>
+    <string name="show_all_events">Visa alla i Händelser</string>
+    <string name="avg_label">snitt</string>
+
+    <!-- Chart head -->
+    <string name="key_income">Inkomst</string>
+    <string name="key_expenses">Utgifter</string>
+    <string name="key_net">Netto</string>
+    <string name="key_saved">Sparat</string>
+    <string name="key_rate">Sparkvot</string>
+    <string name="key_vs">mot %1$s</string>
+    <string name="flow_fixed">Fasta</string>
+    <string name="flow_variable">Rörliga</string>
+    <string name="flow_uncat">Ej kategoriserat</string>
+    <string name="flow_uncat_short">Ej kat.</string>
+    <string name="cd_bar_cash">%1$s: inkomst %2$s, utgifter %3$s, nettokassaflöde %4$s</string>
+    <string name="cd_bar_single">%1$s: %2$s %3$s</string>
+    <string name="cd_bar_chart">Stapeldiagram per period. Svep för äldre perioder, tryck för att välja.</string>
+    <string name="cd_line">Välj månad i diagrammet. %1$s</string>
+
+    <!-- Tiles -->
+    <string name="tile_avg_month">Snitt per månad</string>
+    <string name="tile_saved_of_flow">Sparat av kassaflödet</string>
+    <string name="tile_deficit_months">Månader med underskott</string>
+    <string name="tile_best_month">Bästa månaden</string>
+    <string name="tile_vs_last_year">Mot samma period i fjol</string>
+    <string name="tile_salary_share">Lön av inkomsten</string>
+    <string name="tile_top_source">Största källa</string>
+    <string name="tile_fixed_share">Fasta kostnader</string>
+    <string name="tile_variable_vs_avg">Rörliga mot snitt</string>
+    <string name="tile_biggest">Största utgift</string>
+    <string name="tile_most_common">Vanligaste utgift</string>
+    <string name="tile_rate">Sparkvot</string>
+    <string name="tile_buffer">Buffert</string>
+    <string name="tile_saved_ytd">Sparat hittills i år</string>
+    <string name="sub_last_12">senaste 12 mån</string>
+    <string name="sub_12_to">12 mån t.o.m. %1$s</string>
+    <string name="sub_per_month_in">per månad %1$s</string>
+    <string name="sub_per_month_since">per månad sedan %1$s</string>
+    <string name="sub_flow_negative">Kassaflödet var negativt</string>
+    <string name="sub_label_amount">%1$s · %2$s</string>
+    <string name="sub_no_compare">Ingen jämförelse</string>
+    <string name="sub_salary">%1$s i lön</string>
+    <string name="sub_top_source">%1$s · %2$s av inkomsten</string>
+    <string name="sub_fixed_share">av utgifterna · %1$s</string>
+    <string name="sub_avg_12">Snitt 12 mån %1$s</string>
+    <string name="sub_avg_12_label">Snitt 12 mån</string>
+    <plurals name="sub_most_common">
+        <item quantity="one">%1$d köp · %2$s senaste 30 dagarna</item>
+        <item quantity="other">%1$d köp · %2$s senaste 30 dagarna</item>
+    </plurals>
+    <string name="sub_rate">av inkomsten · mål %1$d %%</string>
+    <string name="sub_rate_reached">av inkomsten · mål %1$d %% · nått</string>
+    <string name="value_months">%1$s mån</string>
+    <string name="sub_buffer">Mål %1$d mån · %2$s</string>
+    <string name="sub_no_buffer">Inget sparkonto än</string>
+    <string name="sub_saved_ytd">%1$s · snitt %2$s/mån</string>
+
+    <!-- Donut and Sankey -->
+    <string name="node_expenses">Utgifter</string>
+    <string name="node_savings">Sparande</string>
+    <string name="node_left">Kvar på konto</string>
+    <string name="node_from_account">Från konto</string>
+    <string name="node_other_savings">Övrigt sparande</string>
+    <string name="center_outflow">Utflöden</string>
+    <string name="of_income">inkomsten</string>
+    <string name="of_outflow">utflödena</string>
+    <string name="cd_donut_leaf">%1$s, %2$s, %3$s av %4$s, visa detaljer</string>
+    <string name="cd_donut_branch">%1$s, %2$s, %3$s av %4$s, tryck för att visa underkategorier</string>
+    <string name="cd_donut">Ringdiagram över hur inkomsten användes. Tryck på en del för att se mer.</string>
+    <string name="donut_back">Tillbaka till %1$s</string>
+    <string name="donut_top">översikten</string>
+    <string name="donut_details">Visa detaljer för %1$s</string>
+    <string name="donut_deficit_negative">Underskott %1$s. Utgifterna översteg inkomsten, så pengar togs från kontot.</string>
+    <string name="donut_deficit_saved">%1$s togs från kontot. Ni sparade mer än kassaflödet räckte till.</string>
+    <string name="cd_sankey">Flödesdiagram för %1$s: inkomst %2$s fördelad på utgifter %3$s, sparande %4$s och kvar på konto %5$s. Tryck på ett flöde för detaljer.</string>
+    <string name="cd_sankey_from_account">Flödesdiagram för %1$s: inkomst %2$s fördelad på utgifter %3$s och sparande %4$s. %5$s togs från kontot. Tryck på ett flöde för detaljer.</string>
+
+    <!-- Category bars and rows -->
+    <string name="cd_category_bar">%1$s, %2$s, %3$s. Visa detaljer</string>
+    <string name="cd_category_trend">%1$s mot snittet för tolv månader, %2$s</string>
+    <string name="trend_better">bättre</string>
+    <string name="trend_worse">sämre</string>
+    <string name="latest_sub">%1$s · %2$s</string>
+    <string name="cd_latest">%1$s, %2$s, %3$s</string>
+
+    <!-- Sheets -->
+    <string name="sheet_net_title">Inkomst − utgifter</string>
+    <string name="sheet_net_desc">Det som blir över när utgifterna dragits från inkomsten. Sparande räknas inte som utgift utan som en överföring inom er ekonomi.</string>
+    <string name="sheet_total_desc">Summan för vald period. Byt period med Månad, År eller Alla överst; valet gäller alla flikar i Flöde.</string>
+    <string name="sheet_left_desc">Nettokassaflödet minus det ni sparade. Pengar som ligger kvar på kontot och kan flyttas till sparande.</string>
+    <string name="sheet_deficit_title">Utgifterna översteg inkomsten</string>
+    <string name="sheet_oversaved_title">Sparat mer än kassaflödet</string>
+    <string name="sheet_deficit_desc">Utgifterna var %1$s större än inkomsten, och sparandet på %2$s gjordes ändå. Totalt %3$s togs från kontot eller bufferten.</string>
+    <string name="sheet_oversaved_desc">Kassaflödet var %1$s men ni sparade %2$s. Mellanskillnaden, %3$s, togs från pengar som redan låg på kontot.</string>
+    <string name="sheet_uncat_desc">Utgifter som väntar på kategori i Händelser. De räknas redan in i nettokassaflödet.</string>
+    <plurals name="sheet_category_count">
+        <item quantity="one">%1$d kategori.</item>
+        <item quantity="other">%1$d kategorier.</item>
+    </plurals>
+    <string name="sheet_vs">Mot %1$s</string>
+    <string name="eyebrow_deficit">Underskott</string>
+    <string name="share_of_income">Andel av inkomsten</string>
+    <string name="share_of_flow">Andel av kassaflödet</string>
+    <string name="share_of_flow_short">Av kassaflödet</string>
+    <string name="share_of_expenses">Andel av utgifterna</string>
+    <string name="share_of_fixed">Andel av fasta</string>
+    <string name="share_of_variable">Andel av rörliga</string>
+    <string name="share_of_savings">Andel av sparandet</string>
+    <string name="row_inflow">Inflöde</string>
+    <string name="row_outflow">Utflöde</string>
+    <string name="row_of_which_saved">Varav sparat</string>
+    <string name="row_to_savings">Överfört till sparande</string>
+    <string name="row_not_placed">Inte placerat</string>
+    <string name="row_biggest_variable">Största rörliga</string>
+    <string name="row_share_of">%1$s av %2$s</string>
+    <string name="cta_show_savings">Visa sparande</string>
+    <string name="cta_show_expenses">Visa utgifter</string>
+    <string name="cta_show_income">Visa inkomster</string>
+    <string name="cta_show_all_events">Visa alla i Händelser</string>
+    <string name="cta_review">Granska i Händelser</string>
+    <string name="cta_close">Stäng</string>
+
+    <!-- Period picker -->
+    <string name="picker_eyebrow">Period</string>
+    <string name="picker_title_month">Välj månad</string>
+    <string name="picker_title_year">Välj år</string>
+    <string name="picker_title_all">Hela tiden</string>
+    <string name="picker_all_text">Alla visar varje månad sedan %1$s. Dra i diagrammet för att läsa av en enskild månad.</string>
+    <string name="picker_latest">Senaste</string>
+    <string name="picker_done">Klar</string>
+    <string name="picker_years">År</string>
+    <string name="picker_months">Månader</string>
+
+    <!-- Empty -->
     <string name="flow_empty_title">Inget flöde än</string>
     <string name="flow_empty_body">Importera dina kontoutdrag så visar vi inkomster, utgifter och sparande per månad.</string>
     <string name="flow_empty_button">Importera kontoutdrag</string>
-    <string name="cd_profile">Profil och inställningar</string>
 </resources>

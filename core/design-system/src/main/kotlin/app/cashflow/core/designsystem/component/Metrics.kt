@@ -20,7 +20,12 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
+import app.cashflow.core.designsystem.icon.CfIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -52,23 +57,47 @@ fun SummaryCard(
     delta: String? = null,
     deltaPositive: Boolean = true,
     accessibilityText: String? = null,
+    onInfo: (() -> Unit)? = null,
+    infoLabel: String? = null,
+    rollDigits: Boolean = false,
 ) {
     val c = CashFlowTheme.colors
-    CfCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .then(if (accessibilityText != null) Modifier.clearAndSetSemantics { contentDescription = accessibilityText } else Modifier),
-    ) {
+    CfCard(modifier = modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
-            Text(label, style = CashFlowTheme.typography.label, color = c.textSecondary)
-            // Hero figures shrink to fit one line rather than truncate (design: minimumScaleFactor 0.7).
-            FitText(value, CashFlowTheme.typography.headlineL, c.textPrimary)
-            if (delta != null) {
-                Text(
-                    delta,
-                    style = CashFlowTheme.typography.bodyStrong.copy(fontFeatureSettings = "tnum"),
-                    color = if (deltaPositive) c.textPositive else c.textPrimary,
-                )
+            Column(
+                Modifier.then(if (accessibilityText != null) Modifier.clearAndSetSemantics { contentDescription = accessibilityText } else Modifier),
+                verticalArrangement = Arrangement.spacedBy(Spacing.s1),
+            ) {
+                Text(label, style = CashFlowTheme.typography.label, color = c.textSecondary)
+                // The figure rolls like an odometer when it changes; at large font scales it shrinks to fit instead.
+                if (rollDigits && LocalDensity.current.fontScale < 1.3f) {
+                    OdometerText(value, CashFlowTheme.typography.headlineL.copy(fontFeatureSettings = "tnum"), c.textPrimary)
+                } else {
+                    // Hero figures shrink to fit one line rather than truncate (design: minimumScaleFactor 0.7).
+                    FitText(value, CashFlowTheme.typography.headlineL, c.textPrimary)
+                }
+            }
+            if (delta != null || onInfo != null) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.s2)) {
+                    if (delta != null) {
+                        Text(
+                            delta,
+                            style = CashFlowTheme.typography.bodyStrong.copy(fontFeatureSettings = "tnum"),
+                            color = if (deltaPositive) c.textPositive else c.textPrimary,
+                            modifier = Modifier.weight(1f, fill = false),
+                        )
+                    }
+                    if (onInfo != null) {
+                        Box(
+                            Modifier
+                                .size(48.dp)
+                                .clip(Radius.pill)
+                                .clickable(role = Role.Button, onClickLabel = infoLabel, onClick = onInfo)
+                                .semantics { contentDescription = infoLabel.orEmpty() },
+                            contentAlignment = Alignment.Center,
+                        ) { Icon(CfIcons.Info, contentDescription = null, tint = c.textPrimary, modifier = Modifier.size(20.dp)) }
+                    }
+                }
             }
         }
     }
@@ -85,6 +114,8 @@ fun StatTile(
     accentDot: Color? = null,
     accessibilityText: String? = null,
     onClick: (() -> Unit)? = null,
+    goal: Float? = null,
+    goalColor: Color = CashFlowTheme.colors.textPrimary,
 ) {
     val c = CashFlowTheme.colors
     Column(
@@ -113,6 +144,7 @@ fun StatTile(
         Spacer(Modifier.weight(1f))
         // The supporting line is always laid out (empty when absent) so tiles in a grid share one height.
         Text(sub.orEmpty(), style = CashFlowTheme.typography.label, color = c.textSecondary, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = Spacing.s2))
+        if (goal != null) GoalBar(goal, goalColor, Modifier.padding(top = 6.dp))
     }
 }
 
@@ -134,6 +166,8 @@ fun CategoryBar(
     accessibilityText: String = "$name, $amount, $share",
     animate: Boolean = true,
     onClick: (() -> Unit)? = null,
+    trend: String? = null,
+    trendBetter: Boolean = true,
 ) {
     val c = CashFlowTheme.colors
     val progress = remember { Animatable(if (animate) 0f else fraction) }
@@ -149,7 +183,18 @@ fun CategoryBar(
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Row(verticalAlignment = Alignment.Bottom) {
-            Text(name, style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+            Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(name, style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
+                if (trend != null) {
+                    Text(
+                        trend,
+                        style = CashFlowTheme.typography.caption.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold, fontFeatureSettings = "tnum"),
+                        color = if (trendBetter) c.textOnTintBrand else c.textPrimary,
+                        maxLines = 1,
+                        modifier = Modifier.clip(Radius.pill).background(if (trendBetter) c.surfaceTintBrand else c.surfaceControl).padding(horizontal = 6.dp, vertical = 1.dp),
+                    )
+                }
+            }
             Spacer(Modifier.width(10.dp))
             Text(amount, style = CashFlowTheme.typography.body.copy(fontFeatureSettings = "tnum"), color = c.textPrimary, maxLines = 1, softWrap = false)
             Spacer(Modifier.width(10.dp))
