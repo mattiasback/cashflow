@@ -275,7 +275,7 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
         val avgSub: UiText = when (mode) {
             PeriodMode.MONTH -> if (isLatest) res(R.string.sub_last_12) else res(R.string.sub_12_to, r.label)
             PeriodMode.YEAR -> res(R.string.sub_per_month_in, r.label)
-            PeriodMode.ALL -> res(R.string.sub_per_month_since, data.periods.first().year.toString())
+            PeriodMode.ALL -> res(R.string.sub_per_month_since, monthLabel(data.periods.first()))
         }
         fun savedOfFlow(): TileUi = if (a.net.ore > 0) {
             val v = a.savings.ore.toDouble() / a.net.ore * 100

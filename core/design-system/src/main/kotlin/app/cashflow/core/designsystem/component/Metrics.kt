@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
 import app.cashflow.core.designsystem.icon.CfIcons
 import androidx.compose.runtime.Composable
@@ -170,7 +171,8 @@ fun CategoryBar(
     trendBetter: Boolean = true,
 ) {
     val c = CashFlowTheme.colors
-    val progress = remember { Animatable(if (animate) 0f else fraction) }
+    val inspecting = LocalInspectionMode.current
+    val progress = remember { Animatable(if (animate && !inspecting) 0f else fraction) }
     LaunchedEffect(fraction) { progress.animateTo(fraction.coerceIn(0f, 1f), tween(900, easing = GrowEasing)) }
     Column(
         modifier = modifier

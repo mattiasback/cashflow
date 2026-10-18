@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -73,6 +74,16 @@ import kotlin.math.atan2
 import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.roundToInt
+
+/**
+ * Progress of a chart's entry animation. Previews and screenshot tests start finished, since
+ * they do not run the animation.
+ */
+@Composable
+private fun rememberEntry(key: Any? = Unit): Animatable<Float, androidx.compose.animation.core.AnimationVector1D> {
+    val inspecting = LocalInspectionMode.current
+    return remember(key) { Animatable(if (inspecting) 1f else 0f) }
+}
 
 // ───────────────────────────── Sub-tabs ─────────────────────────────
 
@@ -155,7 +166,7 @@ fun BarChart(
     // Newest first: with reverseLayout the first item sits at the right edge.
     val ordered = remember(groups) { groups.asReversed() }
     val listState = rememberLazyListState()
-    val rise = remember { Animatable(0f) }
+    val rise = rememberEntry()
     LaunchedEffect(Unit) { rise.animateTo(1f, tween(600)) }
     LaunchedEffect(selectedKey, ordered.size) {
         val i = ordered.indexOfFirst { it.key == selectedKey }
@@ -184,7 +195,7 @@ fun BarChart(
             state = listState,
             reverseLayout = true,
             flingBehavior = rememberSnapFlingBehavior(listState),
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.End),
             modifier = Modifier.fillMaxWidth(),
         ) {
             itemsIndexed(ordered, key = { _, g -> g.key }) { index, group ->
@@ -261,7 +272,7 @@ fun LineChart(
     val count = series.firstOrNull()?.values?.size ?: 0
     if (count == 0) return
     val maxValue = remember(series) { series.maxOf { s -> s.values.maxOrNull() ?: 0f }.coerceAtLeast(1f) }
-    val draw = remember { Animatable(0f) }
+    val draw = rememberEntry()
     LaunchedEffect(Unit) { draw.animateTo(1f, tween(700)) }
     val haptics = LocalHapticFeedback.current
     val currentSelect by rememberUpdatedState(onSelect)
@@ -299,14 +310,29 @@ fun LineChart(
         drawLine(c.divider, Offset(0f, chartH), Offset(size.width, chartH), strokeWidth = 1.dp.toPx())
         clipRect(right = size.width * draw.value) {
             if (overspend && series.size >= 2) {
-                // Shade the months where the second series (spending) is above the first (income).
+                // Shade where the second series (spending) runs above the first (income), with the
+                // crossings interpolated so the band starts and ends exactly where the lines meet.
                 val a = series[0].values
                 val b = series[1].values
-                for (i in 0 until count) {
-                    if (b[i] > a[i]) {
-                        drawRect(c.vizFixed.copy(alpha = 0.18f), Offset(x(i) - size.width / count / 2, y(b[i])), Size(size.width / count, y(a[i]) - y(b[i])))
-                    }
+                val band = Path()
+                for (i in 0 until count - 1) {
+                    val d0 = b[i] - a[i]
+                    val d1 = b[i + 1] - a[i + 1]
+                    if (d0 <= 0f && d1 <= 0f) continue
+                    // The part of segment i→i+1 where spending is higher, as fractions 0..1.
+                    val t = if (d0 != d1) d0 / (d0 - d1) else 0f
+                    val from = if (d0 > 0f) 0f else t
+                    val to = if (d1 > 0f) 1f else t
+                    fun xi(f: Float) = x(i) + (x(i + 1) - x(i)) * f
+                    fun av(f: Float) = a[i] + (a[i + 1] - a[i]) * f
+                    fun bv(f: Float) = b[i] + (b[i + 1] - b[i]) * f
+                    band.moveTo(xi(from), y(bv(from)))
+                    band.lineTo(xi(to), y(bv(to)))
+                    band.lineTo(xi(to), y(av(to)))
+                    band.lineTo(xi(from), y(av(from)))
+                    band.close()
                 }
+                drawPath(band, c.vizFixed.copy(alpha = 0.3f))
             }
             series.forEach { s ->
                 val path = Path()
@@ -357,7 +383,7 @@ fun DonutChart(
     highlightedKey: String? = null,
 ) {
     val c = CashFlowTheme.colors
-    val sweep = remember(segments.map { it.key }) { Animatable(0f) }
+    val sweep = rememberEntry(segments.map { it.key })
     LaunchedEffect(segments.map { it.key }) { sweep.animateTo(1f, tween(500)) }
     val total = segments.sumOf { it.value.toDouble() }.toFloat().coerceAtLeast(1f)
     val currentClick by rememberUpdatedState(onSegmentClick)
@@ -437,7 +463,7 @@ fun SankeyChart(
     modifier: Modifier = Modifier,
 ) {
     val c = CashFlowTheme.colors
-    val flow = remember(nodes.map { it.id }) { Animatable(0f) }
+    val flow = rememberEntry(nodes.map { it.id })
     LaunchedEffect(nodes.map { it.id }) { flow.animateTo(1f, tween(800)) }
     val measurer = rememberTextMeasurer()
     val nameStyle = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = c.textPrimary)
@@ -451,7 +477,7 @@ fun SankeyChart(
             .semantics { this.contentDescription = contentDescription }
             .pointerInput(layout) {
                 detectTapGestures { p ->
-                    val rects = layout.rects(size.width.toFloat(), size.height.toFloat(), 92.dp.toPx(), 8.dp.toPx(), 14.dp.toPx())
+                    val rects = layout.rects(size.width.toFloat(), size.height.toFloat(), 92.dp.toPx(), 120.dp.toPx(), 8.dp.toPx(), 14.dp.toPx(), 40.dp.toPx(), 34.dp.toPx())
                     rects.entries.minByOrNull { (_, r) ->
                         val dx = max(0f, max(r.left - p.x, p.x - r.right))
                         val dy = max(0f, max(r.top - p.y, p.y - r.bottom))
@@ -465,7 +491,7 @@ fun SankeyChart(
     ) {
         val labelW = 92.dp.toPx()
         val barW = 8.dp.toPx()
-        val rects = layout.rects(size.width, size.height, labelW, barW, 14.dp.toPx())
+        val rects = layout.rects(size.width, size.height, labelW, 120.dp.toPx(), barW, 14.dp.toPx(), 40.dp.toPx(), 34.dp.toPx())
         val outUsed = HashMap<String, Float>()
         val inUsed = HashMap<String, Float>()
         clipRect(right = size.width * flow.value) {
@@ -497,7 +523,7 @@ fun SankeyChart(
         layout.nodes.forEach { n ->
             val r = rects[n.id] ?: return@forEach
             drawRoundRect(n.color, r.topLeft, r.size, CornerRadius(2.dp.toPx()))
-            val name = measurer.measure(n.label, nameStyle, maxLines = 1, softWrap = false, constraints = androidx.compose.ui.unit.Constraints(maxWidth = (labelW - 6.dp.toPx()).toInt()))
+            val name = measurer.measure(n.label, nameStyle, maxLines = 1, softWrap = false, constraints = androidx.compose.ui.unit.Constraints(maxWidth = ((if (n.column == layout.maxColumn) 120.dp.toPx() else labelW) - 6.dp.toPx()).toInt()))
             val amount = measurer.measure(n.amount, amountStyle, maxLines = 1, softWrap = false)
             val lastColumn = n.column == layout.maxColumn
             val textX = when {
@@ -505,7 +531,7 @@ fun SankeyChart(
                 lastColumn -> r.right + 6.dp.toPx()
                 else -> r.left - max(name.size.width, amount.size.width) / 2f + barW / 2
             }
-            val textY = if (n.column == 0 || lastColumn) r.center.y - (name.size.height + amount.size.height) / 2f else r.top - name.size.height - amount.size.height - 2.dp.toPx()
+            val textY = if (n.column == 0 || lastColumn) r.top + max(r.height, 34.dp.toPx()) / 2f - (name.size.height + amount.size.height) / 2f else r.top - name.size.height - amount.size.height - 2.dp.toPx()
             drawText(name, topLeft = Offset(textX.coerceAtLeast(0f), textY.coerceAtLeast(0f)))
             drawText(amount, topLeft = Offset(textX.coerceAtLeast(0f), textY.coerceAtLeast(0f) + name.size.height))
         }
@@ -522,23 +548,39 @@ private class SankeyLayout(val nodes: List<SankeyNodeUi>, val links: List<Sankey
     fun inTotal(id: String) = ins[id]?.takeIf { it > 0f } ?: 1f
     private fun value(id: String) = max(outs[id] ?: 0f, ins[id] ?: 0f)
 
-    fun rects(width: Float, height: Float, labelW: Float, barW: Float, gap: Float): Map<String, Rect> {
+    /**
+     * Middle columns carry their labels above each bar, so their gaps (and the top margin) are
+     * [labelGap] tall; the outer columns label beside the bar and use [gap]. The right labels get
+     * [rightW], wider than the left, since group names ("Ej kategoriserat") run longer.
+     */
+    fun rects(width: Float, height: Float, labelW: Float, rightW: Float, barW: Float, gap: Float, labelGap: Float, minSlot: Float): Map<String, Rect> {
         val columns = nodes.groupBy { it.column }
-        val maxTotal = columns.values.maxOfOrNull { col -> col.sumOf { value(it.id).toDouble() }.toFloat() }?.coerceAtLeast(1f) ?: 1f
-        val maxNodes = columns.values.maxOfOrNull { it.size } ?: 1
-        val top = 36f
-        val usable = height - top - gap * (maxNodes - 1) - 8f
-        val scale = usable / maxTotal
+        fun outer(col: Int) = col == 0 || col == maxColumn
+        fun gapOf(col: Int) = if (outer(col)) gap else labelGap
+        // Outer columns label beside the bar, so even a tiny node takes a label's height.
+        fun slot(col: Int, h: Float) = if (outer(col)) max(h, minSlot) else h
+        val top = labelGap
+        val avail = height - top - 8f
+        fun columnHeight(col: Int, list: List<SankeyNodeUi>, s: Float) = list.sumOf { slot(col, max(2f, value(it.id) * s)).toDouble() }.toFloat() + gapOf(col) * (list.size - 1)
+        // One scale for every column: the largest that lets the tightest column fit.
+        var lo = 0f
+        var hi = avail / (columns.values.maxOfOrNull { l -> l.minOfOrNull { value(it.id) } ?: 1f }?.coerceAtLeast(1f) ?: 1f)
+        repeat(40) {
+            val mid = (lo + hi) / 2
+            if (columns.all { (col, list) -> columnHeight(col, list, mid) <= avail }) lo = mid else hi = mid
+        }
+        val scale = lo
         val out = HashMap<String, Rect>()
-        val span = width - 2 * labelW - barW
+        val span = width - labelW - rightW - barW
         columns.forEach { (col, list) ->
             val x = labelW + if (maxColumn == 0) 0f else span * col / maxColumn
-            val colTotal = list.sumOf { value(it.id).toDouble() }.toFloat() * scale + gap * (list.size - 1)
-            var y = top + (usable + gap * (maxNodes - 1) - colTotal) / 2f
+            val g = gapOf(col)
+            val colTotal = columnHeight(col, list, scale)
+            var y = top + (avail - colTotal) / 2f
             list.forEach { n ->
                 val h = max(2f, value(n.id) * scale)
                 out[n.id] = Rect(x, y, x + barW, y + h)
-                y += h + gap
+                y += slot(col, h) + g
             }
         }
         return out
@@ -551,7 +593,8 @@ private class SankeyLayout(val nodes: List<SankeyNodeUi>, val links: List<Sankey
 @Composable
 fun GoalBar(fraction: Float, color: Color, modifier: Modifier = Modifier) {
     val c = CashFlowTheme.colors
-    val fill = remember { Animatable(0f) }
+    val inspecting = LocalInspectionMode.current
+    val fill = remember { Animatable(if (inspecting) fraction.coerceIn(0f, 1f) else 0f) }
     LaunchedEffect(fraction) { fill.animateTo(fraction.coerceIn(0f, 1f), tween(800)) }
     Box(modifier.fillMaxWidth().height(6.dp).clip(Radius.pill).background(c.surfaceControl)) {
         Box(Modifier.fillMaxWidth(fill.value).height(6.dp).clip(Radius.pill).background(color))

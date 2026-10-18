@@ -140,10 +140,11 @@ fun CfChip(
             .defaultMinSize(minHeight = Sizes.controlHeight)
             .clip(Radius.pill)
             .background(bg)
-            .border(1.5.dp, if (selected) c.textPrimary else c.borderChip, Radius.pill)
+            .border(1.5.dp, if (selected) c.textPrimary else if (enabled) c.borderChip else c.borderChip.copy(alpha = 0.35f), Radius.pill)
             .selectable(selected = selected, enabled = enabled, role = Role.RadioButton, onClick = onClick)
             .padding(horizontal = Spacing.s4),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
     ) {
         if (leadingColor != null) {
             Box(Modifier.size(10.dp).clip(Radius.xs).background(leadingColor))

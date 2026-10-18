@@ -167,6 +167,7 @@ fun BandDropdown(label: String, contentDescription: String, onClick: () -> Unit,
     Row(
         modifier = modifier
             .heightIn(min = Sizes.touchMin)
+            .clip(Radius.pill)
             .clickable(role = Role.Button, onClickLabel = contentDescription, onClick = onClick)
             .semantics(mergeDescendants = true) { this.contentDescription = contentDescription },
         verticalAlignment = Alignment.CenterVertically,
