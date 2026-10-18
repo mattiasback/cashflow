@@ -24,7 +24,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
+import app.cashflow.core.designsystem.theme.Spacing
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
@@ -90,19 +94,22 @@ private fun rememberEntry(key: Any? = Unit): Animatable<Float, androidx.compose.
 @Immutable
 data class TabItem(val key: String, val label: String, val ink: Color)
 
-/** Text tabs under a hairline (cf-tabs); the selected tab is underlined in its own accent ink. */
+/** Text tabs under a hairline (cf-tabs); the selected tab is underlined in its own accent ink. From 1.3× text the
+ * tabs keep their natural width and the row scrolls, so no label is cut.
+ */
 @Composable
 fun FlowTabRow(tabs: List<TabItem>, selectedKey: String, onSelect: (String) -> Unit, modifier: Modifier = Modifier) {
     val c = CashFlowTheme.colors
     Box(modifier.fillMaxWidth()) {
         Box(Modifier.align(Alignment.BottomStart).fillMaxWidth().height(1.dp).background(c.divider))
-        Row(Modifier.fillMaxWidth()) {
+        val scroll = androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.3f
+        Row(Modifier.fillMaxWidth().then(if (scroll) Modifier.horizontalScroll(rememberScrollState()) else Modifier)) {
             tabs.forEach { tab ->
                 val selected = tab.key == selectedKey
                 val underline by animateFloatAsState(if (selected) 1f else 0f, tween(200), label = "tab")
                 Box(
                     Modifier
-                        .weight(1f)
+                        .then(if (scroll) Modifier.width(IntrinsicSize.Max).padding(horizontal = Spacing.s4) else Modifier.weight(1f))
                         .heightIn(min = 48.dp)
                         .selectable(selected = selected, role = Role.Tab, onClick = { onSelect(tab.key) }),
                     contentAlignment = Alignment.Center,

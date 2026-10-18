@@ -199,10 +199,14 @@ private fun Header(state: FlowState, onAction: (FlowAction) -> Unit) {
         accent = state.tab.accent(),
         actions = {
             if (state.hasData) {
-                state.periodPill?.let { pill ->
-                    BandDropdown(pill, stringResource(R.string.cd_period_pick, pill), { onAction(FlowAction.OnPickerOpen) })
+                // At large text the band cannot fit pill, switch and profile: the switch moves into the
+                // period sheet (it is there already) and the pill stays, reading "Alla" in Alla.
+                val compact = LocalDensity.current.fontScale >= 1.3f
+                val pill = state.periodPill ?: if (compact) stringResource(R.string.mode_all) else null
+                if (pill != null) {
+                    BandDropdown(pill, stringResource(R.string.cd_period_pick, pill), { onAction(FlowAction.OnPickerOpen) }, Modifier.weight(1f, fill = false))
                 }
-                BandSegmented(
+                if (!compact) BandSegmented(
                     segments = listOf(
                         Segment(PeriodMode.MONTH.name, stringResource(R.string.mode_month)),
                         Segment(PeriodMode.YEAR.name, stringResource(R.string.mode_year)),
