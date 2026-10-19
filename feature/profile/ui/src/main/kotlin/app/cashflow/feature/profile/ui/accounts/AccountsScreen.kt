@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.LocalNavRailInset
 import app.cashflow.core.designsystem.component.BandStatusBar
 import app.cashflow.core.designsystem.component.rememberOnBand
 import app.cashflow.core.designsystem.component.BandIconButton
@@ -66,6 +67,7 @@ fun AccountsScreen(
                 .fillMaxSize()
                 .background(c.bgCanvas)
                 .verticalScroll(scroll)
+                .padding(start = LocalNavRailInset.current)
                 .padding(contentPadding),
         ) {
             AccentHeader(accent = Accent.Settings, title = stringResource(R.string.accounts_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(AccountsAction.OnBackClick) }) }) {

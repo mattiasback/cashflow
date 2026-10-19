@@ -38,6 +38,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.layout.layout
 import app.cashflow.core.designsystem.theme.Accent
 import app.cashflow.core.designsystem.theme.CashFlowTheme
 import app.cashflow.core.designsystem.theme.Radius
@@ -70,7 +72,8 @@ fun AccentHeader(
     val c = CashFlowTheme.colors
     val bandColor = animatedBand(accent)
     Box(modifier.fillMaxWidth().background(c.bgCanvas)) {
-        Column(Modifier.fillMaxWidth()) {
+        // With the side rail the band also runs behind it, so the status bar sits on the band.
+        Column(Modifier.fillMaxWidth().bleedStart(LocalNavRailInset.current)) {
             Spacer(Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(bandColor))
             Box(Modifier.fillMaxWidth().height(Sizes.controlHeight + Spacing.s4 * 2 + Spacing.s8).background(bandColor))
             Box(
@@ -85,6 +88,14 @@ fun AccentHeader(
             Column(Modifier.fillMaxWidth().padding(horizontal = Spacing.s4), content = hero)
         }
     }
+}
+
+/** Widens the content to the start by [inset] (drawn outside the parent's padding). */
+private fun Modifier.bleedStart(inset: Dp): Modifier = if (inset == 0.dp) this else layout { measurable, constraints ->
+    val extra = inset.roundToPx()
+    val width = constraints.maxWidth + extra
+    val placeable = measurable.measure(constraints.copy(minWidth = width, maxWidth = width))
+    layout(constraints.maxWidth, placeable.height) { placeable.place(-extra, 0) }
 }
 
 private val BarHeight = Sizes.controlHeight + Spacing.s4 * 2
@@ -135,7 +146,7 @@ fun AccentTopBar(
     // Semi-transparent: content scrolling underneath shows through, tinted by the accent. At the
     // top the band behind it has the same colour, so the bar looks solid there.
     Column(modifier.fillMaxWidth().background(animatedBand(accent).copy(alpha = 0.82f)).windowInsetsPadding(WindowInsets.statusBars)) {
-        BarRow(title, actions, leading)
+        Box(Modifier.padding(start = LocalNavRailInset.current)) { BarRow(title, actions, leading) }
     }
 }
 

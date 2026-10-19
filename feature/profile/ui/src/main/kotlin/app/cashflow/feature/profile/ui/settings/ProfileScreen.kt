@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.LocalNavRailInset
 import app.cashflow.core.designsystem.component.BandStatusBar
 import app.cashflow.core.designsystem.component.rememberOnBand
 import app.cashflow.core.designsystem.component.BandIconButton
@@ -92,6 +93,7 @@ fun ProfileScreen(
                 .fillMaxSize()
                 .background(c.bgCanvas)
                 .verticalScroll(scroll)
+                .padding(start = LocalNavRailInset.current)
                 .padding(contentPadding),
         ) {
             AccentHeader(accent = Accent.Settings, title = stringResource(R.string.profile_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ProfileAction.OnBackClick) }) }) {

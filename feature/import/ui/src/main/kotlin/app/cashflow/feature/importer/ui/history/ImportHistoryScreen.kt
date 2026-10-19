@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.LocalNavRailInset
 import app.cashflow.core.designsystem.component.CfBottomSheet
 import app.cashflow.core.designsystem.component.BandStatusBar
 import app.cashflow.core.designsystem.component.rememberOnBand
@@ -80,7 +81,7 @@ fun ImportHistoryScreen(
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize().background(c.bgCanvas),
-            contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
+            contentPadding = PaddingValues(start = LocalNavRailInset.current, bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
         ) {
             item(key = "header") {
                 AccentHeader(accent = Accent.Settings, title = stringResource(R.string.history_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ImportHistoryAction.OnBackClick) }) }) {

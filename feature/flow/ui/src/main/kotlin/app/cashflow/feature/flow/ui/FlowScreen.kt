@@ -53,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.LocalNavRailInset
 import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandDropdown
 import app.cashflow.core.designsystem.component.BandIconButton
@@ -163,7 +164,7 @@ fun FlowScreen(
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
+            contentPadding = PaddingValues(start = LocalNavRailInset.current, bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
         ) {
             item(key = "header") { Header(state, onAction) }
             if (!state.hasData) {

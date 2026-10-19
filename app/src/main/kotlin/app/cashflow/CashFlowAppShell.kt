@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import app.cashflow.core.designsystem.theme.band
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
@@ -27,6 +29,9 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import app.cashflow.core.designsystem.component.BottomNavPill
 import app.cashflow.core.designsystem.component.NavItem
+import app.cashflow.core.designsystem.component.NavRailPill
+import app.cashflow.core.designsystem.component.LocalNavRailInset
+import app.cashflow.core.designsystem.component.NavRailWidth
 import app.cashflow.core.designsystem.icon.CfIcons
 import app.cashflow.core.designsystem.theme.Accent
 import app.cashflow.core.designsystem.theme.CashFlowTheme
@@ -83,7 +88,9 @@ fun CashFlowAppShell(
 
     // Lists scroll behind the floating pill; their last row clears it.
     val navInset = with(LocalDensity.current) { WindowInsets.navigationBars.getBottom(this).toDp() }
-    val contentPadding = PaddingValues(bottom = Sizes.navHeight + 32.dp + navInset)
+    // From 600dp (tablets, unfolded foldables, landscape) the pill stands at the start edge as a rail.
+    val wide = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.width.toDp() } >= 600.dp
+    val contentPadding = if (wide) PaddingValues(bottom = navInset + 16.dp) else PaddingValues(bottom = Sizes.navHeight + 32.dp + navInset)
 
     val homeReselect = remember(navigator) { navigator.reselectEvents.filter { it == HomeRoute }.map { } }
     val flowReselect = remember(navigator) { navigator.reselectEvents.filter { it == FlowRoute }.map { } }
@@ -161,18 +168,21 @@ fun CashFlowAppShell(
     )
 
     Box(Modifier.fillMaxSize().background(CashFlowTheme.colors.bgCanvas)) {
-        NavDisplay(
-            entries = state.toDecoratedEntries(provider),
-            onBack = { navigator.goBack() },
-            sceneStrategies = listOf(sheet),
-        )
-        if (showNav) {
-            BottomNavPill(
-                items = items,
-                selectedKey = state.topLevelRoute.toString(),
-                onSelect = { key -> navigator.selectTab(TopLevel.first { it.toString() == key }) },
-                modifier = Modifier.align(Alignment.BottomCenter),
+        // Screens keep their content clear of the rail; their bands still run under it.
+        CompositionLocalProvider(LocalNavRailInset provides if (wide && showNav) NavRailWidth else 0.dp) {
+            NavDisplay(
+                entries = state.toDecoratedEntries(provider),
+                onBack = { navigator.goBack() },
+                sceneStrategies = listOf(sheet),
             )
+        }
+        if (showNav) {
+            val onSelect = { key: String -> navigator.selectTab(TopLevel.first { it.toString() == key }) }
+            if (wide) {
+                NavRailPill(items, state.topLevelRoute.toString(), onSelect, Modifier.align(Alignment.CenterStart))
+            } else {
+                BottomNavPill(items, state.topLevelRoute.toString(), onSelect, Modifier.align(Alignment.BottomCenter))
+            }
         }
     }
 }
