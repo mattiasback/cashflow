@@ -1,6 +1,19 @@
 package app.cashflow.feature.profile.ui.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import app.cashflow.core.designsystem.theme.Radius
+import app.cashflow.core.domain.model.GoalType
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -107,6 +120,23 @@ fun ProfileScreen(
                     }
                 }
 
+                GroupHeading(stringResource(R.string.profile_group_goals))
+                ListGroup {
+                    GoalStepper(
+                        label = stringResource(R.string.profile_goal_buffer),
+                        hint = stringResource(R.string.profile_goal_buffer_hint),
+                        value = pluralStringResource(R.plurals.profile_goal_months, state.bufferGoalMonths, state.bufferGoalMonths),
+                        onStep = { onAction(ProfileAction.OnGoalStep(GoalType.BUFFER_MONTHS, it)) },
+                    )
+                    Box(Modifier.fillMaxWidth().padding(horizontal = Spacing.s4).height(1.dp).background(c.divider))
+                    GoalStepper(
+                        label = stringResource(R.string.profile_goal_rate),
+                        hint = stringResource(R.string.profile_goal_rate_hint),
+                        value = stringResource(R.string.profile_goal_percent, state.savingsGoalPercent),
+                        onStep = { onAction(ProfileAction.OnGoalStep(GoalType.SAVINGS_RATE, it)) },
+                    )
+                }
+
                 GroupHeading(stringResource(R.string.profile_group_categories))
                 ListGroup {
                     NavRow(stringResource(R.string.profile_rules), state.rulesLine.asString()) { onAction(ProfileAction.OnRulesClick) }
@@ -177,5 +207,45 @@ private fun ProfileScreenPreview() {
             ),
             onAction = {},
         )
+    }
+}
+
+/** A goal with − and + steppers (48dp targets); the value is read out after each step. */
+@Composable
+private fun GoalStepper(label: String, hint: String, value: String, onStep: (Int) -> Unit) {
+    val c = CashFlowTheme.colors
+    val less = stringResource(R.string.cd_goal_less, label)
+    val more = stringResource(R.string.cd_goal_more, label)
+    Row(Modifier.fillMaxWidth().padding(start = Spacing.s4, end = Spacing.s2, top = Spacing.s2, bottom = Spacing.s2), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(label, style = CashFlowTheme.typography.body, color = c.textPrimary)
+            Text(hint, style = CashFlowTheme.typography.label, color = c.textSecondary)
+        }
+        StepButton(CfIcons.Minus, less) { onStep(-1) }
+        Text(
+            value,
+            style = CashFlowTheme.typography.bodyStrong.copy(fontFeatureSettings = "tnum"),
+            color = c.textPrimary,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.widthIn(min = 64.dp).semantics { liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite },
+        )
+        StepButton(CfIcons.Plus, more) { onStep(1) }
+    }
+}
+
+@Composable
+private fun StepButton(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, onClick: () -> Unit) {
+    val c = CashFlowTheme.colors
+    Box(
+        Modifier
+            .size(48.dp)
+            .clip(Radius.pill)
+            .clickable(role = androidx.compose.ui.semantics.Role.Button, onClickLabel = label, onClick = onClick)
+            .semantics { contentDescription = label },
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(Modifier.size(36.dp).clip(Radius.pill).background(c.surfaceControl), contentAlignment = Alignment.Center) {
+            Icon(icon, contentDescription = null, tint = c.textPrimary, modifier = Modifier.size(18.dp))
+        }
     }
 }

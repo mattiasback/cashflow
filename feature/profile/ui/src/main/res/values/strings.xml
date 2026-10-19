@@ -14,6 +14,18 @@
         <item quantity="other">%d importer · ångra en hel import när som helst</item>
     </plurals>
     <string name="profile_group_calc">Beräkningar</string>
+    <string name="profile_group_goals">Mål</string>
+    <string name="profile_goal_buffer">Buffertmål</string>
+    <string name="profile_goal_buffer_hint">Månader av fasta utgifter som sparkontona ska täcka</string>
+    <string name="profile_goal_rate">Sparmål</string>
+    <string name="profile_goal_rate_hint">Andel av inkomsten som sparas</string>
+    <plurals name="profile_goal_months">
+        <item quantity="one">%1$d mån</item>
+        <item quantity="other">%1$d mån</item>
+    </plurals>
+    <string name="profile_goal_percent">%1$d&#160;%%</string>
+    <string name="cd_goal_less">Minska %1$s</string>
+    <string name="cd_goal_more">Öka %1$s</string>
     <string name="profile_mortgage_switch">Räkna amortering som sparande</string>
     <string name="profile_mortgage_hint">Delar varje bolånebetalning i ränta (utgift, Boende) och amortering (sparande). Av betyder att hela betalningen är en utgift.</string>
     <string name="profile_mortgage_split">Delning av bolånet</string>

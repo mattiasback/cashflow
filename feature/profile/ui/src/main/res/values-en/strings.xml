@@ -14,6 +14,18 @@
         <item quantity="other">%d imports · undo a whole import at any time</item>
     </plurals>
     <string name="profile_group_calc">Calculations</string>
+    <string name="profile_group_goals">Goals</string>
+    <string name="profile_goal_buffer">Buffer goal</string>
+    <string name="profile_goal_buffer_hint">Months of fixed expenses the savings accounts should cover</string>
+    <string name="profile_goal_rate">Savings goal</string>
+    <string name="profile_goal_rate_hint">Share of income saved</string>
+    <plurals name="profile_goal_months">
+        <item quantity="one">%1$d mo</item>
+        <item quantity="other">%1$d mo</item>
+    </plurals>
+    <string name="profile_goal_percent">%1$d%%</string>
+    <string name="cd_goal_less">Decrease %1$s</string>
+    <string name="cd_goal_more">Increase %1$s</string>
     <string name="profile_mortgage_switch">Count amortization as savings</string>
     <string name="profile_mortgage_hint">Splits each mortgage payment into interest (expense, Housing) and amortization (savings). Off means the whole payment is an expense.</string>
     <string name="profile_mortgage_split">Mortgage split</string>

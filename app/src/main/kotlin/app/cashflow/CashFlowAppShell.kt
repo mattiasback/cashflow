@@ -38,6 +38,8 @@ import app.cashflow.feature.events.ui.TransactionDetailRoute
 import app.cashflow.feature.events.ui.eventsEntries
 import app.cashflow.feature.flow.ui.FlowRoute
 import app.cashflow.feature.flow.ui.flowEntries
+import app.cashflow.feature.home.ui.HomeRoute
+import app.cashflow.feature.home.ui.homeEntries
 import app.cashflow.feature.importer.ui.ImportReceiptRoute
 import app.cashflow.feature.importer.ui.ImportRoute
 import app.cashflow.feature.importer.ui.ColumnMappingRoute
@@ -58,7 +60,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
-private val TopLevel = listOf<NavKey>(FlowRoute, EventsRoute)
+private val TopLevel = listOf<NavKey>(HomeRoute, FlowRoute, EventsRoute)
 
 /**
  * App shell: two tabs (Flöde, Händelser) with their own back stacks, the floating nav pill,
@@ -68,7 +70,7 @@ private val TopLevel = listOf<NavKey>(FlowRoute, EventsRoute)
 fun CashFlowAppShell(
     sharedUris: Flow<List<String>>,
 ) {
-    val state = rememberNavigationState(startRoute = FlowRoute, topLevelRoutes = TopLevel)
+    val state = rememberNavigationState(startRoute = HomeRoute, topLevelRoutes = TopLevel)
     val navigator = remember(state) { Navigator(state) }
     val sheet = remember { BottomSheetSceneStrategy<NavKey>() }
 
@@ -80,10 +82,20 @@ fun CashFlowAppShell(
     val navInset = with(LocalDensity.current) { WindowInsets.navigationBars.getBottom(this).toDp() }
     val contentPadding = PaddingValues(bottom = Sizes.navHeight + 32.dp + navInset)
 
+    val homeReselect = remember(navigator) { navigator.reselectEvents.filter { it == HomeRoute }.map { } }
     val flowReselect = remember(navigator) { navigator.reselectEvents.filter { it == FlowRoute }.map { } }
     val eventsReselect = remember(navigator) { navigator.reselectEvents.filter { it == EventsRoute }.map { } }
 
     val provider = entryProvider<NavKey> {
+        homeEntries(
+            contentPadding = contentPadding,
+            scrollToTop = homeReselect,
+            onOpenFlow = { navigator.selectTab(FlowRoute) },
+            onOpenReview = { navigator.navigateIn(EventsRoute, ReviewRoute) },
+            onOpenImport = { navigator.navigateIn(EventsRoute, ImportRoute()) },
+            onOpenProfile = { navigator.navigate(ProfileRoute) },
+            onOpenAccounts = { navigator.navigate(AccountsRoute) },
+        )
         flowEntries(
             contentPadding = contentPadding,
             scrollToTop = flowReselect,
@@ -130,6 +142,7 @@ fun CashFlowAppShell(
     val current = state.currentKey
     val showNav = current !is ImportRoute && current !is ColumnMappingRoute
     val items = listOf(
+        NavItem(HomeRoute.toString(), stringResource(R.string.nav_home), CfIcons.Home, Accent.Home),
         NavItem(FlowRoute.toString(), stringResource(R.string.nav_flow), CfIcons.Cashflow, Accent.Cashflow),
         NavItem(EventsRoute.toString(), stringResource(R.string.nav_events), CfIcons.Transfer, Accent.Events),
     )

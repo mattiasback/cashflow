@@ -30,6 +30,7 @@ object CfIcons {
     val Tag = line("M3 12l9-9h7v7l-9 9-7-7zM15.5 8.5h.01")
     val Copy = line("M9 9h10v10H9zM5 15V5h10")
     val Plus = line("M12 5v14M5 12h14")
+    val Minus = line("M5 12h14")
     val Search = line("M11 17.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13zM20 20l-4.2-4.2")
     val File = line("M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 14h6M9 17h4")
     val Sparkle = line("M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7-4.7-1.8 4.7-1.8zM19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z")

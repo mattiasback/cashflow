@@ -7,6 +7,7 @@ import app.cashflow.core.importengine.di.importEngineModule
 import app.cashflow.di.appModule
 import app.cashflow.feature.events.ui.di.eventsUiModule
 import app.cashflow.feature.flow.ui.flowUiModule
+import app.cashflow.feature.home.ui.homeUiModule
 import app.cashflow.feature.importer.data.di.importDataModule
 import app.cashflow.feature.importer.ui.importUiModule
 import app.cashflow.feature.profile.ui.profileUiModule
@@ -23,6 +24,7 @@ val cashFlowModules = listOf(
     importUiModule,
     eventsUiModule,
     flowUiModule,
+    homeUiModule,
     profileUiModule,
     rulesUiModule,
     appModule,

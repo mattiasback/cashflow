@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_title">Home</string>
+    <string name="home_summary_label">Net cash flow · %1$s</string>
+    <string name="home_delta_vs">%1$s vs %2$s</string>
+    <string name="home_delta_first">First month with data</string>
+    <string name="home_footer">Last import %1$s · %2$d transactions, %3$d to review in Events.</string>
+    <string name="cd_summary">%1$s: %2$s. %3$s</string>
+    <string name="cd_info">About net cash flow</string>
+    <string name="cd_profile">Profile and settings</string>
+    <string name="cd_scope">Show private or shared finances</string>
+    <string name="scope_private">Private</string>
+    <string name="scope_joint">Shared</string>
+    <string name="scope_private_later">Private and Shared split once household sharing arrives.</string>
+
+    <string name="kpi_income">Income</string>
+    <string name="kpi_expenses">Expenses</string>
+    <string name="kpi_rate">Savings rate</string>
+    <string name="kpi_buffer">Buffer</string>
+    <string name="goal_reached">Goal reached</string>
+    <string name="cd_kpi">%1$s %2$s%3$s%4$s. Show details</string>
+    <string name="cd_trend_up">, up %1$s vs %2$s, %3$s</string>
+    <string name="cd_trend_down">, down %1$s vs %2$s, %3$s</string>
+    <string name="cd_trend_flat">, unchanged vs %1$s</string>
+    <string name="better">better</string>
+    <string name="worse">worse</string>
+    <string name="points">%1$s percentage points</string>
+    <string name="cd_goal_reached">, goal %1$s reached</string>
+    <string name="cd_goal_progress">, %1$s of the goal %2$s</string>
+    <string name="cd_buffer_months">, %1$s of %2$d months</string>
+    <string name="cd_no_buffer">, no savings account with a value yet</string>
+
+    <string name="section_trends">Trends</string>
+    <string name="trends_span">12 mo</string>
+    <string name="trend_net">Net cash flow</string>
+    <string name="trend_value">%1$s in %2$s</string>
+    <string name="trend_vs_avg">vs average</string>
+    <string name="cd_trend_row">%1$s %2$s in %3$s, %4$s the 12-month average%5$s. Open in Flow.</string>
+    <string name="trend_level">level with</string>
+    <string name="trend_above">above</string>
+    <string name="trend_below">below</string>
+    <string name="better_suffix">, better</string>
+    <string name="worse_suffix">, worse</string>
+
+    <string name="section_todo">To do</string>
+    <string name="todo_review_eyebrow">To review</string>
+    <plurals name="todo_review_title">
+        <item quantity="one">%1$d transaction has no category</item>
+        <item quantity="other">%1$d transactions have no category</item>
+    </plurals>
+    <string name="todo_review_text">%1$s waits in Events. Until then it counts as Uncategorized.</string>
+    <string name="todo_review_action">Review now</string>
+    <string name="todo_duplicates_eyebrow">Possible duplicate</string>
+    <plurals name="todo_duplicates_title">
+        <item quantity="one">%1$d transaction may be imported twice</item>
+        <item quantity="other">%1$d transactions may be imported twice</item>
+    </plurals>
+    <string name="todo_duplicates_text">The same amount and date are in two files. Check that nothing counts twice.</string>
+    <string name="todo_duplicates_action">Review</string>
+    <string name="todo_import_eyebrow">Import</string>
+    <string name="todo_import_title">Time to import %1$s</string>
+    <string name="todo_import_text">The latest transaction is from %1$s.</string>
+    <string name="todo_import_text_empty">Import bank statements and Home shows your numbers.</string>
+    <string name="todo_import_action">Import file</string>
+    <string name="todo_done_eyebrow">To do</string>
+    <string name="todo_done_title">All reviewed</string>
+    <string name="todo_done_text">Nothing is waiting. Import new statements when the month ends.</string>
+    <string name="todo_done_action">Import file</string>
+
+    <string name="sheet_kpi_eyebrow">Key figure · %1$s</string>
+    <string name="sheet_vs">Vs %1$s</string>
+    <string name="sheet_avg_month">Average per month</string>
+    <string name="sheet_net_title">Income − expenses</string>
+    <string name="sheet_net_desc">What is left when expenses are taken from income. Savings is not an expense.</string>
+    <string name="sheet_saved_of_flow">Saved of cash flow</string>
+    <string name="sheet_income_desc">All income this month, by source.</string>
+    <string name="sheet_salary_share">Salary share</string>
+    <string name="sheet_expenses_desc">Fixed and variable expenses and what is not yet categorized. Savings is not included.</string>
+    <string name="sheet_share_of_income">Share of income</string>
+    <string name="sheet_rate_desc">Share of income that goes to savings. Goal %1$s, change it in Profile.</string>
+    <string name="sheet_rate_desc_amort">Share of income that goes to savings and amortization. Goal %1$s, change it in Profile.</string>
+    <string name="sheet_goal">Goal</string>
+    <string name="sheet_buffer_title">Buffer coverage</string>
+    <string name="sheet_buffer_desc">How many months of fixed expenses your savings accounts cover. Goal %1$d months, change it in Profile.</string>
+    <string name="sheet_buffer_desc_empty">Mark your savings accounts as Savings account in Profile › Accounts and enter what they are worth today.</string>
+    <string name="sheet_buffer">Buffer</string>
+    <string name="sheet_fixed_per_month">Fixed per month</string>
+    <string name="row_saved">Saved</string>
+    <string name="row_left">Left in account</string>
+    <string name="row_value_updated">Value %1$s</string>
+    <string name="row_value_imported">No value entered</string>
+    <string name="row_buffer_goal">Goal %1$d months</string>
+    <string name="row_left_to_save">Left to save</string>
+    <string name="row_goal_reached">Goal reached</string>
+    <string name="group_fixed">Fixed</string>
+    <string name="group_variable">Variable</string>
+    <string name="group_uncategorized">Uncategorized</string>
+    <string name="cta_open_flow">Open Cash flow</string>
+    <string name="cta_open_income">Open Income</string>
+    <string name="cta_open_expenses">Open Expenses</string>
+    <string name="cta_open_savings">Open Savings</string>
+    <string name="cta_open_accounts">Open Accounts</string>
+</resources>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">CashFlow</string>
+    <string name="nav_home">Hem</string>
     <string name="nav_flow">Flöde</string>
     <string name="nav_events">Händelser</string>
 </resources>

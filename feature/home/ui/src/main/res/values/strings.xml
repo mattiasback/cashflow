@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_title">Hem</string>
+    <string name="home_summary_label">Nettokassaflöde · %1$s</string>
+    <string name="home_delta_vs">%1$s mot %2$s</string>
+    <string name="home_delta_first">Första månaden med data</string>
+    <string name="home_footer">Senast importerat %1$s · %2$d transaktioner, %3$d att granska i Händelser.</string>
+    <string name="cd_summary">%1$s: %2$s. %3$s</string>
+    <string name="cd_info">Om nettokassaflöde</string>
+    <string name="cd_profile">Profil och inställningar</string>
+    <string name="cd_scope">Visa privat eller gemensam ekonomi</string>
+    <string name="scope_private">Privat</string>
+    <string name="scope_joint">Gemensamt</string>
+    <string name="scope_private_later">Privat och Gemensamt skiljs åt när hushållsdelning kommer.</string>
+
+    <!-- Key figures -->
+    <string name="kpi_income">Inkomst</string>
+    <string name="kpi_expenses">Utgifter</string>
+    <string name="kpi_rate">Sparkvot</string>
+    <string name="kpi_buffer">Buffert</string>
+    <string name="goal_reached">Mål nått</string>
+    <string name="cd_kpi">%1$s %2$s%3$s%4$s. Visa detaljer</string>
+    <string name="cd_trend_up">, upp %1$s mot %2$s, %3$s</string>
+    <string name="cd_trend_down">, ner %1$s mot %2$s, %3$s</string>
+    <string name="cd_trend_flat">, oförändrat mot %1$s</string>
+    <string name="better">bättre</string>
+    <string name="worse">sämre</string>
+    <string name="points">%1$s procentenheter</string>
+    <string name="cd_goal_reached">, målet %1$s är nått</string>
+    <string name="cd_goal_progress">, %1$s av målet %2$s</string>
+    <string name="cd_buffer_months">, %1$s av %2$d månader</string>
+    <string name="cd_no_buffer">, inget sparkonto med värde än</string>
+
+    <!-- Trender -->
+    <string name="section_trends">Trender</string>
+    <string name="trends_span">12 mån</string>
+    <string name="trend_net">Nettokassaflöde</string>
+    <string name="trend_value">%1$s i %2$s</string>
+    <string name="trend_vs_avg">mot snitt</string>
+    <string name="cd_trend_row">%1$s %2$s i %3$s, %4$s snittet för tolv månader%5$s. Öppna i Flöde.</string>
+    <string name="trend_level">i nivå med</string>
+    <string name="trend_above">över</string>
+    <string name="trend_below">under</string>
+    <string name="better_suffix">, bättre</string>
+    <string name="worse_suffix">, sämre</string>
+
+    <!-- Att göra -->
+    <string name="section_todo">Att göra</string>
+    <string name="todo_review_eyebrow">Att granska</string>
+    <plurals name="todo_review_title">
+        <item quantity="one">%1$d transaktion saknar kategori</item>
+        <item quantity="other">%1$d transaktioner saknar kategori</item>
+    </plurals>
+    <string name="todo_review_text">%1$s väntar i Händelser. Tills dess räknas det som Ej kategoriserat.</string>
+    <string name="todo_review_action">Granska nu</string>
+    <string name="todo_duplicates_eyebrow">Möjlig dubblett</string>
+    <plurals name="todo_duplicates_title">
+        <item quantity="one">%1$d transaktion kan vara importerad två gånger</item>
+        <item quantity="other">%1$d transaktioner kan vara importerade två gånger</item>
+    </plurals>
+    <string name="todo_duplicates_text">Samma belopp och datum finns i två filer. Kontrollera så att inget räknas dubbelt.</string>
+    <string name="todo_duplicates_action">Granska</string>
+    <string name="todo_import_eyebrow">Importera</string>
+    <string name="todo_import_title">Dags att importera %1$s</string>
+    <string name="todo_import_text">Senaste transaktionen är från %1$s.</string>
+    <string name="todo_import_text_empty">Importera kontoutdrag så visar Hem era siffror.</string>
+    <string name="todo_import_action">Importera fil</string>
+    <string name="todo_done_eyebrow">Att göra</string>
+    <string name="todo_done_title">Allt är granskat</string>
+    <string name="todo_done_text">Inget väntar just nu. Importera nya kontoutdrag när månaden är slut.</string>
+    <string name="todo_done_action">Importera fil</string>
+
+    <!-- Sheets -->
+    <string name="sheet_kpi_eyebrow">Nyckeltal · %1$s</string>
+    <string name="sheet_vs">Mot %1$s</string>
+    <string name="sheet_avg_month">Snitt per månad</string>
+    <string name="sheet_net_title">Inkomst − utgifter</string>
+    <string name="sheet_net_desc">Det som blir över när utgifterna dragits från inkomsten. Sparande räknas inte som utgift.</string>
+    <string name="sheet_saved_of_flow">Sparat av kassaflödet</string>
+    <string name="sheet_income_desc">All inkomst under månaden, per källa.</string>
+    <string name="sheet_salary_share">Lön av inkomsten</string>
+    <string name="sheet_expenses_desc">Fasta och rörliga utgifter och det som ännu inte är kategoriserat. Sparande räknas inte in.</string>
+    <string name="sheet_share_of_income">Andel av inkomsten</string>
+    <string name="sheet_rate_desc">Andel av inkomsten som går till sparande. Mål %1$s, ändras i Profil.</string>
+    <string name="sheet_rate_desc_amort">Andel av inkomsten som går till sparande och amortering. Mål %1$s, ändras i Profil.</string>
+    <string name="sheet_goal">Mål</string>
+    <string name="sheet_buffer_title">Bufferttäckning</string>
+    <string name="sheet_buffer_desc">Så många månader era fasta utgifter täcks av sparkontona. Mål %1$d månader, ändras i Profil.</string>
+    <string name="sheet_buffer_desc_empty">Markera era sparkonton som Sparkonto i Profil › Konton och ange vad de är värda idag, så räknas bufferten ut.</string>
+    <string name="sheet_buffer">Buffert</string>
+    <string name="sheet_fixed_per_month">Fasta per månad</string>
+    <string name="row_saved">Sparat</string>
+    <string name="row_left">Kvar på konto</string>
+    <string name="row_value_updated">Värde %1$s</string>
+    <string name="row_value_imported">Inget värde angivet</string>
+    <string name="row_buffer_goal">Mål %1$d månader</string>
+    <string name="row_left_to_save">Kvar att spara</string>
+    <string name="row_goal_reached">Målet är nått</string>
+    <string name="group_fixed">Fasta</string>
+    <string name="group_variable">Rörliga</string>
+    <string name="group_uncategorized">Ej kategoriserat</string>
+    <string name="cta_open_flow">Öppna Kassaflöde</string>
+    <string name="cta_open_income">Öppna Inkomster</string>
+    <string name="cta_open_expenses">Öppna Utgifter</string>
+    <string name="cta_open_savings">Öppna Sparande</string>
+    <string name="cta_open_accounts">Öppna Konton</string>
+</resources>

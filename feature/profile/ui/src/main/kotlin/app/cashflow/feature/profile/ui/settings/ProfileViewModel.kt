@@ -5,11 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cashflow.core.domain.cashflow.SavingsCalculator
 import app.cashflow.core.domain.datasource.AccountLocalDataSource
+import app.cashflow.core.domain.datasource.GoalLocalDataSource
 import app.cashflow.core.domain.datasource.ImportBatchLocalDataSource
 import app.cashflow.core.domain.datasource.MerchantMemoryLocalDataSource
 import app.cashflow.core.domain.datasource.RuleLocalDataSource
 import app.cashflow.core.domain.datasource.SettingsDataSource
 import app.cashflow.core.domain.datasource.TransactionLocalDataSource
+import app.cashflow.core.domain.model.Goal
+import app.cashflow.core.domain.model.GoalType
+import app.cashflow.core.domain.model.Goals
 import app.cashflow.core.domain.model.MortgageSplitMode
 import app.cashflow.core.domain.model.ThemeMode
 import app.cashflow.core.ui.UiText
@@ -29,6 +33,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.math.roundToInt
 
 @Stable
 data class ProfileState(
@@ -39,6 +44,8 @@ data class ProfileState(
     val mortgageLine: UiText? = null,
     val percentDecimals: Boolean = false,
     val theme: ThemeMode = ThemeMode.SYSTEM,
+    val bufferGoalMonths: Int = GoalType.BUFFER_MONTHS.defaultTarget.toInt(),
+    val savingsGoalPercent: Int = GoalType.SAVINGS_RATE.defaultTarget.toInt(),
     val isLoading: Boolean = true,
 )
 
@@ -50,6 +57,8 @@ sealed interface ProfileAction {
     data object OnMortgageClick : ProfileAction
     data class OnPercentDecimalsToggle(val enabled: Boolean) : ProfileAction
     data class OnThemeSelect(val theme: ThemeMode) : ProfileAction
+    /** One step up (+1) or down (−1) for a goal; months for Buffert, percent for Sparkvot. */
+    data class OnGoalStep(val type: GoalType, val step: Int) : ProfileAction
     data object OnBackClick : ProfileAction
 }
 
@@ -69,6 +78,7 @@ class ProfileViewModel(
     batches: ImportBatchLocalDataSource,
     rules: RuleLocalDataSource,
     memories: MerchantMemoryLocalDataSource,
+    private val goals: GoalLocalDataSource,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
@@ -81,8 +91,8 @@ class ProfileViewModel(
     private val savings = SavingsCalculator()
 
     init {
-        val counts = combine(batches.observeBatches(), rules.observeUserRules(), memories.observeAll()) { b, r, m -> Triple(b, r, m) }
-        combine(settings.settings, accounts.observeAccounts(), transactions.observeAll(), counts) { prefs, accs, txs, (imports, userRules, remembered) ->
+        val counts = combine(batches.observeBatches(), rules.observeUserRules(), memories.observeAll(), goals.observeGoals()) { b, r, m, g -> Counts(b, r, m, Goals.of(g)) }
+        combine(settings.settings, accounts.observeAccounts(), transactions.observeAll(), counts) { prefs, accs, txs, (imports, userRules, remembered, goalValues) ->
             val year = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
             val household = savings.householdValue(savings.summarize(accs, txs, year))
             val mortgage = prefs.mortgage
@@ -98,6 +108,8 @@ class ProfileViewModel(
                 },
                 percentDecimals = prefs.percentDecimals,
                 theme = prefs.theme,
+                bufferGoalMonths = goalValues.bufferMonths.roundToInt(),
+                savingsGoalPercent = goalValues.savingsRatePercent.roundToInt(),
                 isLoading = false,
             )
         }.onEach { s -> _state.update { s } }.launchIn(viewModelScope)
@@ -117,6 +129,14 @@ class ProfileViewModel(
             }
             is ProfileAction.OnPercentDecimalsToggle -> update { it.copy(percentDecimals = action.enabled) }
             is ProfileAction.OnThemeSelect -> update { it.copy(theme = action.theme) }
+            is ProfileAction.OnGoalStep -> {
+                val current = when (action.type) {
+                    GoalType.BUFFER_MONTHS -> _state.value.bufferGoalMonths
+                    GoalType.SAVINGS_RATE -> _state.value.savingsGoalPercent
+                }.toDouble()
+                val next = (current + action.step).coerceIn(action.type.range)
+                if (next != current) viewModelScope.launch { goals.setGoal(Goal(action.type, next)) }
+            }
         }
     }
 
@@ -128,3 +148,10 @@ class ProfileViewModel(
         viewModelScope.launch { _events.send(event) }
     }
 }
+
+private data class Counts(
+    val imports: List<app.cashflow.core.domain.model.ImportBatch>,
+    val rules: List<app.cashflow.core.domain.model.CategoryRule>,
+    val memories: List<app.cashflow.core.domain.model.MerchantMemory>,
+    val goals: Goals,
+)
