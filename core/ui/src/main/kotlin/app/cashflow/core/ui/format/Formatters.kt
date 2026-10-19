@@ -29,7 +29,7 @@ private fun group(value: Long, separator: Char): String {
 }
 
 /**
- * Money: `12 450 kr` / `SEK 12,450`. Groups with a no-break space, the unit stays on the
+ * Money: `12 450 kr` / `12,450 kr` (the unit is always "kr", also in English). Groups with a no-break space, the unit stays on the
  * same line, negatives use the real minus sign (U+2212), never a hyphen.
  */
 object MoneyFormatter {
@@ -49,7 +49,7 @@ object MoneyFormatter {
         } else {
             group(abs(money.kronor), if (locale == AppLocale.SV) NBSP else ',')
         }
-        return if (locale == AppLocale.SV) "$sign$body${NBSP}kr" else "${sign}SEK$NBSP$body"
+        return "$sign$body${NBSP}kr"
     }
 
     /** For TalkBack: "18 500 kronor", "minus 1 200 kronor". */

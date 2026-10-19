@@ -95,7 +95,7 @@ private fun animatedBand(accent: Accent): Color {
 }
 
 @Composable
-private fun BarRow(title: String?, actions: @Composable RowScope.() -> Unit) {
+private fun BarRow(title: String?, actions: @Composable RowScope.() -> Unit, leading: @Composable RowScope.() -> Unit = {}) {
     val c = CashFlowTheme.colors
     Row(
         modifier = Modifier
@@ -105,6 +105,8 @@ private fun BarRow(title: String?, actions: @Composable RowScope.() -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.s2),
     ) {
+        // Profile and back sit at the start of the bar (design: avatar left).
+        leading()
         if (title != null) {
             // Titles on the band are white and large enough for the 3:1 icon-only accents.
             Text(title, style = CashFlowTheme.typography.title, color = c.textOnAccent, modifier = Modifier.weight(1f))
@@ -125,10 +127,11 @@ fun AccentTopBar(
     accent: Accent,
     modifier: Modifier = Modifier,
     title: String? = null,
+    leading: @Composable RowScope.() -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     Column(modifier.fillMaxWidth().background(animatedBand(accent)).windowInsetsPadding(WindowInsets.statusBars)) {
-        BarRow(title, actions)
+        BarRow(title, actions, leading)
     }
 }
 

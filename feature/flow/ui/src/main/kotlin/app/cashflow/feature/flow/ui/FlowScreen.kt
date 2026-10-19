@@ -190,8 +190,12 @@ fun FlowScreen(
                 }
             }
         }
-    // The controls stay at the top while the hero and the rest scroll under them.
-    AccentTopBar(accent = state.tab.accent(), actions = { BarActions(state, onAction) })
+        // The controls stay at the top while the hero and the rest scroll under them.
+        AccentTopBar(
+            accent = state.tab.accent(),
+            leading = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(FlowAction.OnProfileClick) }) },
+            actions = { BarActions(state, onAction) },
+        )
     }
 }
 
@@ -226,7 +230,6 @@ private fun RowScope.BarActions(state: FlowState, onAction: (FlowAction) -> Unit
             contentDescription = stringResource(R.string.cd_mode),
         )
     }
-    BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(FlowAction.OnProfileClick) })
 }
 
 // Measures the pill, the three mode labels and the profile button against the window width.

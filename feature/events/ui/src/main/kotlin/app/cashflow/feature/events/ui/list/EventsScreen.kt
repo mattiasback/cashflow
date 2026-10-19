@@ -215,7 +215,7 @@ fun EventsScreen(
             }
         }
         // The band's controls stay at the top while the content scrolls under them.
-        AccentTopBar(accent = Accent.Events, title = stringResource(R.string.events_title), actions = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(EventsAction.OnProfileClick) }) })
+        AccentTopBar(accent = Accent.Events, title = stringResource(R.string.events_title), leading = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(EventsAction.OnProfileClick) }) })
     }
 
     when (state.sheet) {

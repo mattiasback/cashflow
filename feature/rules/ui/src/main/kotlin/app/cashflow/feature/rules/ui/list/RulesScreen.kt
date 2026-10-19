@@ -151,7 +151,7 @@ fun RulesScreen(
             }
         }
         // The band's controls stay at the top while the content scrolls under them.
-        AccentTopBar(accent = Accent.Settings, title = stringResource(R.string.rules_title), actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(RulesAction.OnBackClick) }) })
+        AccentTopBar(accent = Accent.Settings, title = stringResource(R.string.rules_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(RulesAction.OnBackClick) }) })
     }
 }
 

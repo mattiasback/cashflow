@@ -116,7 +116,7 @@ fun ImportHistoryScreen(
             }
         }
         // The band's controls stay at the top while the content scrolls under them.
-        AccentTopBar(accent = Accent.Settings, title = stringResource(R.string.history_title), actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ImportHistoryAction.OnBackClick) }) })
+        AccentTopBar(accent = Accent.Settings, title = stringResource(R.string.history_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ImportHistoryAction.OnBackClick) }) })
     }
 
     state.sheet?.let { sheet ->

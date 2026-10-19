@@ -179,7 +179,7 @@ fun ColumnMappingScreen(
             }
         }
         // The band's controls stay at the top while the content scrolls under them.
-        AccentTopBar(accent = Accent.Events, title = stringResource(R.string.import_title), actions = { BandIconButton(CfIcons.Close, stringResource(R.string.cd_cancel_import), { onAction(ColumnMappingAction.OnCloseClick) }) })
+        AccentTopBar(accent = Accent.Events, title = stringResource(R.string.import_title), leading = { BandIconButton(CfIcons.Close, stringResource(R.string.cd_cancel_import), { onAction(ColumnMappingAction.OnCloseClick) }) })
     }
 }
 

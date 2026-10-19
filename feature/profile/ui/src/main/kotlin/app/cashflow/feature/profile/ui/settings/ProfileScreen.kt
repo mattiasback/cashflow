@@ -147,7 +147,7 @@ fun ProfileScreen(
             }
         }
         // The band's controls stay at the top while the content scrolls under them.
-        AccentTopBar(accent = Accent.Settings, title = stringResource(R.string.profile_title), actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ProfileAction.OnBackClick) }) })
+        AccentTopBar(accent = Accent.Settings, title = stringResource(R.string.profile_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ProfileAction.OnBackClick) }) })
     }
 }
 

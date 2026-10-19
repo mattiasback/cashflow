@@ -18,8 +18,8 @@ class FormattersTest {
         assertThat(MoneyFormatter.format(Money.kr(-35000), locale = sv)).isEqualTo("−35 000 kr")
         assertThat(MoneyFormatter.format(Money.kr(1830), signed = true, locale = sv)).isEqualTo("+1 830 kr")
         assertThat(MoneyFormatter.format(Money(5485821), decimals = true, locale = sv)).isEqualTo("54 858,21 kr")
-        assertThat(MoneyFormatter.format(Money.kr(12450), locale = en)).isEqualTo("SEK 12,450")
-        assertThat(MoneyFormatter.format(Money.kr(-12450), locale = en)).isEqualTo("−SEK 12,450")
+        assertThat(MoneyFormatter.format(Money.kr(12450), locale = en)).isEqualTo("12,450 kr")
+        assertThat(MoneyFormatter.format(Money.kr(-12450), locale = en)).isEqualTo("−12,450 kr")
         assertThat(MoneyFormatter.format(Money.ZERO, signed = true, locale = sv)).isEqualTo("0 kr")
     }
 
