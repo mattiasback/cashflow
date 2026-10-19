@@ -351,7 +351,6 @@ internal class HomeBuilder(private val locale: AppLocale = AppLocale.current()) 
                 HomeTarget.Flow(TrendId.SAVINGS_RATE),
             )
             HomeSheet.BUFFER -> {
-                val buffers = Buffer.accounts(input.accounts, input.transactions, m.last.year)
                 val goalValue = m.fixedPerMonth.ore * m.bufferGoal
                 val rest = (goalValue - (m.buffer?.ore ?: 0L)).toLong()
                 HomeSheetUi(
@@ -366,14 +365,10 @@ internal class HomeBuilder(private val locale: AppLocale = AppLocale.current()) 
                         shareB = kr(m.fixedPerMonth),
                         bar = m.bufferMonths?.let { (it / m.bufferGoal).toFloat().coerceIn(0f, 1f) } ?: 0f,
                         barTone = FlowTone.Savings,
-                        rows = buffers.map { (acc, value) ->
-                            SheetRowUi(
-                                text(acc.name),
-                                acc.marketValueDate?.let { res(R.string.row_value_updated, PeriodFormatter.iso(it, locale)) } ?: res(R.string.row_value_imported),
-                                kr(value),
-                                null, FlowTone.Savings,
-                            )
-                        } + if (m.bufferMonths != null) {
+                        rows = listOf(
+                            SheetRowUi(res(R.string.row_buffer_total), res(R.string.row_since, month(input.data.periods.first())), m.buffer?.let { kr(it) } ?: kr(0L), null, FlowTone.Savings),
+                            SheetRowUi(res(R.string.row_buffer_12), null, kr(m.a12.savingsByCategory[CategoryId.BUFFER] ?: Money.ZERO, signed = true), null, FlowTone.Savings),
+                        ) + if (m.bufferMonths != null) {
                             listOf(
                                 SheetRowUi(
                                     res(R.string.row_buffer_goal, m.bufferGoal.roundToInt()),
@@ -384,9 +379,9 @@ internal class HomeBuilder(private val locale: AppLocale = AppLocale.current()) 
                         } else {
                             emptyList()
                         },
-                        cta = res(if (buffers.isEmpty() || m.bufferMonths == null) R.string.cta_open_accounts else R.string.cta_open_savings),
+                        cta = res(R.string.cta_open_savings),
                     ),
-                    if (buffers.isEmpty() || m.bufferMonths == null) HomeTarget.Accounts else HomeTarget.Flow(TrendId.SAVINGS_RATE),
+                    HomeTarget.Flow(TrendId.SAVINGS_RATE),
                 )
             }
         }

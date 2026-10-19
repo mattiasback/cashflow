@@ -23,11 +23,8 @@ enum class AccountType {
     /** Pension is paid by the employer, so it never counts as the household's own savings. */
     val countsAsHouseholdSavings: Boolean get() = isSavingsLike
 
-    /**
-     * Accounts whose value today you enter, since the exports carry no balance or market value:
-     * ISK and KF, and savings accounts (the buffer on Hem).
-     */
-    val hasMarketValue: Boolean get() = this == ISK || this == KF || this == SAVINGS
+    /** Investment accounts have a market value the exports do not carry; you enter it. */
+    val hasMarketValue: Boolean get() = this == ISK || this == KF
 
     companion object {
         /**

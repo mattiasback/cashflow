@@ -69,7 +69,7 @@ class HomeViewModel(
                 transactions = b.txs,
                 categories = byId,
                 accounts = b.accs,
-                buffer = Buffer.value(b.accs, b.txs, year = data.periods.lastOrNull()?.year ?: 0),
+                buffer = Buffer.value(data),
                 goals = Goals.of(b.goals),
                 percentDecimals = prefs.percentDecimals,
                 amortizationAsSavings = prefs.mortgage.enabled,

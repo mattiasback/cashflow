@@ -76,7 +76,7 @@ class FlowViewModel(
         ) { txs, cats, accs, (mortgage, decimals), goalList ->
             val byId = cats.associateBy { it.id }
             val data = FlowData.of(txs, mortgage, { byId[it]?.kind ?: CategoryKind.UNCATEGORIZED })
-            val buffer = Buffer.value(accs, txs, year = data.periods.lastOrNull()?.year ?: 0)
+            val buffer = Buffer.value(data)
             FlowInput(data, txs, byId, buffer, decimals, Goals.of(goalList))
         }.flowOn(compute)
 
