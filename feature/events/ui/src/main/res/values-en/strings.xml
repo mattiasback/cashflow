@@ -119,4 +119,5 @@
     <string name="review_duplicate_body">Same account and amount, with a slightly different date or text. Probably the same purchase in two exports.</string>
     <string name="review_keep_both">Keep both</string>
     <string name="review_merge">Merge</string>
+    <string name="detail_placeholder">Pick a transaction in the list to see it here.</string>
 </resources>

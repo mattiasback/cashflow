@@ -40,6 +40,10 @@ import app.cashflow.feature.events.ui.CategoryEventsRoute
 import app.cashflow.feature.events.ui.EventsRoute
 import app.cashflow.feature.events.ui.ReviewRoute
 import app.cashflow.feature.events.ui.TransactionDetailRoute
+import app.cashflow.feature.events.ui.detail.TransactionDetailPlaceholder
+import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
+import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import app.cashflow.feature.events.ui.eventsEntries
 import app.cashflow.feature.flow.ui.FlowRoute
 import app.cashflow.feature.flow.ui.flowEntries
@@ -74,6 +78,7 @@ private val TopLevel = listOf<NavKey>(HomeRoute, FlowRoute, InsightsRoute, Event
  * App shell: four tabs (Hem, Flöde, Insikter, Händelser) with their own back stacks, the floating nav pill,
  * and every cross-feature callback turned into a Navigator call.
  */
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun CashFlowAppShell(
     sharedUris: Flow<List<String>>,
@@ -81,6 +86,7 @@ fun CashFlowAppShell(
     val state = rememberNavigationState(startRoute = HomeRoute, topLevelRoutes = TopLevel)
     val navigator = remember(state) { Navigator(state) }
     val sheet = remember { BottomSheetSceneStrategy<NavKey>() }
+    val listDetail = rememberListDetailSceneStrategy<NavKey>()
 
     LaunchedEffect(sharedUris) {
         sharedUris.collect { uris -> navigator.navigateIn(EventsRoute, ImportRoute(uris)) }
@@ -124,6 +130,10 @@ fun CashFlowAppShell(
         eventsEntries(
             contentPadding = contentPadding,
             sheetMetadata = BottomSheetSceneStrategy.sheet,
+            // Wide windows: the list and the picked transaction side by side instead of a sheet.
+            listMetadata = if (wide) ListDetailSceneStrategy.listPane(detailPlaceholder = { TransactionDetailPlaceholder() }) else emptyMap(),
+            detailMetadata = if (wide) ListDetailSceneStrategy.detailPane() else BottomSheetSceneStrategy.sheet,
+            detailInPane = wide,
             scrollToTop = eventsReselect,
             onOpenDetail = { navigator.navigate(TransactionDetailRoute(it)) },
             onOpenImport = { navigator.navigate(ImportRoute()) },
@@ -173,7 +183,7 @@ fun CashFlowAppShell(
             NavDisplay(
                 entries = state.toDecoratedEntries(provider),
                 onBack = { navigator.goBack() },
-                sceneStrategies = listOf(sheet),
+                sceneStrategies = listOf(listDetail, sheet),
             )
         }
         if (showNav) {

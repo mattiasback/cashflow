@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.navigation3.runtime)
     implementation(libs.navigation3.ui)
     implementation(libs.compose.material3.navigationSuite)
+    implementation(libs.compose.material3.adaptive.navigation3)
     implementation(libs.kermit)
 
     testImplementation(testFixtures(projects.core.domain))
