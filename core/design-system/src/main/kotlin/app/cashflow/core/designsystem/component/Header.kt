@@ -101,7 +101,7 @@ private fun BarRow(title: String?, actions: @Composable RowScope.() -> Unit, lea
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = BarHeight)
-            .padding(horizontal = Spacing.s4),
+            .padding(horizontal = Spacing.s3),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.s2),
     ) {
@@ -217,7 +217,7 @@ fun BandDropdown(label: String, contentDescription: String, onClick: () -> Unit,
                 .height(Sizes.controlHeight)
                 .clip(Radius.pill)
                 .background(c.overlayOnAccent)
-                .padding(start = Spacing.s4, end = Spacing.s3),
+                .padding(start = Spacing.s3, end = Spacing.s2),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Spacing.s1),
         ) {
@@ -256,7 +256,7 @@ fun BandSegmented(
                     .clip(Radius.pill)
                     .background(bg)
                     .selectable(selected = selected, role = Role.Tab, onClick = { onSelect(s.key) })
-                    .padding(horizontal = Spacing.s3),
+                    .padding(horizontal = Spacing.s2),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(s.label, style = CashFlowTheme.typography.bodyStrong, color = if (selected) c.textOnThumb else c.textOnAccent, maxLines = 1)

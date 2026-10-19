@@ -243,10 +243,10 @@ private fun bandFits(state: FlowState): Boolean {
     val pill = state.periodPill ?: ""
     val needed = with(density) {
         val text = { s: String -> measurer.measure(s, style).size.width.toDp() }
-        val pillW = if (pill.isEmpty()) 0.dp else text(pill) + 16.dp + 12.dp + 18.dp + 4.dp
-        val switchW = labels.sumOf { (text(it) + 24.dp).value.toDouble() }.dp + 8.dp
-        // Side padding 2×16, profile 48, gaps 2×8.
-        pillW + switchW + 48.dp + 32.dp + 16.dp
+        val pillW = if (pill.isEmpty()) 0.dp else text(pill) + 12.dp + 8.dp + 18.dp + 4.dp
+        val switchW = labels.sumOf { (text(it) + 16.dp).value.toDouble() }.dp + 8.dp
+        // Side padding 2×12, profile 48, gaps 2×8.
+        pillW + switchW + 48.dp + 24.dp + 16.dp
     }
     return needed <= width
 }
