@@ -195,7 +195,9 @@ internal class HomeBuilder(private val locale: AppLocale = AppLocale.current()) 
             val good = if (flat) null else (if (higher) d > 0 else d < 0)
             val changeText = when {
                 flat -> "→"
-                unitPoints -> (if (d > 0) "↑ " else "↓ ") + one(abs(d)) + POINTS_UNIT.getValue(locale)
+                // The rate's change is shown in percent, following the decimals setting; read out as
+                // percentage points by TalkBack.
+                unitPoints -> (if (d > 0) "↑ " else "↓ ") + pct(abs(d))
                 else -> (if (d > 0) "↑ " else "↓ ") + pct(abs(rel))
             }
             val valueText = res(R.string.trend_value, fmt(last), short)
@@ -393,7 +395,6 @@ internal class HomeBuilder(private val locale: AppLocale = AppLocale.current()) 
     private companion object {
         val SALARY = CategoryId("lon")
         // No-break space so the unit never wraps away from the number.
-        val POINTS_UNIT = mapOf(AppLocale.SV to " pe", AppLocale.EN to " pp")
         val MONTHS_UNIT = mapOf(AppLocale.SV to " mån", AppLocale.EN to " mo")
     }
 }
