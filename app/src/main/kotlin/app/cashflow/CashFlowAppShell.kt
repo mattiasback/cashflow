@@ -102,6 +102,7 @@ fun CashFlowAppShell(
             onOpenEvents = { id, period -> navigator.navigateIn(EventsRoute, CategoryEventsRoute(id, period)) },
             onOpenImport = { navigator.navigateIn(EventsRoute, ImportRoute()) },
             onOpenProfile = { navigator.navigate(ProfileRoute) },
+            onOpenTransaction = { navigator.navigate(TransactionDetailRoute(it)) },
         )
         eventsEntries(
             contentPadding = contentPadding,

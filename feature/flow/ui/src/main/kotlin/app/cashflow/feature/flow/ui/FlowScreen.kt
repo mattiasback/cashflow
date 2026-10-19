@@ -95,6 +95,7 @@ fun FlowRoot(
     contentPadding: PaddingValues,
     onOpenEvents: (categoryId: String?, period: String?) -> Unit,
     onOpenImport: () -> Unit,
+    onOpenTransaction: (String) -> Unit = {},
     onOpenProfile: () -> Unit = {},
     scrollToTop: Flow<Unit> = emptyFlow(),
     viewModel: FlowViewModel = koinViewModel(),
@@ -104,6 +105,7 @@ fun FlowRoot(
         when (event) {
             is FlowEvent.OpenEvents -> onOpenEvents(event.categoryId, event.period)
             FlowEvent.OpenImport -> onOpenImport()
+            is FlowEvent.OpenTransaction -> onOpenTransaction(event.id)
             FlowEvent.OpenProfile -> onOpenProfile()
         }
     }
@@ -553,6 +555,7 @@ private fun Latest(state: FlowState, onAction: (FlowAction) -> Unit) {
                         Modifier
                             .fillMaxWidth()
                             .heightIn(min = 64.dp)
+                            .clickable(role = Role.Button) { onAction(FlowAction.OnTransactionClick(t.id)) }
                             .semantics(mergeDescendants = true) { contentDescription = "${t.title}, $sub, ${t.amount}" }
                             .padding(horizontal = Spacing.s4, vertical = Spacing.s2),
                         verticalAlignment = Alignment.CenterVertically,

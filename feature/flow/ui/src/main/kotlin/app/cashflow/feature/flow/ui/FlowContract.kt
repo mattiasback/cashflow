@@ -192,6 +192,8 @@ sealed interface FlowAction {
     data object OnSheetCta : FlowAction
     data object OnSheetDismiss : FlowAction
     data object OnShowAllEvents : FlowAction
+    /** A row under Senaste transaktioner: opens the transaction, where it can be edited. */
+    data class OnTransactionClick(val id: String) : FlowAction
     data object OnImportClick : FlowAction
     data object OnProfileClick : FlowAction
 }
@@ -199,5 +201,6 @@ sealed interface FlowAction {
 sealed interface FlowEvent {
     data class OpenEvents(val categoryId: String?, val period: String?) : FlowEvent
     data object OpenImport : FlowEvent
+    data class OpenTransaction(val id: String) : FlowEvent
     data object OpenProfile : FlowEvent
 }

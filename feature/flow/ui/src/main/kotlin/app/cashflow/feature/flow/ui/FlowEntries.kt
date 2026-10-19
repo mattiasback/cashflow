@@ -17,6 +17,7 @@ fun EntryProviderScope<NavKey>.flowEntries(
     scrollToTop: Flow<Unit>,
     onOpenEvents: (categoryId: String?, period: String?) -> Unit,
     onOpenImport: () -> Unit,
+    onOpenTransaction: (String) -> Unit,
     onOpenProfile: () -> Unit,
 ) {
     entry<FlowRoute> {
@@ -24,6 +25,7 @@ fun EntryProviderScope<NavKey>.flowEntries(
             contentPadding = contentPadding,
             onOpenEvents = onOpenEvents,
             onOpenImport = onOpenImport,
+            onOpenTransaction = onOpenTransaction,
             onOpenProfile = onOpenProfile,
             scrollToTop = scrollToTop,
         )

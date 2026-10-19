@@ -126,6 +126,7 @@ class FlowViewModel(
                 SheetCta.Close, null -> local { it.copy(sheet = null) }
             }
             FlowAction.OnShowAllEvents -> send(FlowEvent.OpenEvents(null, eventsPeriod()))
+            is FlowAction.OnTransactionClick -> send(FlowEvent.OpenTransaction(action.id))
             FlowAction.OnImportClick -> send(FlowEvent.OpenImport)
             FlowAction.OnProfileClick -> send(FlowEvent.OpenProfile)
         }
