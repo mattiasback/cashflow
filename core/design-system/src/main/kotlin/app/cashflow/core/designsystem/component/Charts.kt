@@ -157,7 +157,7 @@ data class BarGroup(
 
 /**
  * The swipeable bar chart: newest period on the right, drag sideways with fling and snap. The
- * selected period is lifted, the others are faded, a tint marks deficit periods and a dashed
+ * selected period is lifted, the others are faded, a dot under the label marks deficit periods and a dashed
  * line shows the average. Bars rise in sequence on first show.
  */
 @Composable
@@ -235,7 +235,6 @@ fun BarChart(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Canvas(Modifier.fillMaxWidth().height(plot)) {
-                        if (group.deficit) drawRect(c.vizFixed.copy(alpha = 0.14f))
                         val bw = barWidth.toPx()
                         val gap = 3.dp.toPx()
                         val n = group.bars.size
