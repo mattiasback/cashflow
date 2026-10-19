@@ -43,9 +43,23 @@ private data class Filters(
     val query: String = "",
     val status: StatusFilter = StatusFilter.ALL,
     val categoryId: CategoryId? = null,
+    /** A whole FlÃ¶de group (Inkomster, Utgifter, Sparande) instead of one category. */
+    val group: CategoryGroup? = null,
     val period: Period? = null,
     val sheet: EventsSheet? = null,
 )
+
+/** Category groups HÃ¤ndelser can filter on, keyed "group:income" etc. in navigation and the picker. */
+enum class CategoryGroup(val key: String, val kinds: Set<CategoryKind>) {
+    INCOME("group:income", setOf(CategoryKind.INCOME)),
+    EXPENSES("group:expense", setOf(CategoryKind.FIXED, CategoryKind.VARIABLE, CategoryKind.UNCATEGORIZED)),
+    SAVINGS("group:savings", setOf(CategoryKind.SAVINGS)),
+    ;
+
+    companion object {
+        fun of(key: String?) = entries.firstOrNull { it.key == key }
+    }
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EventsViewModel(
@@ -64,7 +78,8 @@ class EventsViewModel(
 
     private val filters = MutableStateFlow(
         Filters(
-            categoryId = initialCategory?.let(::CategoryId),
+            categoryId = initialCategory?.takeIf { CategoryGroup.of(it) == null }?.let(::CategoryId),
+            group = CategoryGroup.of(initialCategory),
             period = initialPeriod?.let(Period::parse),
         ),
     )
@@ -85,7 +100,9 @@ class EventsViewModel(
             is EventsAction.OnStatusChipClick -> filters.update { it.copy(status = action.filter) }
             EventsAction.OnCategoryFilterClick -> filters.update { it.copy(sheet = EventsSheet.CATEGORY) }
             EventsAction.OnPeriodFilterClick -> filters.update { it.copy(sheet = EventsSheet.PERIOD) }
-            is EventsAction.OnCategoryPicked -> filters.update { it.copy(categoryId = action.id?.let(::CategoryId), sheet = null) }
+            is EventsAction.OnCategoryPicked -> filters.update {
+                it.copy(categoryId = action.id?.takeIf { id -> CategoryGroup.of(id) == null }?.let(::CategoryId), group = CategoryGroup.of(action.id), sheet = null)
+            }
             is EventsAction.OnPeriodPicked -> filters.update { it.copy(period = action.key?.let(Period::parse), sheet = null) }
             EventsAction.OnSheetDismiss -> filters.update { it.copy(sheet = null) }
             is EventsAction.OnTransactionClick -> send(EventsEvent.NavigateToDetail(action.id))
@@ -113,6 +130,7 @@ class EventsViewModel(
         val rows = inPeriod
             .filter { hits == null || it.id in hits }
             .filter { f.categoryId == null || it.categoryId == f.categoryId }
+            .filter { f.group == null || (categories[it.categoryId]?.kind ?: CategoryKind.UNCATEGORIZED) in f.group.kinds }
             .filter { matches(it, f.status) }
             .sortedWith(compareByDescending<Transaction> { it.transactionDate }.thenByDescending { it.bookingDate }.thenByDescending { it.fileOrder })
 
@@ -126,9 +144,14 @@ class EventsViewModel(
 
         val review = all.filter { it.status == TransactionStatus.TO_REVIEW }
         val periodLabel = f.period?.let { UiText.DynamicString(PeriodFormatter.month(it, locale)) } ?: UiText.StringResource(R.string.filter_all)
-        val categoryLabel = f.categoryId?.let { id -> categoryName(id, categories[id]?.name ?: id.value) } ?: UiText.StringResource(R.string.filter_all)
+        val categoryLabel = f.group?.let { groupLabel(it) }
+            ?: f.categoryId?.let { id -> categoryName(id, categories[id]?.name ?: id.value) }
+            ?: UiText.StringResource(R.string.filter_all)
         val counts = inPeriod.groupingBy { it.categoryId }.eachCount()
-        val categoryOptions = listOf(CategoryOptionUi(null, UiText.StringResource(R.string.filter_all_categories), null, null, inPeriod.size, f.categoryId == null)) +
+        val categoryOptions = listOf(CategoryOptionUi(null, UiText.StringResource(R.string.filter_all_categories), null, null, inPeriod.size, f.categoryId == null && f.group == null)) +
+            CategoryGroup.entries.map { g ->
+                CategoryOptionUi(g.key, groupLabel(g), null, null, inPeriod.count { (categories[it.categoryId]?.kind ?: CategoryKind.UNCATEGORIZED) in g.kinds }, f.group == g)
+            } +
             categories.values
                 .sortedWith(compareBy({ groupOrder(it.kind) }, { it.sortOrder }))
                 .filter { counts.containsKey(it.id) || it.id == f.categoryId }
@@ -145,7 +168,7 @@ class EventsViewModel(
             query = f.query,
             statusFilter = f.status,
             categoryLabel = categoryLabel,
-            categoryActive = f.categoryId != null,
+            categoryActive = f.categoryId != null || f.group != null,
             periodLabel = periodLabel,
             periodActive = f.period != null,
             countText = UiText.PluralResource(R.plurals.transactions_count, rows.size),
@@ -168,6 +191,14 @@ class EventsViewModel(
         StatusFilter.AUTO -> tx.status == TransactionStatus.AUTO
         StatusFilter.MANUAL -> tx.status == TransactionStatus.MANUAL
     }
+
+    private fun groupLabel(g: CategoryGroup): UiText = UiText.StringResource(
+        when (g) {
+            CategoryGroup.INCOME -> R.string.filter_group_income
+            CategoryGroup.EXPENSES -> R.string.filter_group_expenses
+            CategoryGroup.SAVINGS -> R.string.filter_group_savings
+        },
+    )
 
     private fun groupOrder(kind: CategoryKind) = when (kind) {
         CategoryKind.UNCATEGORIZED -> 0

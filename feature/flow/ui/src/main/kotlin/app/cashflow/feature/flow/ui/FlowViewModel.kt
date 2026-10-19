@@ -125,7 +125,8 @@ class FlowViewModel(
                 }
                 SheetCta.Close, null -> local { it.copy(sheet = null) }
             }
-            FlowAction.OnShowAllEvents -> send(FlowEvent.OpenEvents(null, eventsPeriod()))
+            // Händelser opens on the whole group of the sub-tab ("group:savings" etc.), for the month shown.
+            FlowAction.OnShowAllEvents -> send(FlowEvent.OpenEvents(selection.value?.tab?.let { GROUP_KEYS[it] }, eventsPeriod()))
             is FlowAction.OnTransactionClick -> send(FlowEvent.OpenTransaction(action.id))
             FlowAction.OnImportClick -> send(FlowEvent.OpenImport)
             FlowAction.OnProfileClick -> send(FlowEvent.OpenProfile)
@@ -172,6 +173,8 @@ class FlowViewModel(
     }
 
     internal companion object {
+        val GROUP_KEYS = mapOf(FlowTab.INCOME to "group:income", FlowTab.EXPENSE to "group:expense", FlowTab.SAVINGS to "group:savings")
+
         fun encode(sel: FlowSelection): String = when (sel.mode) {
             PeriodMode.MONTH -> "m:" + (sel.month?.toString() ?: "")
             PeriodMode.YEAR -> "y:" + (sel.year?.toString() ?: "")

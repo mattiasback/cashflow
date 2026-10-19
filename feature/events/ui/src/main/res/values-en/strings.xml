@@ -6,6 +6,9 @@
 
     <string name="filter_all">All</string>
     <string name="filter_all_categories">All categories</string>
+    <string name="filter_group_income">All income</string>
+    <string name="filter_group_expenses">All expenses</string>
+    <string name="filter_group_savings">All savings</string>
     <string name="filter_all_time">All time</string>
     <string name="filter_period">Period</string>
     <string name="filter_category">Category</string>

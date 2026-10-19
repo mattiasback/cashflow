@@ -6,6 +6,9 @@
 
     <string name="filter_all">Alla</string>
     <string name="filter_all_categories">Alla kategorier</string>
+    <string name="filter_group_income">Alla inkomster</string>
+    <string name="filter_group_expenses">Alla utgifter</string>
+    <string name="filter_group_savings">Allt sparande</string>
     <string name="filter_all_time">Hela tiden</string>
     <string name="filter_period">Period</string>
     <string name="filter_category">Kategori</string>
