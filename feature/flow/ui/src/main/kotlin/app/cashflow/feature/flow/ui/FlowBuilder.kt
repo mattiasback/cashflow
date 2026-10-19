@@ -152,10 +152,10 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
         )
     }
 
-    /** "okt 2026", "2026", "jan–okt 2026" for the running year, "sedan jan 2022" for Alla. */
+    /** "okt 2026", "2026" (also for the running year), "sedan jan 2022" for Alla. */
     private fun scopeLabel(data: FlowData, scope: PeriodScope): String = when (scope.mode) {
         PeriodMode.MONTH -> monthLabel(scope.last)
-        PeriodMode.YEAR -> if (scope.yearToDate) "${monthShort(scope.first)}–${monthLabel(scope.last)}" else scope.key
+        PeriodMode.YEAR -> scope.key
         PeriodMode.ALL -> (if (locale == AppLocale.SV) "sedan " else "since ") + monthLabel(data.periods.first())
     }
 
@@ -361,7 +361,7 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
                 val year = r.scope.last.year
                 val ytdMonths = data.periods.filter { it.year == year && it <= r.scope.last }
                 val ytd = data.sum(ytdMonths)
-                val ytdLabel = if (ytdMonths.size > 1) "${monthShort(ytdMonths.first())}–${monthLabel(ytdMonths.last())}" else monthLabel(ytdMonths.last())
+                val ytdLabel = year.toString()
                 val monthlyCost = r.a12.expenses.ore / n12
                 val bufferTile = if (input.buffer != null && input.buffer.ore > 0 && monthlyCost > 0) {
                     val months = input.buffer.ore.toDouble() / monthlyCost
