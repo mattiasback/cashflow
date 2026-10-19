@@ -39,6 +39,8 @@ import app.cashflow.feature.events.ui.eventsEntries
 import app.cashflow.feature.flow.ui.FlowRoute
 import app.cashflow.feature.flow.ui.flowEntries
 import app.cashflow.feature.home.ui.HomeRoute
+import app.cashflow.feature.insights.ui.InsightsRoute
+import app.cashflow.feature.insights.ui.insightsEntries
 import app.cashflow.feature.home.ui.homeEntries
 import app.cashflow.feature.importer.ui.ImportReceiptRoute
 import app.cashflow.feature.importer.ui.ImportRoute
@@ -47,6 +49,7 @@ import app.cashflow.feature.importer.ui.ImportHistoryRoute
 import app.cashflow.feature.importer.ui.importEntries
 import app.cashflow.feature.profile.ui.AccountRoute
 import app.cashflow.feature.profile.ui.AccountsRoute
+import app.cashflow.feature.profile.ui.BufferBalanceRoute
 import app.cashflow.feature.profile.ui.MortgageRoute
 import app.cashflow.feature.profile.ui.ProfileRoute
 import app.cashflow.feature.profile.ui.profileEntries
@@ -60,10 +63,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
-private val TopLevel = listOf<NavKey>(HomeRoute, FlowRoute, EventsRoute)
+private val TopLevel = listOf<NavKey>(HomeRoute, FlowRoute, InsightsRoute, EventsRoute)
 
 /**
- * App shell: two tabs (Flöde, Händelser) with their own back stacks, the floating nav pill,
+ * App shell: four tabs (Hem, Flöde, Insikter, Händelser) with their own back stacks, the floating nav pill,
  * and every cross-feature callback turned into a Navigator call.
  */
 @Composable
@@ -84,6 +87,7 @@ fun CashFlowAppShell(
 
     val homeReselect = remember(navigator) { navigator.reselectEvents.filter { it == HomeRoute }.map { } }
     val flowReselect = remember(navigator) { navigator.reselectEvents.filter { it == FlowRoute }.map { } }
+    val insightsReselect = remember(navigator) { navigator.reselectEvents.filter { it == InsightsRoute }.map { } }
     val eventsReselect = remember(navigator) { navigator.reselectEvents.filter { it == EventsRoute }.map { } }
 
     val provider = entryProvider<NavKey> {
@@ -104,6 +108,13 @@ fun CashFlowAppShell(
             onOpenProfile = { navigator.navigate(ProfileRoute) },
             onOpenTransaction = { navigator.navigate(TransactionDetailRoute(it)) },
         )
+        insightsEntries(
+            contentPadding = contentPadding,
+            scrollToTop = insightsReselect,
+            onOpenSavings = { navigator.selectTab(FlowRoute) },
+            onOpenProfile = { navigator.navigate(ProfileRoute) },
+            onOpenImport = { navigator.navigateIn(EventsRoute, ImportRoute()) },
+        )
         eventsEntries(
             contentPadding = contentPadding,
             sheetMetadata = BottomSheetSceneStrategy.sheet,
@@ -120,6 +131,7 @@ fun CashFlowAppShell(
             onOpenAccounts = { navigator.navigate(AccountsRoute) },
             onOpenAccount = { navigator.navigate(AccountRoute(it)) },
             onOpenMortgage = { navigator.navigate(MortgageRoute) },
+            onOpenBufferBalance = { navigator.navigate(BufferBalanceRoute) },
             onOpenImportHistory = { navigator.navigate(ImportHistoryRoute) },
             onOpenRules = { navigator.navigate(RulesRoute) },
             onBack = { navigator.goBack() },
@@ -145,6 +157,7 @@ fun CashFlowAppShell(
     val items = listOf(
         NavItem(HomeRoute.toString(), stringResource(R.string.nav_home), CfIcons.Home, Accent.Home),
         NavItem(FlowRoute.toString(), stringResource(R.string.nav_flow), CfIcons.Cashflow, Accent.Cashflow),
+        NavItem(InsightsRoute.toString(), stringResource(R.string.nav_insights), CfIcons.Bulb, Accent.Insights),
         NavItem(EventsRoute.toString(), stringResource(R.string.nav_events), CfIcons.Transfer, Accent.Events),
     )
 

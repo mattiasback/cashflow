@@ -52,6 +52,7 @@ object OpportunityEngine {
     const val SMALL_CHARGE_ORE = 100_00L
     private const val OVER_PERCENT = 10.0
     private const val OVER_MIN_ORE = 200_00L
+    private const val ONE_OFF_PERCENT = 100.0
     private const val AVERAGE_MONTHS = 6
 
     /** Housing and loans recur too, but their price follows the interest rate, not a choice. */
@@ -87,7 +88,11 @@ object OpportunityEngine {
         return now.filterKeys { kindOf(it) == CategoryKind.VARIABLE }.mapNotNull { (id, spent) ->
             val average = before.sumOf { data.month(it).expensesByCategory[id]?.ore ?: 0L } / before.size
             val gap = spent.ore - average
-            if (average <= 0 || gap < OVER_MIN_ORE || gap.toDouble() / average * 100 < OVER_PERCENT) {
+            val previous = data.month(before.last()).expensesByCategory[id]?.ore ?: 0L
+            val percent = if (average > 0) gap.toDouble() / average * 100 else 0.0
+            // A one-off (the dentist, a new sofa) is not a pace to keep: the month before must be at or
+            // above the average too, and a jump past double is left out.
+            if (average <= 0 || gap < OVER_MIN_ORE || percent < OVER_PERCENT || percent > ONE_OFF_PERCENT || previous < average) {
                 null
             } else {
                 Opportunity.OverAverage(id, last, spent, Money(average), before.size)

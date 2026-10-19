@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Band and hero -->
+    <string name="title">Insikter</string>
+    <string name="cd_profile">Profil och inställningar</string>
+    <string name="cd_info">Hur räknar vi?</string>
+    <string name="hero_label">Möjlig förbättring per år</string>
+    <string name="cd_hero">%1$s %2$s, %3$s. Visa hur vi räknar</string>
+    <string name="gain_none">Inga förslag just nu</string>
+    <plurals name="gain_left">
+        <item quantity="one">%1$d förslag kvar</item>
+        <item quantity="other">%1$d förslag kvar</item>
+    </plurals>
+    <string name="gain_left_done">%1$s · %2$d klart</string>
+
+    <!-- Er plan -->
+    <string name="section_plan">Er plan</string>
+    <string name="plan_intro">Ordningen som brukar löna sig bäst: trygghet först, sedan dyra lån, sedan långsiktigt sparande.</string>
+    <string name="plan_done">%1$d av %2$d klara</string>
+    <string name="tag_ongoing">Pågår</string>
+    <string name="tag_biggest">Störst effekt</string>
+    <string name="tag_loans">Lån</string>
+    <string name="tag_yearly">Varje år</string>
+    <string name="tag_done">Klart</string>
+    <string name="mark_done">Markera som klart</string>
+    <string name="undo">Ångra</string>
+    <string name="cd_step">Steg %1$d: %2$s, %3$s. %4$s</string>
+    <string name="step_eyebrow">Steg %1$d i planen</string>
+
+    <string name="step_buffer_title">Fyll bufferten till %1$d månader</string>
+    <string name="step_buffer_text">En buffert skyddar mot dyra lån när något oväntat händer. Ni har %1$s, målet är %2$s.</string>
+    <string name="step_buffer_text_no_balance">En buffert skyddar mot dyra lån när något oväntat händer. Målet är %1$s, %2$d månader av era fasta utgifter. Ange buffertens saldo i Profil så följer appen hur långt ni har kvar.</string>
+    <string name="step_buffer_bar">%1$s av %2$d mån · full %3$s med %4$s/mån</string>
+    <string name="step_buffer_bar_full">%1$s av %2$d mån · full</string>
+    <string name="step_buffer_bar_stalled">%1$s av %2$d mån · inget sätts in just nu</string>
+    <string name="step_buffer_cta">Öka överföringen</string>
+    <string name="step_buffer_how">Höj den automatiska överföringen till buffertkontot. Med %1$s mer per månad är den full %2$s%3$s.</string>
+    <string name="step_buffer_how_instead"> i stället för %1$s</string>
+    <string name="step_buffer_how_plain">Lägg en stående överföring till buffertkontot dagen efter lön.</string>
+
+    <string name="step_surplus_title">Ge överskottet ett jobb</string>
+    <string name="step_surplus_text">I snitt blir %1$s kvar på kontot varje månad utan att placeras. En automatisk överföring dagen efter lön gör att pengarna jobbar.</string>
+    <string name="step_surplus_text_done">I snitt blir bara %1$s kvar på kontot per månad, så överskottet har redan ett jobb.</string>
+    <string name="step_surplus_cta">Sätt upp överföring</string>
+    <string name="step_surplus_how">Lägg en stående överföring på %1$s dagen efter lön, och låt ca 2 000 kr ligga kvar som marginal.</string>
+    <string name="step_surplus_how_plain">Låt en liten marginal ligga kvar på kontot och flytta resten dagen efter lön.</string>
+
+    <string name="step_loan_title">Betala av det dyraste lånet först</string>
+    <string name="step_loan_text">Ni betalar %1$s per månad på lån utöver bolånet. Extra betalning på lånet med högst ränta ger en säker avkastning, ofta mer än sparande efter skatt.</string>
+    <string name="step_loan_text_none">Inga andra lån än bolånet syns i transaktionerna.</string>
+    <string name="step_loan_cta">Räkna på extra betalning</string>
+    <string name="step_loan_how">När bufferten är full: betala extra på lånet med högst ränta, varje månad eller med en engångssumma.</string>
+
+    <string name="step_long_title">Se över det långsiktiga sparandet</string>
+    <string name="step_long_text_over">Sparkvoten är %1$s, över målet %2$s. Kontrollera avgifter och att fonderna ligger på ISK.</string>
+    <string name="step_long_text_under">Sparkvoten är %1$s, under målet %2$s. Kontrollera avgifter och att fonderna ligger på ISK.</string>
+    <string name="step_long_cta">Visa sparandet</string>
+    <string name="step_long_how">Kontrollera fondavgifterna en gång om året och flytta till ISK om något ligger på en vanlig depå.</string>
+
+    <!-- Spara utan att märka det -->
+    <string name="section_opps">Spara utan att märka det</string>
+    <string name="opps_intro">Hittat i era transaktioner, sorterat på vad det ger per år.</string>
+    <string name="opps_empty">Inga förslag just nu. Appen letar efter prishöjningar, små återkommande dragningar och kategorier över ert snitt.</string>
+    <string name="opp_eyebrow">Förslag · %1$s</string>
+    <string name="opp_done_sub">Klart – bra jobbat!</string>
+    <string name="effort_10_min">10 min</string>
+    <string name="effort_5_min">5 min</string>
+    <string name="effort_habit">Vana</string>
+    <string name="effort_fixed">Fixat</string>
+    <string name="i_fixed_it">Jag har fixat det</string>
+    <string name="undo_done">Ångra klart</string>
+    <string name="cd_opp">%1$s, ungefär %2$s per år, insats %3$s. Visa detaljer</string>
+    <string name="cd_opp_done">%1$s, klart. Visa detaljer</string>
+
+    <string name="opp_rises_title">Se över abonnemangen</string>
+    <string name="opp_rises_sub">%1$s · %2$s</string>
+    <plurals name="price_rises">
+        <item quantity="one">%1$d prishöjning</item>
+        <item quantity="other">%1$d prishöjningar</item>
+    </plurals>
+    <plurals name="subscriptions">
+        <item quantity="one">%1$d abonnemang</item>
+        <item quantity="other">%1$d abonnemang</item>
+    </plurals>
+    <string name="opp_rises_why">Priset har höjts per månad:\n%1$s\nTillbaka till det gamla priset blir %2$s per år.</string>
+    <string name="opp_rises_assume">Baserat på de senaste sex månaderna. Ett abonnemang räknas när samma belopp dras en gång i månaden.</string>
+    <string name="opp_rises_how">Säg upp det ni inte använder och jämför priset för de som höjts.</string>
+
+    <string name="opp_small_title">Stoppa små dragningar</string>
+    <plurals name="opp_small_sub">
+        <item quantity="one">%1$d återkommande under %2$s</item>
+        <item quantity="other">%1$d återkommande under %2$s</item>
+    </plurals>
+    <string name="opp_small_why">Små dragningar varje månad:\n%1$s\nTotalt %2$s per månad, alltså %3$s per år.</string>
+    <string name="opp_small_assume">Appen ser inte om ni använder tjänsterna, så summan är det mesta ni kan spara.</string>
+    <string name="opp_small_how">Granska dragningarna och säg upp dem ni inte använder.</string>
+
+    <string name="opp_over_title">Håll snittet för %1$s</string>
+    <string name="opp_over_sub">%1$s %2$s över ert snitt</string>
+    <string name="opp_over_why">%1$s låg på %2$s mot ett snitt på %3$s. Om ni håller snittet sparar ni cirka %4$s per år jämfört med takten i %5$s.</string>
+    <plurals name="opp_over_assume">
+        <item quantity="one">Jämfört med snittet för månaden före.</item>
+        <item quantity="other">Jämfört med snittet för %1$d månader före.</item>
+    </plurals>
+    <string name="opp_over_how">Följ kategorin i Flöde under månaden.</string>
+
+    <!-- Tänk om -->
+    <string name="section_whatif">Tänk om …</string>
+    <string name="sim_head">… ni sparade mer varje månad</string>
+    <string name="sim_slider">Extra sparande per månad</string>
+    <string name="cd_sim">%1$s per månad</string>
+    <string name="sim_min">0 kr</string>
+    <string name="sim_max">10 000 kr</string>
+    <string name="sim_buffer">Bufferten full</string>
+    <string name="sim_buffer_never">Aldrig i dagens takt</string>
+    <string name="sim_buffer_full_now">Redan full</string>
+    <string name="sim_instead_of">i stället för %1$s</string>
+    <string name="sim_current_pace">med nuvarande takt</string>
+    <string name="sim_rate">Sparkvot</string>
+    <string name="sim_rate_now">nu %1$s</string>
+    <string name="sim_funds">Nytt fondsparande om 10 år</string>
+    <string name="sim_funds_more">%1$s jämfört med idag</string>
+    <string name="sim_funds_now">med nuvarande %1$s/mån</string>
+    <string name="sim_note">Extra pengar går först till bufferten tills den räcker %1$d månader, sedan till fonder. Räkneexempel med 6 %% årlig avkastning, inte en prognos.</string>
+    <string name="sim_note_no_balance">Extra pengar går till fonder. Ange buffertens saldo i Profil så räknar appen med bufferten först. Räkneexempel med 6 %% årlig avkastning, inte en prognos.</string>
+
+    <!-- Så står ni dig -->
+    <string name="section_health">Så står ni dig</string>
+    <string name="bench_rate">Sparkvot</string>
+    <string name="bench_rate_note">Mål %1$s. Många rekommenderar minst 10 %% av inkomsten.</string>
+    <string name="bench_buffer">Buffert</string>
+    <string name="bench_buffer_note">Mål %1$d månader av de fasta utgifterna.</string>
+    <string name="bench_fixed">Fasta kostnader av inkomsten</string>
+    <string name="bench_fixed_note">Under 50 %% ger utrymme att spara och klara oväntade utgifter.</string>
+    <string name="health_span">snitt 12 mån</string>
+
+    <!-- Fråga en AI -->
+    <string name="section_ai">Fråga en AI</string>
+    <string name="ai_title">Få en second opinion</string>
+    <string name="ai_text">Kopiera en anonym sammanfattning av er plan och era siffror till den AI-chatt du redan använder.</string>
+    <string name="ai_preview">Förhandsvisning av sammanfattningen</string>
+    <string name="ai_privacy">Inga namn, kontonummer eller handlare. Texten skapas på telefonen och skickas aldrig av oss.</string>
+    <string name="ai_copy">Kopiera anonym sammanfattning</string>
+    <string name="ai_copied">Kopierad</string>
+    <string name="ai_share">Dela …</string>
+    <string name="prompt">Du är en erfaren privatekonomisk rådgivare i Sverige.\nVårt hushåll, snitt per månad de senaste %1$d månaderna:\nInkomst %2$s, utgifter %3$s (fasta %4$s), sparande %5$s (sparkvot %6$s).\nOplacerat på kontot i snitt %7$s per månad.\n%8$s%9$sVår plan: 1) fyll bufferten 2) ge överskottet ett jobb 3) betala av dyra lån 4) se över det långsiktiga sparandet.\nÄr ordningen rimlig? Vad skulle du ändra?</string>
+    <string name="prompt_buffer">Buffert %1$s av målet %2$s (%3$d månader av fasta utgifter).\n</string>
+    <string name="prompt_buffer_target">Buffertmål %1$s (%2$d månader av fasta utgifter), saldot okänt.\n</string>
+    <string name="prompt_loans">Andra lån än bolånet: %1$s per månad.\n</string>
+
+    <!-- Sheets and the rest -->
+    <string name="sheet_why">Så kom vi fram till det</string>
+    <string name="sheet_how">Gör så här</string>
+    <string name="close">Stäng</string>
+    <string name="about_eyebrow">Så räknar vi</string>
+    <string name="about_why">Summan av förslagen under \"Spara utan att märka det\" som ni inte har markerat som klara. Varje förslag bygger på era egna transaktioner.</string>
+    <string name="about_assume">Uppskattningarna avrundas. Appen ser inte om ni använder en tjänst, så det är det mesta ni kan spara.</string>
+    <string name="about_how">Börja med det som ger mest per minut.</string>
+    <string name="disclaimer">Förslagen bygger på era egna siffror och vanliga tumregler. De är inte personlig finansiell rådgivning.</string>
+    <string name="not_enough_title">Insikter behöver tre månader</string>
+    <string name="not_enough_text">Med minst tre månaders transaktioner kan appen räkna snitt och hitta återkommande dragningar. Importera fler kontoutdrag.</string>
+    <string name="empty_title">Inget att visa än</string>
+    <string name="empty_text">Importera kontoutdrag så räknar appen fram er plan och vad ni kan spara.</string>
+    <string name="import_cta">Importera</string>
+    <string name="copied_message">Sammanfattningen är kopierad</string>
+</resources>

@@ -16,9 +16,18 @@
     <string name="profile_group_calc">Beräkningar</string>
     <string name="profile_group_goals">Mål</string>
     <string name="profile_goal_buffer">Buffertmål</string>
-    <string name="profile_goal_buffer_hint">Månader av fasta utgifter som sparkontona ska täcka</string>
+    <string name="profile_goal_buffer_hint">Månader av fasta utgifter som bufferten ska räcka till</string>
     <string name="profile_goal_rate">Sparmål</string>
     <string name="profile_goal_rate_hint">Andel av inkomsten som sparas</string>
+    <string name="profile_buffer_balance">Buffertens saldo</string>
+    <string name="profile_buffer_balance_line">%1$s den %2$s</string>
+    <string name="profile_buffer_balance_none">Inte angivet. Insikter följer bufferten när du anger det.</string>
+    <string name="buffer_balance_title">Buffertens saldo</string>
+    <string name="buffer_balance_body">Kontoutdragen visar bara vad som flyttas in och ut, inte saldot. Ange vad som finns på buffertkontot i dag, så räknar Insikter vidare med överföringarna efter i dag.</string>
+    <string name="buffer_balance_label">Saldo i dag</string>
+    <string name="buffer_balance_stored">Angivet %1$s · i dag ca %2$s</string>
+    <string name="buffer_balance_save">Spara</string>
+    <string name="buffer_balance_clear">Ta bort</string>
     <plurals name="profile_goal_months">
         <item quantity="one">%1$d mån</item>
         <item quantity="other">%1$d mån</item>
@@ -41,7 +50,7 @@
     <string name="profile_theme_system">System</string>
     <string name="profile_theme_light">Ljust</string>
     <string name="profile_theme_dark">Mörkt</string>
-    <string name="profile_footer">CashFlow 0.4.0 · steg 4</string>
+    <string name="profile_footer">CashFlow 0.5.0 · steg 5</string>
 
     <string name="accounts_title">Konton</string>
     <string name="accounts_savings_title">Eget sparande</string>

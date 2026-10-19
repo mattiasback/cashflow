@@ -57,6 +57,7 @@ fun ProfileRoot(
     contentPadding: PaddingValues,
     onOpenAccounts: () -> Unit,
     onOpenMortgage: () -> Unit,
+    onOpenBufferBalance: () -> Unit,
     onOpenImportHistory: () -> Unit,
     onOpenRules: () -> Unit,
     onBack: () -> Unit,
@@ -69,6 +70,7 @@ fun ProfileRoot(
             ProfileEvent.OpenImportHistory -> onOpenImportHistory()
             ProfileEvent.OpenRules -> onOpenRules()
             ProfileEvent.OpenMortgage -> onOpenMortgage()
+            ProfileEvent.OpenBufferBalance -> onOpenBufferBalance()
             ProfileEvent.NavigateBack -> onBack()
         }
     }
@@ -135,6 +137,7 @@ fun ProfileScreen(
                         value = stringResource(R.string.profile_goal_percent, state.savingsGoalPercent),
                         onStep = { onAction(ProfileAction.OnGoalStep(GoalType.SAVINGS_RATE, it)) },
                     )
+                    NavRow(stringResource(R.string.profile_buffer_balance), state.bufferBalanceLine.asString(), divider = true) { onAction(ProfileAction.OnBufferBalanceClick) }
                 }
 
                 GroupHeading(stringResource(R.string.profile_group_categories))

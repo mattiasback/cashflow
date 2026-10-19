@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name" translatable="false">CashFlow</string>
     <string name="nav_home">Hem</string>
+    <string name="nav_insights">Insikter</string>
     <string name="nav_flow">Flöde</string>
     <string name="nav_events">Händelser</string>
 </resources>

@@ -35,6 +35,10 @@ object CfIcons {
     val File = line("M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 14h6M9 17h4")
     val Sparkle = line("M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7-4.7-1.8 4.7-1.8zM19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z")
     val Savings = line("M5 11a7 6 0 0 1 13-2.5h1.5a1.5 1.5 0 0 1 1.5 1.5v2.5l-2 .8A7 6 0 0 1 16 16.5V20h-3v-2h-3v2H7v-3.6A6 6 0 0 1 5 11zM10 7.2h4M15.5 11h.01")
+    val List = line("M4 6h16M4 12h16M4 18h10")
+    val Drop = line("M12 3c3 4 6 7.2 6 10.5a6 6 0 01-12 0C6 10.2 9 7 12 3z")
+    val Fork = line("M7 3v8a2 2 0 002 2v8M11 3v8M15 3c2 0 3 2 3 5s-1 5-3 5v8")
+    val Share = line("M12 4v11M7.5 8.5 12 4l4.5 4.5M5 13v6h14v-6")
 
     private fun line(d: String): ImageVector = ImageVector.Builder(
         defaultWidth = 24.dp,

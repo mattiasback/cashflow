@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Band and hero -->
+    <string name="title">Insights</string>
+    <string name="cd_profile">Profile and settings</string>
+    <string name="cd_info">How do we count?</string>
+    <string name="hero_label">Possible gain per year</string>
+    <string name="cd_hero">%1$s %2$s, %3$s. Show how we count</string>
+    <string name="gain_none">No suggestions right now</string>
+    <plurals name="gain_left">
+        <item quantity="one">%1$d suggestion left</item>
+        <item quantity="other">%1$d suggestions left</item>
+    </plurals>
+    <string name="gain_left_done">%1$s · %2$d done</string>
+
+    <!-- Er plan -->
+    <string name="section_plan">Your plan</string>
+    <string name="plan_intro">The order that usually pays off best: safety first, then expensive loans, then long-term saving.</string>
+    <string name="plan_done">%1$d of %2$d done</string>
+    <string name="tag_ongoing">Ongoing</string>
+    <string name="tag_biggest">Biggest effect</string>
+    <string name="tag_loans">Loans</string>
+    <string name="tag_yearly">Every year</string>
+    <string name="tag_done">Done</string>
+    <string name="mark_done">Mark as done</string>
+    <string name="undo">Undo</string>
+    <string name="cd_step">Step %1$d: %2$s, %3$s. %4$s</string>
+    <string name="step_eyebrow">Step %1$d of the plan</string>
+
+    <string name="step_buffer_title">Fill the buffer to %1$d months</string>
+    <string name="step_buffer_text">A buffer keeps you from expensive loans when something unexpected happens. You have %1$s, the goal is %2$s.</string>
+    <string name="step_buffer_text_no_balance">A buffer keeps you from expensive loans when something unexpected happens. The goal is %1$s, %2$d months of your fixed expenses. Enter the buffer\'s balance in Profile and the app follows how far you have left.</string>
+    <string name="step_buffer_bar">%1$s of %2$d mo · full %3$s at %4$s/mo</string>
+    <string name="step_buffer_bar_full">%1$s of %2$d mo · full</string>
+    <string name="step_buffer_bar_stalled">%1$s of %2$d mo · nothing goes in right now</string>
+    <string name="step_buffer_cta">Raise the transfer</string>
+    <string name="step_buffer_how">Raise the automatic transfer to the buffer account. With %1$s more a month it is full %2$s%3$s.</string>
+    <string name="step_buffer_how_instead"> instead of %1$s</string>
+    <string name="step_buffer_how_plain">Set up a standing transfer to the buffer account the day after payday.</string>
+
+    <string name="step_surplus_title">Give the surplus a job</string>
+    <string name="step_surplus_text">On average %1$s is left on the account each month without being placed. An automatic transfer the day after payday puts the money to work.</string>
+    <string name="step_surplus_text_done">On average only %1$s is left on the account a month, so the surplus already has a job.</string>
+    <string name="step_surplus_cta">Set up a transfer</string>
+    <string name="step_surplus_how">Set up a standing transfer of %1$s the day after payday, and leave about 2,000 kr as a margin.</string>
+    <string name="step_surplus_how_plain">Leave a small margin on the account and move the rest the day after payday.</string>
+
+    <string name="step_loan_title">Pay off the most expensive loan first</string>
+    <string name="step_loan_text">You pay %1$s a month on loans besides the mortgage. Extra payments on the loan with the highest rate give a safe return, often more than saving after tax.</string>
+    <string name="step_loan_text_none">No loans other than the mortgage show in the transactions.</string>
+    <string name="step_loan_cta">Work out an extra payment</string>
+    <string name="step_loan_how">Once the buffer is full: pay extra on the loan with the highest rate, every month or as a lump sum.</string>
+
+    <string name="step_long_title">Review long-term saving</string>
+    <string name="step_long_text_over">The savings rate is %1$s, above the goal of %2$s. Check fees and that the funds are in an ISK.</string>
+    <string name="step_long_text_under">The savings rate is %1$s, below the goal of %2$s. Check fees and that the funds are in an ISK.</string>
+    <string name="step_long_cta">Show savings</string>
+    <string name="step_long_how">Check the fund fees once a year and move anything in a regular custody account to an ISK.</string>
+
+    <!-- Spara utan att märka det -->
+    <string name="section_opps">Save without noticing</string>
+    <string name="opps_intro">Found in your transactions, sorted by what it gives per year.</string>
+    <string name="opps_empty">No suggestions right now. The app looks for price rises, small recurring charges and categories above your average.</string>
+    <string name="opp_eyebrow">Suggestion · %1$s</string>
+    <string name="opp_done_sub">Done, well done!</string>
+    <string name="effort_10_min">10 min</string>
+    <string name="effort_5_min">5 min</string>
+    <string name="effort_habit">Habit</string>
+    <string name="effort_fixed">Fixed</string>
+    <string name="i_fixed_it">I fixed it</string>
+    <string name="undo_done">Undo done</string>
+    <string name="cd_opp">%1$s, about %2$s a year, effort %3$s. Show details</string>
+    <string name="cd_opp_done">%1$s, done. Show details</string>
+
+    <string name="opp_rises_title">Review your subscriptions</string>
+    <string name="opp_rises_sub">%1$s · %2$s</string>
+    <plurals name="price_rises">
+        <item quantity="one">%1$d price rise</item>
+        <item quantity="other">%1$d price rises</item>
+    </plurals>
+    <plurals name="subscriptions">
+        <item quantity="one">%1$d subscription</item>
+        <item quantity="other">%1$d subscriptions</item>
+    </plurals>
+    <string name="opp_rises_why">The monthly price went up:\n%1$s\nGoing back to the old price saves %2$s a year.</string>
+    <string name="opp_rises_assume">Based on the last six months. A subscription is the same amount charged once a month.</string>
+    <string name="opp_rises_how">Cancel what you do not use and compare prices for the ones that went up.</string>
+
+    <string name="opp_small_title">Stop small charges</string>
+    <plurals name="opp_small_sub">
+        <item quantity="one">%1$d recurring under %2$s</item>
+        <item quantity="other">%1$d recurring under %2$s</item>
+    </plurals>
+    <string name="opp_small_why">Small charges every month:\n%1$s\nIn total %2$s a month, so %3$s a year.</string>
+    <string name="opp_small_assume">The app cannot see whether you use the services, so the sum is the most you can save.</string>
+    <string name="opp_small_how">Go through the charges and cancel the ones you do not use.</string>
+
+    <string name="opp_over_title">Keep %1$s at your average</string>
+    <string name="opp_over_sub">%1$s %2$s above your average</string>
+    <string name="opp_over_why">%1$s was %2$s against an average of %3$s. Keeping to the average saves about %4$s a year compared with the pace in %5$s.</string>
+    <plurals name="opp_over_assume">
+        <item quantity="one">Compared with the month before.</item>
+        <item quantity="other">Compared with the average of the %1$d months before.</item>
+    </plurals>
+    <string name="opp_over_how">Follow the category in Flow during the month.</string>
+
+    <!-- Tänk om -->
+    <string name="section_whatif">What if …</string>
+    <string name="sim_head">… you saved more each month</string>
+    <string name="sim_slider">Extra saving per month</string>
+    <string name="cd_sim">%1$s a month</string>
+    <string name="sim_min">0 kr</string>
+    <string name="sim_max">10,000 kr</string>
+    <string name="sim_buffer">Buffer full</string>
+    <string name="sim_buffer_never">Never at today\'s pace</string>
+    <string name="sim_buffer_full_now">Already full</string>
+    <string name="sim_instead_of">instead of %1$s</string>
+    <string name="sim_current_pace">at the current pace</string>
+    <string name="sim_rate">Savings rate</string>
+    <string name="sim_rate_now">now %1$s</string>
+    <string name="sim_funds">New fund savings in 10 years</string>
+    <string name="sim_funds_more">%1$s compared with today</string>
+    <string name="sim_funds_now">at the current %1$s/mo</string>
+    <string name="sim_note">Extra money goes to the buffer until it covers %1$d months, then to funds. An example at 6 %% a year, not a forecast.</string>
+    <string name="sim_note_no_balance">Extra money goes to funds. Enter the buffer\'s balance in Profile and the app fills the buffer first. An example at 6 %% a year, not a forecast.</string>
+
+    <!-- Så står ni dig -->
+    <string name="section_health">How you are doing</string>
+    <string name="bench_rate">Savings rate</string>
+    <string name="bench_rate_note">Goal %1$s. Many recommend at least 10 %% of income.</string>
+    <string name="bench_buffer">Buffer</string>
+    <string name="bench_buffer_note">Goal %1$d months of fixed expenses.</string>
+    <string name="bench_fixed">Fixed costs of income</string>
+    <string name="bench_fixed_note">Under 50 %% leaves room to save and handle the unexpected.</string>
+    <string name="health_span">12-month average</string>
+
+    <!-- Fråga en AI -->
+    <string name="section_ai">Ask an AI</string>
+    <string name="ai_title">Get a second opinion</string>
+    <string name="ai_text">Copy an anonymous summary of your plan and figures to the AI chat you already use.</string>
+    <string name="ai_preview">Preview of the summary</string>
+    <string name="ai_privacy">No names, account numbers or payees. The text is made on the phone and never sent by us.</string>
+    <string name="ai_copy">Copy anonymous summary</string>
+    <string name="ai_copied">Copied</string>
+    <string name="ai_share">Share …</string>
+    <string name="prompt">You are an experienced personal finance adviser in Sweden.\nOur household, monthly average over the last %1$d months:\nIncome %2$s, expenses %3$s (fixed %4$s), savings %5$s (savings rate %6$s).\nLeft unplaced on the account on average %7$s a month.\n%8$s%9$sOur plan: 1) fill the buffer 2) give the surplus a job 3) pay off expensive loans 4) review long-term saving.\nIs the order sensible? What would you change?</string>
+    <string name="prompt_buffer">Buffer %1$s of the goal %2$s (%3$d months of fixed expenses).\n</string>
+    <string name="prompt_buffer_target">Buffer goal %1$s (%2$d months of fixed expenses), balance unknown.\n</string>
+    <string name="prompt_loans">Loans besides the mortgage: %1$s a month.\n</string>
+
+    <!-- Sheets and the rest -->
+    <string name="sheet_why">How we got there</string>
+    <string name="sheet_how">What to do</string>
+    <string name="close">Close</string>
+    <string name="about_eyebrow">How we count</string>
+    <string name="about_why">The sum of the suggestions under \"Save without noticing\" that you have not marked as done. Each one is based on your own transactions.</string>
+    <string name="about_assume">Estimates are rounded. The app cannot see whether you use a service, so this is the most you can save.</string>
+    <string name="about_how">Start with what gives the most per minute.</string>
+    <string name="disclaimer">The suggestions are based on your own figures and common rules of thumb. They are not personal financial advice.</string>
+    <string name="not_enough_title">Insights need three months</string>
+    <string name="not_enough_text">With at least three months of transactions the app can work out averages and find recurring charges. Import more statements.</string>
+    <string name="empty_title">Nothing to show yet</string>
+    <string name="empty_text">Import statements and the app works out your plan and what you can save.</string>
+    <string name="import_cta">Import</string>
+    <string name="copied_message">The summary is copied</string>
+</resources>

@@ -66,6 +66,13 @@ class OpportunityEngineTest {
     }
 
     @Test
+    fun `a one-off spike is not a pace to keep`() {
+        val spend = listOf(800.0, 900.0, 700.0, 800.0, 600.0, 1900.0)
+        val rows = salary() + months.zip(spend).map { (m, kr) -> row(m, 15, -kr, "TANDLAKARE EXEMPEL", "noje") }
+        assertThat(find(rows).filterIsInstance<Opportunity.OverAverage>()).isEmpty()
+    }
+
+    @Test
     fun `the list is sorted by kr per year`() {
         val stream = months.mapIndexed { i, m -> row(m, 9, if (i < 4) -149.0 else -179.0, "STREAMA EXEMPEL", "abonnemang") }
         val spend = listOf(1800.0, 1900.0, 1750.0, 1850.0, 1850.0, 2100.0)

@@ -19,6 +19,7 @@ import app.cashflow.core.domain.model.ThemeMode
 import app.cashflow.core.ui.UiText
 import app.cashflow.core.ui.format.AppLocale
 import app.cashflow.core.ui.format.MoneyFormatter
+import app.cashflow.core.ui.format.PeriodFormatter
 import app.cashflow.feature.profile.ui.R
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +47,8 @@ data class ProfileState(
     val theme: ThemeMode = ThemeMode.SYSTEM,
     val bufferGoalMonths: Int = GoalType.BUFFER_MONTHS.defaultTarget.toInt(),
     val savingsGoalPercent: Int = GoalType.SAVINGS_RATE.defaultTarget.toInt(),
+    /** "50 000 kr den 2026-10-01" or "Inte angivet". */
+    val bufferBalanceLine: UiText = UiText.DynamicString(""),
     val isLoading: Boolean = true,
 )
 
@@ -55,6 +58,7 @@ sealed interface ProfileAction {
     data object OnRulesClick : ProfileAction
     data class OnMortgageToggle(val enabled: Boolean) : ProfileAction
     data object OnMortgageClick : ProfileAction
+    data object OnBufferBalanceClick : ProfileAction
     data class OnPercentDecimalsToggle(val enabled: Boolean) : ProfileAction
     data class OnThemeSelect(val theme: ThemeMode) : ProfileAction
     /** One step up (+1) or down (−1) for a goal; months for Buffert, percent for Sparkvot. */
@@ -67,6 +71,7 @@ sealed interface ProfileEvent {
     data object OpenImportHistory : ProfileEvent
     data object OpenRules : ProfileEvent
     data object OpenMortgage : ProfileEvent
+    data object OpenBufferBalance : ProfileEvent
     data object NavigateBack : ProfileEvent
 }
 
@@ -110,6 +115,9 @@ class ProfileViewModel(
                 theme = prefs.theme,
                 bufferGoalMonths = goalValues.bufferMonths.roundToInt(),
                 savingsGoalPercent = goalValues.savingsRatePercent.roundToInt(),
+                bufferBalanceLine = prefs.bufferBalance?.let { b ->
+                    UiText.StringResource(R.string.profile_buffer_balance_line, arrayOf(MoneyFormatter.format(b.amount, locale = locale), PeriodFormatter.iso(b.date, locale)))
+                } ?: UiText.StringResource(R.string.profile_buffer_balance_none),
                 isLoading = false,
             )
         }.onEach { s -> _state.update { s } }.launchIn(viewModelScope)
@@ -121,6 +129,7 @@ class ProfileViewModel(
             ProfileAction.OnImportHistoryClick -> send(ProfileEvent.OpenImportHistory)
             ProfileAction.OnRulesClick -> send(ProfileEvent.OpenRules)
             ProfileAction.OnMortgageClick -> send(ProfileEvent.OpenMortgage)
+            ProfileAction.OnBufferBalanceClick -> send(ProfileEvent.OpenBufferBalance)
             ProfileAction.OnBackClick -> send(ProfileEvent.NavigateBack)
             is ProfileAction.OnMortgageToggle -> {
                 update { it.copy(mortgage = it.mortgage.copy(enabled = action.enabled)) }

@@ -16,9 +16,18 @@
     <string name="profile_group_calc">Calculations</string>
     <string name="profile_group_goals">Goals</string>
     <string name="profile_goal_buffer">Buffer goal</string>
-    <string name="profile_goal_buffer_hint">Months of fixed expenses the savings accounts should cover</string>
+    <string name="profile_goal_buffer_hint">Months of fixed expenses the buffer should cover</string>
     <string name="profile_goal_rate">Savings goal</string>
     <string name="profile_goal_rate_hint">Share of income saved</string>
+    <string name="profile_buffer_balance">Buffer balance</string>
+    <string name="profile_buffer_balance_line">%1$s on %2$s</string>
+    <string name="profile_buffer_balance_none">Not entered. Insights follows the buffer once you enter it.</string>
+    <string name="buffer_balance_title">Buffer balance</string>
+    <string name="buffer_balance_body">Statements only show what moves in and out, not the balance. Enter what is on the buffer account today, and Insights adds the transfers after today.</string>
+    <string name="buffer_balance_label">Balance today</string>
+    <string name="buffer_balance_stored">Entered %1$s · today about %2$s</string>
+    <string name="buffer_balance_save">Save</string>
+    <string name="buffer_balance_clear">Remove</string>
     <plurals name="profile_goal_months">
         <item quantity="one">%1$d mo</item>
         <item quantity="other">%1$d mo</item>
@@ -41,7 +50,7 @@
     <string name="profile_theme_system">System</string>
     <string name="profile_theme_light">Light</string>
     <string name="profile_theme_dark">Dark</string>
-    <string name="profile_footer">CashFlow 0.4.0 · step 4</string>
+    <string name="profile_footer">CashFlow 0.5.0 · step 5</string>
 
     <string name="accounts_title">Accounts</string>
     <string name="accounts_savings_title">Own savings</string>
