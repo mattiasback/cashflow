@@ -37,7 +37,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
-import app.cashflow.core.designsystem.component.AccentStatusBar
+import app.cashflow.core.designsystem.component.BandStatusBar
+import app.cashflow.core.designsystem.component.rememberOnBand
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -84,6 +85,7 @@ fun ImportScreen(
     onAction: (ImportAction) -> Unit,
 ) {
     val c = CashFlowTheme.colors
+    val scroll = rememberScrollState()
     Box(Modifier.fillMaxSize()) {
         Column(
             Modifier
@@ -91,7 +93,7 @@ fun ImportScreen(
                 .background(c.bgCanvas)
                 // The new-account name field must stay above the keyboard.
                 .fitInside(WindowInsetsRulers.Ime.current)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scroll)
                 .padding(bottom = Spacing.s12),
         ) {
             AccentHeader(accent = Accent.Events, title = stringResource(R.string.import_title), leading = { BandIconButton(CfIcons.Close, stringResource(R.string.cd_cancel_import), { onAction(ImportAction.OnCloseClick) }) }) {
@@ -174,7 +176,7 @@ fun ImportScreen(
                 }
             }
         }
-        AccentStatusBar(accent = Accent.Events)
+        BandStatusBar(rememberOnBand(scroll))
     }
 }
 

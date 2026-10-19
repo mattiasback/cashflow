@@ -55,7 +55,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
-import app.cashflow.core.designsystem.component.AccentStatusBar
+import app.cashflow.core.designsystem.component.BandStatusBar
+import app.cashflow.core.designsystem.component.rememberOnBand
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -115,12 +116,13 @@ fun ReviewScreen(
 ) {
     val c = CashFlowTheme.colors
     val total = state.decided + state.duplicates.size + state.groups.size
+    val scroll = rememberScrollState()
     Box(Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(c.bgCanvas)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scroll)
                 .padding(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
             verticalArrangement = Arrangement.spacedBy(Spacing.s3),
         ) {
@@ -167,7 +169,7 @@ fun ReviewScreen(
                 }
             }
         }
-        AccentStatusBar(accent = Accent.Events)
+        BandStatusBar(rememberOnBand(scroll))
     }
 }
 

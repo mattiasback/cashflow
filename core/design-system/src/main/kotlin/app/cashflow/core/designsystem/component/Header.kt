@@ -139,15 +139,6 @@ fun AccentTopBar(
     }
 }
 
-/**
- * Only the status bar in the band colour, for screens whose controls scroll away with the band
- * (every tab but Flöde): content scrolls under it, and the status bar icons stay readable.
- */
-@Composable
-fun AccentStatusBar(accent: Accent, modifier: Modifier = Modifier) {
-    Spacer(modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(animatedBand(accent).copy(alpha = 0.82f)))
-}
-
 /** Round 40dp control on the band (profile, filter). */
 @Composable
 fun BandIconButton(

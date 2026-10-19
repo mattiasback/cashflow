@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -30,7 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
 import app.cashflow.core.designsystem.component.CfBottomSheet
-import app.cashflow.core.designsystem.component.AccentStatusBar
+import app.cashflow.core.designsystem.component.BandStatusBar
+import app.cashflow.core.designsystem.component.rememberOnBand
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -73,8 +75,10 @@ fun ImportHistoryScreen(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val c = CashFlowTheme.colors
+    val listState = rememberLazyListState()
     Box(Modifier.fillMaxSize()) {
         LazyColumn(
+            state = listState,
             modifier = Modifier.fillMaxSize().background(c.bgCanvas),
             contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
         ) {
@@ -116,7 +120,7 @@ fun ImportHistoryScreen(
                 )
             }
         }
-        AccentStatusBar(accent = Accent.Settings)
+        BandStatusBar(rememberOnBand(listState))
     }
 
     state.sheet?.let { sheet ->

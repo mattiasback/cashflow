@@ -55,6 +55,7 @@ import app.cashflow.core.designsystem.component.AccentHeader
 import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandDropdown
 import app.cashflow.core.designsystem.component.BandIconButton
+import app.cashflow.core.designsystem.component.BandStatusBar
 import app.cashflow.core.designsystem.component.BandSegmented
 import app.cashflow.core.designsystem.component.BarChart
 import app.cashflow.core.designsystem.component.BarGroup
@@ -192,6 +193,8 @@ fun FlowScreen(
                 }
             }
         }
+        // The band stays behind the status bar here, so its icons stay light.
+        BandStatusBar(onBand = true)
         // The controls stay at the top while the hero and the rest scroll under them.
         AccentTopBar(
             accent = state.tab.accent(),

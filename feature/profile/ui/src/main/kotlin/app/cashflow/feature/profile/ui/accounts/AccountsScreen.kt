@@ -18,7 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
-import app.cashflow.core.designsystem.component.AccentStatusBar
+import app.cashflow.core.designsystem.component.BandStatusBar
+import app.cashflow.core.designsystem.component.rememberOnBand
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfCard
 import app.cashflow.core.designsystem.component.GroupHeading
@@ -58,12 +59,13 @@ fun AccountsScreen(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val c = CashFlowTheme.colors
+    val scroll = rememberScrollState()
     Box(Modifier.fillMaxSize()) {
         Column(
             Modifier
                 .fillMaxSize()
                 .background(c.bgCanvas)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scroll)
                 .padding(contentPadding),
         ) {
             AccentHeader(accent = Accent.Settings, title = stringResource(R.string.accounts_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(AccountsAction.OnBackClick) }) }) {
@@ -88,7 +90,7 @@ fun AccountsScreen(
                 )
             }
         }
-        AccentStatusBar(accent = Accent.Settings)
+        BandStatusBar(rememberOnBand(scroll))
     }
 }
 

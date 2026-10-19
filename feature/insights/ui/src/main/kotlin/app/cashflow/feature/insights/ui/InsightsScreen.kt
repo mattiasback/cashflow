@@ -54,7 +54,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
-import app.cashflow.core.designsystem.component.AccentStatusBar
+import app.cashflow.core.designsystem.component.BandStatusBar
+import app.cashflow.core.designsystem.component.rememberOnBand
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfBottomSheet
 import app.cashflow.core.designsystem.component.CfButton
@@ -159,7 +160,7 @@ fun InsightsScreen(
             }
             if (state.enoughData) content(state, onAction)
         }
-        AccentStatusBar(accent = Accent.Insights)
+        BandStatusBar(rememberOnBand(listState))
     }
 }
 
