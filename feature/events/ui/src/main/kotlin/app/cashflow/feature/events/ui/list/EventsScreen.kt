@@ -81,7 +81,8 @@ fun EventsRoot(
     initialCategory: String? = null,
     initialPeriod: String? = null,
     viewModel: EventsViewModel = koinViewModel(key = "events-$initialCategory-$initialPeriod") {
-        org.koin.core.parameter.parametersOf(*listOfNotNull(initialCategory, initialPeriod).toTypedArray())
+        // Positional: a null category must keep its slot, or the period would be read as a category.
+        org.koin.core.parameter.parametersOf(initialCategory, initialPeriod)
     },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
