@@ -1,5 +1,6 @@
 package app.cashflow.feature.flow.ui
 
+import app.cashflow.core.domain.cashflow.Buffer
 import app.cashflow.core.domain.cashflow.CashFlowSummary
 import app.cashflow.core.domain.cashflow.FlowData
 import app.cashflow.core.domain.cashflow.PeriodMode
@@ -7,6 +8,7 @@ import app.cashflow.core.domain.cashflow.PeriodScope
 import app.cashflow.core.domain.model.Category
 import app.cashflow.core.domain.model.CategoryId
 import app.cashflow.core.domain.model.CategoryKind
+import app.cashflow.core.domain.model.Goals
 import app.cashflow.core.domain.model.Money
 import app.cashflow.core.domain.model.Period
 import app.cashflow.core.domain.model.Transaction
@@ -46,6 +48,7 @@ internal class FlowInput(
     /** The household's buffer (savings accounts), null when there is no savings account. */
     val buffer: Money?,
     val percentDecimals: Boolean,
+    val goals: Goals = Goals(),
 )
 
 /** The resolved period: the scope, its sum and what it is compared with. */
@@ -367,14 +370,15 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
                 val ytdMonths = data.periods.filter { it.year == year && it <= r.scope.last }
                 val ytd = data.sum(ytdMonths)
                 val ytdLabel = year.toString()
-                val monthlyCost = r.a12.expenses.ore / n12
-                val bufferTile = if (input.buffer != null && input.buffer.ore > 0 && monthlyCost > 0) {
-                    val months = input.buffer.ore.toDouble() / monthlyCost
+                val bufferGoal = input.goals.bufferMonths
+                val rateGoal = input.goals.savingsRatePercent
+                val months = Buffer.months(input.buffer, Money(r.a12.fixedExpenses.ore / n12))
+                val bufferTile = if (months != null) {
                     TileUi(
                         res(R.string.tile_buffer),
                         res(R.string.value_months, PercentFormatter.format(months, decimals = 1, locale = locale).replace("%", "").trim()),
-                        res(R.string.sub_buffer, BUFFER_TARGET_MONTHS, pct(months / BUFFER_TARGET_MONTHS * 100)),
-                        goal = (months / BUFFER_TARGET_MONTHS).toFloat().coerceIn(0f, 1f),
+                        res(R.string.sub_buffer, bufferGoal.roundToInt(), pct(months / bufferGoal * 100)),
+                        goal = (months / bufferGoal).toFloat().coerceIn(0f, 1f),
                     )
                 } else {
                     TileUi(res(R.string.tile_buffer), text("–"), res(R.string.sub_no_buffer))
@@ -384,8 +388,8 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
                     avgTile { it.savings },
                     TileUi(
                         res(R.string.tile_rate), text(pct(rate)),
-                        res(if (rate >= SAVINGS_GOAL_PERCENT) R.string.sub_rate_reached else R.string.sub_rate, SAVINGS_GOAL_PERCENT),
-                        goal = (rate / SAVINGS_GOAL_PERCENT).toFloat().coerceIn(0f, 1f),
+                        res(if (rate >= rateGoal) R.string.sub_rate_reached else R.string.sub_rate, rateGoal.roundToInt()),
+                        goal = (rate / rateGoal).toFloat().coerceIn(0f, 1f),
                     ),
                     bufferTile,
                     TileUi(res(R.string.tile_saved_ytd), text(kr(ytd.savings)), res(R.string.sub_saved_ytd, ytdLabel, kr(ytd.savings.ore / ytdMonths.size.coerceAtLeast(1)))),
@@ -784,8 +788,6 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
         const val OTHER_SAVINGS = "ovrigt_spar"
         const val LEFT = "kvar"
         val SALARY = CategoryId("lon")
-        const val SAVINGS_GOAL_PERCENT = 10
-        const val BUFFER_TARGET_MONTHS = 6
         private val TIERS = listOf(1f, 0.78f, 0.6f, 0.45f, 0.32f, 0.22f)
         private val NO_DATA_SUFFIX = mapOf(AppLocale.SV to ", ingen data", AppLocale.EN to ", no data")
     }

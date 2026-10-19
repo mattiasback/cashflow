@@ -8,6 +8,7 @@ import app.cashflow.core.domain.model.CategoryKind
 import app.cashflow.core.domain.testing.Fixtures.tx
 import app.cashflow.core.domain.testing.InMemoryAccountDataSource
 import app.cashflow.core.domain.testing.InMemoryCategoryDataSource
+import app.cashflow.core.domain.testing.InMemoryGoalDataSource
 import app.cashflow.core.domain.testing.InMemorySettingsDataSource
 import app.cashflow.core.domain.testing.InMemoryTransactionDataSource
 import app.cashflow.core.ui.UiText
@@ -66,7 +67,7 @@ class FlowViewModelTest {
     @AfterEach
     fun tearDown() = Dispatchers.resetMain()
 
-    private fun vm() = FlowViewModel(transactions, categories, InMemoryAccountDataSource(), settings, UnconfinedTestDispatcher())
+    private fun vm() = FlowViewModel(transactions, categories, InMemoryAccountDataSource(), settings, InMemoryGoalDataSource(), UnconfinedTestDispatcher())
 
     private suspend fun FlowViewModel.awaitState(predicate: (FlowState) -> Boolean) = withTimeout(5_000) { state.first { it.hasData && predicate(it) } }
 

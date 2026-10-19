@@ -2,16 +2,16 @@ package app.cashflow.feature.flow.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.cashflow.core.domain.cashflow.Buffer
 import app.cashflow.core.domain.cashflow.FlowData
 import app.cashflow.core.domain.cashflow.PeriodMode
-import app.cashflow.core.domain.cashflow.SavingsCalculator
 import app.cashflow.core.domain.datasource.AccountLocalDataSource
 import app.cashflow.core.domain.datasource.CategoryLocalDataSource
+import app.cashflow.core.domain.datasource.GoalLocalDataSource
 import app.cashflow.core.domain.datasource.SettingsDataSource
 import app.cashflow.core.domain.datasource.TransactionLocalDataSource
-import app.cashflow.core.domain.model.AccountType
 import app.cashflow.core.domain.model.CategoryKind
-import app.cashflow.core.domain.model.Money
+import app.cashflow.core.domain.model.Goals
 import app.cashflow.core.domain.model.Period
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -41,12 +40,12 @@ class FlowViewModel(
     categories: CategoryLocalDataSource,
     accounts: AccountLocalDataSource,
     private val settings: SettingsDataSource,
+    goals: GoalLocalDataSource,
     // Month sums are computed off the main thread; tests pass their own dispatcher.
     compute: CoroutineDispatcher = Dispatchers.Default,
 ) : ViewModel() {
 
     private val builder = FlowBuilder()
-    private val savings = SavingsCalculator()
 
     private val _state = MutableStateFlow(FlowState())
     val state: StateFlow<FlowState> = _state.asStateFlow()
@@ -59,21 +58,26 @@ class FlowViewModel(
     private var input: FlowInput? = null
 
     init {
-        viewModelScope.launch {
-            val prefs = settings.settings.first()
-            selection.value = decode(prefs.lastTab, prefs.lastPeriod)
-        }
+        // The stored tab and period, also when Hem changes them (a trend row opens a sub-tab).
+        settings.settings.map { it.lastTab to it.lastPeriod }.distinctUntilChanged().onEach { (tab, period) ->
+            val stored = decode(tab, period)
+            selection.update { sel ->
+                if (sel == null) stored
+                else if (sel.tab == stored.tab && encode(sel) == encode(stored)) sel
+                else sel.copy(tab = stored.tab, mode = stored.mode, month = stored.month, year = stored.year, path = emptyList(), sheet = null)
+            }
+        }.launchIn(viewModelScope)
         val model = combine(
             transactions.observeAll(),
             categories.observeCategories(),
             accounts.observeAccounts(),
             settings.settings.map { it.mortgage to it.percentDecimals }.distinctUntilChanged(),
-        ) { txs, cats, accs, (mortgage, decimals) ->
+            goals.observeGoals(),
+        ) { txs, cats, accs, (mortgage, decimals), goalList ->
             val byId = cats.associateBy { it.id }
             val data = FlowData.of(txs, mortgage, { byId[it]?.kind ?: CategoryKind.UNCATEGORIZED })
-            val buffers = savings.summarize(accs.filter { it.type == AccountType.SAVINGS }, txs, year = data.periods.lastOrNull()?.year ?: 0)
-            val buffer = if (buffers.isEmpty()) null else Money(buffers.sumOf { it.value.ore })
-            FlowInput(data, txs, byId, buffer, decimals)
+            val buffer = Buffer.value(accs, txs, year = data.periods.lastOrNull()?.year ?: 0)
+            FlowInput(data, txs, byId, buffer, decimals, Goals.of(goalList))
         }.flowOn(compute)
 
         combine(model, selection.filterNotNull()) { i, sel ->
