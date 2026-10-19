@@ -137,8 +137,8 @@
     <string name="share_of_savings">Andel av sparandet</string>
     <string name="row_inflow">Inflöde</string>
     <string name="row_outflow">Utflöde</string>
-    <string name="row_of_which_saved">Varav sparat</string>
-    <string name="row_to_savings">Överfört till sparande</string>
+    <string name="row_of_which_saved">Sparat</string>
+    <string name="row_to_savings">Till sparande</string>
     <string name="row_not_placed">Inte placerat</string>
     <string name="row_biggest_variable">Största rörliga</string>
     <string name="row_share_of">%1$s av %2$s</string>

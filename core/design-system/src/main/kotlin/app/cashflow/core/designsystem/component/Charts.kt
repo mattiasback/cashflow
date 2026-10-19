@@ -53,6 +53,8 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -195,7 +197,19 @@ fun BarChart(
                 averageLabel,
                 style = CashFlowTheme.typography.caption,
                 color = c.textSecondary,
-                modifier = Modifier.align(Alignment.TopEnd).clip(Radius.xs).background(c.surfaceCard).padding(horizontal = 4.dp),
+                // Sits just above the dashed line at its left end, on top of the bars, so it never
+                // covers the newest months on the right.
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .zIndex(1f)
+                    .layout { measurable, constraints ->
+                        val p = measurable.measure(constraints)
+                        val lineY = plot.toPx() - (average / maxValue).coerceIn(0f, 1f) * (plot.toPx() - 8.dp.toPx())
+                        layout(p.width, p.height) { p.place(0, (lineY - p.height - 2.dp.toPx()).roundToInt().coerceAtLeast(0)) }
+                    }
+                    .clip(Radius.xs)
+                    .background(c.surfaceCard)
+                    .padding(horizontal = 4.dp),
             )
         }
         LazyRow(

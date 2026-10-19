@@ -130,8 +130,8 @@
     <string name="share_of_savings">Share of savings</string>
     <string name="row_inflow">Inflow</string>
     <string name="row_outflow">Outflow</string>
-    <string name="row_of_which_saved">Of which saved</string>
-    <string name="row_to_savings">Moved to savings</string>
+    <string name="row_of_which_saved">Saved</string>
+    <string name="row_to_savings">To savings</string>
     <string name="row_not_placed">Not placed</string>
     <string name="row_biggest_variable">Largest variable</string>
     <string name="row_share_of">%1$s of %2$s</string>

@@ -217,7 +217,7 @@ private fun RowScope.BarActions(state: FlowState, onAction: (FlowAction) -> Unit
         val compact = !bandFits(state)
         val pill = state.periodPill ?: if (compact) stringResource(R.string.mode_all) else null
         if (pill != null) {
-            BandDropdown(pill, stringResource(R.string.cd_period_pick, pill), { onAction(FlowAction.OnPickerOpen) }, Modifier.weight(1f, fill = false))
+            BandDropdown(pill, stringResource(R.string.cd_period_pick, pill), { onAction(FlowAction.OnPickerOpen) })
         }
         if (!compact) BandSegmented(
             segments = listOf(
