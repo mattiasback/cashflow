@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -91,94 +92,94 @@ fun ColumnMappingScreen(
     onAction: (ColumnMappingAction) -> Unit,
 ) {
     val c = CashFlowTheme.colors
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(c.bgCanvas)
-            .imePadding()
-            .verticalScroll(rememberScrollState())
-            .padding(bottom = Spacing.s12),
-    ) {
-        AccentHeader(
-            accent = Accent.Events,
-            title = stringResource(R.string.import_title),
-            actions = { BandIconButton(CfIcons.Close, stringResource(R.string.cd_cancel_import), { onAction(ColumnMappingAction.OnCloseClick) }) },
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(c.bgCanvas)
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = Spacing.s12),
         ) {
-            CfCard(Modifier.fillMaxWidth()) {
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.s2)) {
-                    Text(state.fileName, style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary)
-                    state.meta?.let { Text(it.asString(), style = CashFlowTheme.typography.label, color = c.textSecondary) }
-                    Text(stringResource(R.string.mapping_intro), style = CashFlowTheme.typography.body, color = c.textPrimary)
-                    if (state.formatChips.isNotEmpty()) {
-                        Text(state.formatChips.map { it.asString() }.joinToString(" · "), style = CashFlowTheme.typography.label, color = c.textSecondary)
+            AccentHeader(accent = Accent.Events, pinnedBar = true) {
+                CfCard(Modifier.fillMaxWidth()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.s2)) {
+                        Text(state.fileName, style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary)
+                        state.meta?.let { Text(it.asString(), style = CashFlowTheme.typography.label, color = c.textSecondary) }
+                        Text(stringResource(R.string.mapping_intro), style = CashFlowTheme.typography.body, color = c.textPrimary)
+                        if (state.formatChips.isNotEmpty()) {
+                            Text(state.formatChips.map { it.asString() }.joinToString(" · "), style = CashFlowTheme.typography.label, color = c.textSecondary)
+                        }
+                        if (state.isLoading) CircularProgressIndicator(color = c.accentEventsInk, modifier = Modifier.align(Alignment.CenterHorizontally))
+                        state.error?.let { Text(it.asString(), style = CashFlowTheme.typography.body, color = c.dangerStrong) }
                     }
-                    if (state.isLoading) CircularProgressIndicator(color = c.accentEventsInk, modifier = Modifier.align(Alignment.CenterHorizontally))
-                    state.error?.let { Text(it.asString(), style = CashFlowTheme.typography.body, color = c.dangerStrong) }
                 }
             }
-        }
-        if (state.columns.isEmpty()) return@Column
-        Column(Modifier.padding(horizontal = Spacing.gutter)) {
-            GroupHeading(stringResource(R.string.mapping_step_columns))
-            CfCard(Modifier.fillMaxWidth()) {
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
-                    state.columns.forEach { col -> ColumnRow(col, onAction) }
-                    CfSwitchRow(stringResource(R.string.mapping_negate), state.negate, { onAction(ColumnMappingAction.OnNegateToggle(it)) })
-                }
-            }
-
-            GroupHeading(stringResource(R.string.mapping_step_preview))
-            state.warning?.let { w ->
-                Column(
-                    Modifier.fillMaxWidth().clip(Radius.sm).background(c.vizFixedFill).padding(Spacing.s4),
-                ) { Text(w.asString(), style = CashFlowTheme.typography.body, color = c.textPrimary) }
-            }
-            if (state.preview.isNotEmpty()) {
-                CfCard(Modifier.fillMaxWidth().padding(top = Spacing.s2)) {
+            if (state.columns.isEmpty()) return@Column
+            Column(Modifier.padding(horizontal = Spacing.gutter)) {
+                GroupHeading(stringResource(R.string.mapping_step_columns))
+                CfCard(Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
-                        state.preview.forEach { p ->
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Column(Modifier.weight(1f)) {
-                                    Text(p.text, style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary, maxLines = 1)
-                                    Text(p.date, style = CashFlowTheme.typography.label, color = c.textSecondary)
+                        state.columns.forEach { col -> ColumnRow(col, onAction) }
+                        CfSwitchRow(stringResource(R.string.mapping_negate), state.negate, { onAction(ColumnMappingAction.OnNegateToggle(it)) })
+                    }
+                }
+
+                GroupHeading(stringResource(R.string.mapping_step_preview))
+                state.warning?.let { w ->
+                    Column(
+                        Modifier.fillMaxWidth().clip(Radius.sm).background(c.vizFixedFill).padding(Spacing.s4),
+                    ) { Text(w.asString(), style = CashFlowTheme.typography.body, color = c.textPrimary) }
+                }
+                if (state.preview.isNotEmpty()) {
+                    CfCard(Modifier.fillMaxWidth().padding(top = Spacing.s2)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+                            state.preview.forEach { p ->
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Column(Modifier.weight(1f)) {
+                                        Text(p.text, style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary, maxLines = 1)
+                                        Text(p.date, style = CashFlowTheme.typography.label, color = c.textSecondary)
+                                    }
+                                    Text(p.amount, style = CashFlowTheme.typography.bodyStrong.copy(fontFeatureSettings = "tnum"), color = c.textPrimary)
                                 }
-                                Text(p.amount, style = CashFlowTheme.typography.bodyStrong.copy(fontFeatureSettings = "tnum"), color = c.textPrimary)
                             }
                         }
                     }
                 }
-            }
-            state.summary?.let { Text(it.asString(), style = CashFlowTheme.typography.label, color = c.textSecondary, modifier = Modifier.padding(top = Spacing.s2, start = Spacing.s1)) }
+                state.summary?.let { Text(it.asString(), style = CashFlowTheme.typography.label, color = c.textSecondary, modifier = Modifier.padding(top = Spacing.s2, start = Spacing.s1)) }
 
-            GroupHeading(stringResource(R.string.mapping_step_account))
-            CfCard(Modifier.fillMaxWidth()) {
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
-                    Text(stringResource(R.string.mapping_account_question), style = CashFlowTheme.typography.body, color = c.textPrimary)
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.s2), verticalArrangement = Arrangement.spacedBy(Spacing.s2)) {
-                        state.accounts.forEach { a -> CfChip(a.label.asString(), a.selected, { onAction(ColumnMappingAction.OnAccountSelect(a.id)) }) }
-                    }
-                    if (state.accounts.lastOrNull()?.selected == true) {
-                        CfTextField(stringResource(R.string.import_account_name), state.newAccountName, { onAction(ColumnMappingAction.OnNewAccountNameChange(it)) })
+                GroupHeading(stringResource(R.string.mapping_step_account))
+                CfCard(Modifier.fillMaxWidth()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+                        Text(stringResource(R.string.mapping_account_question), style = CashFlowTheme.typography.body, color = c.textPrimary)
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.s2), verticalArrangement = Arrangement.spacedBy(Spacing.s2)) {
+                            state.accounts.forEach { a -> CfChip(a.label.asString(), a.selected, { onAction(ColumnMappingAction.OnAccountSelect(a.id)) }) }
+                        }
+                        if (state.accounts.lastOrNull()?.selected == true) {
+                            CfTextField(stringResource(R.string.import_account_name), state.newAccountName, { onAction(ColumnMappingAction.OnNewAccountNameChange(it)) })
+                        }
                     }
                 }
-            }
 
-            GroupHeading(stringResource(R.string.mapping_step_save))
-            CfCard(Modifier.fillMaxWidth()) {
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.s2)) {
-                    CfTextField(stringResource(R.string.mapping_profile_name), state.profileName, { onAction(ColumnMappingAction.OnProfileNameChange(it)) })
-                    Text(stringResource(R.string.mapping_profile_hint), style = CashFlowTheme.typography.label, color = c.textSecondary)
+                GroupHeading(stringResource(R.string.mapping_step_save))
+                CfCard(Modifier.fillMaxWidth()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.s2)) {
+                        CfTextField(stringResource(R.string.mapping_profile_name), state.profileName, { onAction(ColumnMappingAction.OnProfileNameChange(it)) })
+                        Text(stringResource(R.string.mapping_profile_hint), style = CashFlowTheme.typography.label, color = c.textSecondary)
+                    }
                 }
+                CfButton(
+                    stringResource(R.string.mapping_import),
+                    { onAction(ColumnMappingAction.OnImportClick) },
+                    Modifier.fillMaxWidth().padding(top = Spacing.s6),
+                    variant = CfButtonVariant.Accent,
+                    accent = c.actionEvents,
+                    enabled = state.canImport && !state.isWorking,
+                )
             }
-            CfButton(
-                stringResource(R.string.mapping_import),
-                { onAction(ColumnMappingAction.OnImportClick) },
-                Modifier.fillMaxWidth().padding(top = Spacing.s6),
-                variant = CfButtonVariant.Accent,
-                accent = c.actionEvents,
-                enabled = state.canImport && !state.isWorking,
-            )
         }
+        // The band's controls stay at the top while the content scrolls under them.
+        AccentTopBar(accent = Accent.Events, title = stringResource(R.string.import_title), actions = { BandIconButton(CfIcons.Close, stringResource(R.string.cd_cancel_import), { onAction(ColumnMappingAction.OnCloseClick) }) })
     }
 }
 

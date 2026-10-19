@@ -51,6 +51,10 @@ private val Emphasized = CubicBezierEasing(0.2f, 0f, 0f, 1f)
  * The thematic band at the top of a tab. It draws behind the status bar, fades into the
  * canvas behind the hero card, and hosts round controls on an `overlay-on-accent` track.
  * Body text never sits on the band itself; the hero content is a card.
+ *
+ * With [pinnedBar] the controls row is left out (its space is kept): the screen draws an
+ * [AccentTopBar] over its scrolling content instead, so the controls stay while the hero
+ * card scrolls under them.
  */
 @Composable
 fun AccentHeader(
@@ -58,10 +62,11 @@ fun AccentHeader(
     modifier: Modifier = Modifier,
     title: String? = null,
     actions: @Composable RowScope.() -> Unit = {},
+    pinnedBar: Boolean = false,
     hero: @Composable ColumnScope.() -> Unit = {},
 ) {
     val c = CashFlowTheme.colors
-    val bandColor by animateColorAsState(accent.band(), tween(300, easing = Emphasized), label = "band")
+    val bandColor = animatedBand(accent)
     Box(modifier.fillMaxWidth().background(c.bgCanvas)) {
         Column(Modifier.fillMaxWidth()) {
             Spacer(Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(bandColor))
@@ -74,24 +79,56 @@ fun AccentHeader(
             )
         }
         Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.statusBars)) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = Sizes.controlHeight + Spacing.s4 * 2)
-                    .padding(horizontal = Spacing.s4),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Spacing.s2),
-            ) {
-                if (title != null) {
-                    // Titles on the band are white and large enough for the 3:1 icon-only accents.
-                    Text(title, style = CashFlowTheme.typography.title, color = c.textOnAccent, modifier = Modifier.weight(1f))
-                } else {
-                    Spacer(Modifier.weight(1f))
-                }
-                actions()
-            }
+            if (pinnedBar) Spacer(Modifier.fillMaxWidth().height(BarHeight)) else BarRow(title, actions)
             Column(Modifier.fillMaxWidth().padding(horizontal = Spacing.s4), content = hero)
         }
+    }
+}
+
+private val BarHeight = Sizes.controlHeight + Spacing.s4 * 2
+
+// One animated band colour per accent, so the pinned bar and the band behind the hero always match.
+@Composable
+private fun animatedBand(accent: Accent): Color {
+    val color by animateColorAsState(accent.band(), tween(300, easing = Emphasized), label = "band")
+    return color
+}
+
+@Composable
+private fun BarRow(title: String?, actions: @Composable RowScope.() -> Unit) {
+    val c = CashFlowTheme.colors
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = BarHeight)
+            .padding(horizontal = Spacing.s4),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.s2),
+    ) {
+        if (title != null) {
+            // Titles on the band are white and large enough for the 3:1 icon-only accents.
+            Text(title, style = CashFlowTheme.typography.title, color = c.textOnAccent, modifier = Modifier.weight(1f))
+        } else {
+            Spacer(Modifier.weight(1f))
+        }
+        actions()
+    }
+}
+
+/**
+ * The band's controls row, pinned at the top over scrolling content (design: "on scroll the band
+ * stays pinned as the app-bar background; the hero card scrolls under it"). It also fills the
+ * status bar with the band colour, so the status bar itself stays transparent.
+ */
+@Composable
+fun AccentTopBar(
+    accent: Accent,
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    actions: @Composable RowScope.() -> Unit = {},
+) {
+    Column(modifier.fillMaxWidth().background(animatedBand(accent)).windowInsetsPadding(WindowInsets.statusBars)) {
+        BarRow(title, actions)
     }
 }
 

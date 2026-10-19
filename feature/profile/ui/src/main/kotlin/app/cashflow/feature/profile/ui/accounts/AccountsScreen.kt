@@ -1,6 +1,7 @@
 package app.cashflow.feature.profile.ui.accounts
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfCard
 import app.cashflow.core.designsystem.component.GroupHeading
@@ -56,38 +58,38 @@ fun AccountsScreen(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val c = CashFlowTheme.colors
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(c.bgCanvas)
-            .verticalScroll(rememberScrollState())
-            .padding(contentPadding),
-    ) {
-        AccentHeader(
-            accent = Accent.Settings,
-            title = stringResource(R.string.accounts_title),
-            actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(AccountsAction.OnBackClick) }) },
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(c.bgCanvas)
+                .verticalScroll(rememberScrollState())
+                .padding(contentPadding),
         ) {
-            CfCard(Modifier.fillMaxWidth()) {
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
-                    Text(stringResource(R.string.accounts_savings_title).uppercase(), style = CashFlowTheme.typography.overline, color = c.textSecondary)
-                    Text(state.savingsValue, style = CashFlowTheme.typography.headline.copy(fontFeatureSettings = "tnum"), color = c.textPrimary)
-                    Text(stringResource(R.string.accounts_savings_body), style = CashFlowTheme.typography.label, color = c.textSecondary)
-                    state.savingsNote?.let { Text(it.asString(), style = CashFlowTheme.typography.label, color = c.textPrimary) }
+            AccentHeader(accent = Accent.Settings, pinnedBar = true) {
+                CfCard(Modifier.fillMaxWidth()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
+                        Text(stringResource(R.string.accounts_savings_title).uppercase(), style = CashFlowTheme.typography.overline, color = c.textSecondary)
+                        Text(state.savingsValue, style = CashFlowTheme.typography.headline.copy(fontFeatureSettings = "tnum"), color = c.textPrimary)
+                        Text(stringResource(R.string.accounts_savings_body), style = CashFlowTheme.typography.label, color = c.textSecondary)
+                        state.savingsNote?.let { Text(it.asString(), style = CashFlowTheme.typography.label, color = c.textPrimary) }
+                    }
                 }
             }
+            Column(Modifier.padding(horizontal = Spacing.gutter)) {
+                Group(stringResource(R.string.accounts_group_bank), state.bankAccounts, onAction)
+                Group(stringResource(R.string.accounts_group_savings), state.savingsAccounts, onAction)
+                Group(stringResource(R.string.accounts_group_pension), state.pensionAccounts, onAction)
+                Text(
+                    stringResource(R.string.accounts_footer),
+                    style = CashFlowTheme.typography.label,
+                    color = c.textSecondary,
+                    modifier = Modifier.padding(top = Spacing.s4, bottom = Spacing.s6, start = Spacing.s1, end = Spacing.s1),
+                )
+            }
         }
-        Column(Modifier.padding(horizontal = Spacing.gutter)) {
-            Group(stringResource(R.string.accounts_group_bank), state.bankAccounts, onAction)
-            Group(stringResource(R.string.accounts_group_savings), state.savingsAccounts, onAction)
-            Group(stringResource(R.string.accounts_group_pension), state.pensionAccounts, onAction)
-            Text(
-                stringResource(R.string.accounts_footer),
-                style = CashFlowTheme.typography.label,
-                color = c.textSecondary,
-                modifier = Modifier.padding(top = Spacing.s4, bottom = Spacing.s6, start = Spacing.s1, end = Spacing.s1),
-            )
-        }
+        // The band's controls stay at the top while the content scrolls under them.
+        AccentTopBar(accent = Accent.Settings, title = stringResource(R.string.accounts_title), actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(AccountsAction.OnBackClick) }) })
     }
 }
 

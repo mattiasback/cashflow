@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -71,51 +72,51 @@ fun ImportHistoryScreen(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val c = CashFlowTheme.colors
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().background(c.bgCanvas),
-        contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
-    ) {
-        item(key = "header") {
-            AccentHeader(
-                accent = Accent.Settings,
-                title = stringResource(R.string.history_title),
-                actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ImportHistoryAction.OnBackClick) }) },
-            ) {
-                CfCard(Modifier.fillMaxWidth()) {
-                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
-                        Text(stringResource(R.string.history_intro_title), style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary)
-                        Text(stringResource(R.string.history_intro_body), style = CashFlowTheme.typography.label, color = c.textSecondary)
-                    }
-                }
-            }
-        }
-        state.months.forEach { month ->
-            item(key = month.heading) {
-                Column(Modifier.padding(horizontal = Spacing.gutter)) {
-                    GroupHeading(month.heading)
-                    ListGroup {
-                        month.rows.forEachIndexed { i, row ->
-                            ListRow(
-                                title = row.title,
-                                subtitle = row.line.map { it.asString() }.joinToString(" · "),
-                                leading = { KindIcon(row.kind, row.undone) },
-                                showDivider = i > 0,
-                                onClick = { onAction(ImportHistoryAction.OnImportClick(row.id)) },
-                                trailing = { Icon(CfIcons.ChevronRight, contentDescription = null, tint = c.textSecondary) },
-                            )
+    Box(Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().background(c.bgCanvas),
+            contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
+        ) {
+            item(key = "header") {
+                AccentHeader(accent = Accent.Settings, pinnedBar = true) {
+                    CfCard(Modifier.fillMaxWidth()) {
+                        Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
+                            Text(stringResource(R.string.history_intro_title), style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary)
+                            Text(stringResource(R.string.history_intro_body), style = CashFlowTheme.typography.label, color = c.textSecondary)
                         }
                     }
                 }
             }
+            state.months.forEach { month ->
+                item(key = month.heading) {
+                    Column(Modifier.padding(horizontal = Spacing.gutter)) {
+                        GroupHeading(month.heading)
+                        ListGroup {
+                            month.rows.forEachIndexed { i, row ->
+                                ListRow(
+                                    title = row.title,
+                                    subtitle = row.line.map { it.asString() }.joinToString(" · "),
+                                    leading = { KindIcon(row.kind, row.undone) },
+                                    showDivider = i > 0,
+                                    onClick = { onAction(ImportHistoryAction.OnImportClick(row.id)) },
+                                    trailing = { Icon(CfIcons.ChevronRight, contentDescription = null, tint = c.textSecondary) },
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            item(key = "footer") {
+                Text(
+                    stringResource(R.string.history_footer),
+                    style = CashFlowTheme.typography.label,
+                    color = c.textSecondary,
+                    modifier = Modifier.padding(horizontal = Spacing.gutter + Spacing.s1, vertical = Spacing.s4),
+                )
+            }
         }
-        item(key = "footer") {
-            Text(
-                stringResource(R.string.history_footer),
-                style = CashFlowTheme.typography.label,
-                color = c.textSecondary,
-                modifier = Modifier.padding(horizontal = Spacing.gutter + Spacing.s1, vertical = Spacing.s4),
-            )
-        }
+        // The band's controls stay at the top while the content scrolls under them.
+        AccentTopBar(accent = Accent.Settings, title = stringResource(R.string.history_title), actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ImportHistoryAction.OnBackClick) }) })
     }
 
     state.sheet?.let { sheet ->

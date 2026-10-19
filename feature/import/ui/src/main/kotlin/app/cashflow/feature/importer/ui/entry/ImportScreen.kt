@@ -4,6 +4,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -36,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -82,98 +84,98 @@ fun ImportScreen(
     onAction: (ImportAction) -> Unit,
 ) {
     val c = CashFlowTheme.colors
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(c.bgCanvas)
-            // The new-account name field must stay above the keyboard.
-            .fitInside(WindowInsetsRulers.Ime.current)
-            .verticalScroll(rememberScrollState())
-            .padding(bottom = Spacing.s12),
-    ) {
-        AccentHeader(
-            accent = Accent.Events,
-            title = stringResource(R.string.import_title),
-            actions = { BandIconButton(CfIcons.Close, stringResource(R.string.cd_cancel_import), { onAction(ImportAction.OnCloseClick) }) },
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(c.bgCanvas)
+                // The new-account name field must stay above the keyboard.
+                .fitInside(WindowInsetsRulers.Ime.current)
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = Spacing.s12),
         ) {
-            CfCard(Modifier.fillMaxWidth()) {
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.s2), modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) {
-                    when (state.phase) {
-                        ImportPhase.PICKING -> {
-                            Text(stringResource(R.string.import_pick_title), style = CashFlowTheme.typography.title, color = c.textPrimary)
-                            Text(stringResource(R.string.import_pick_body), style = CashFlowTheme.typography.body, color = c.textSecondary)
-                            CfButton(stringResource(R.string.import_pick_button), { onAction(ImportAction.OnPickFilesClick) }, Modifier.fillMaxWidth(), icon = CfIcons.File)
-                        }
-                        ImportPhase.READING, ImportPhase.IMPORTING -> {
-                            CircularProgressIndicator(color = c.accentEventsInk, modifier = Modifier.align(Alignment.CenterHorizontally))
-                            Text(
-                                if (state.phase == ImportPhase.READING) UiText.PluralResource(R.plurals.import_reading, state.fileCount).asString()
-                                else stringResource(R.string.import_importing),
-                                style = CashFlowTheme.typography.body,
-                                color = c.textPrimary,
-                                modifier = Modifier.align(Alignment.CenterHorizontally),
-                            )
-                        }
-                        ImportPhase.QUESTIONS -> {
-                            val onlyTypes = state.questions.isEmpty()
-                            Text(
-                                stringResource(if (onlyTypes) R.string.import_type_title else R.string.import_questions_title),
-                                style = CashFlowTheme.typography.title,
-                                color = c.textPrimary,
-                            )
-                            Text(
-                                stringResource(if (onlyTypes) R.string.import_type_body else R.string.import_questions_body),
-                                style = CashFlowTheme.typography.body,
-                                color = c.textSecondary,
-                            )
-                            if (state.typeQuestions.isNotEmpty()) {
-                                Text(stringResource(R.string.import_type_hint), style = CashFlowTheme.typography.label, color = c.textSecondary)
+            AccentHeader(accent = Accent.Events, pinnedBar = true) {
+                CfCard(Modifier.fillMaxWidth()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.s2), modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) {
+                        when (state.phase) {
+                            ImportPhase.PICKING -> {
+                                Text(stringResource(R.string.import_pick_title), style = CashFlowTheme.typography.title, color = c.textPrimary)
+                                Text(stringResource(R.string.import_pick_body), style = CashFlowTheme.typography.body, color = c.textSecondary)
+                                CfButton(stringResource(R.string.import_pick_button), { onAction(ImportAction.OnPickFilesClick) }, Modifier.fillMaxWidth(), icon = CfIcons.File)
                             }
-                        }
-                        ImportPhase.FAILED -> {
-                            Text(stringResource(R.string.import_failed_title), style = CashFlowTheme.typography.title, color = c.textPrimary)
-                            state.error?.let { Text(it.asString(), style = CashFlowTheme.typography.body, color = c.dangerStrong) }
-                            CfButton(stringResource(R.string.import_pick_again), { onAction(ImportAction.OnPickFilesClick) }, Modifier.fillMaxWidth())
-                        }
-                    }
-                }
-            }
-        }
-
-        Column(Modifier.padding(horizontal = Spacing.gutter), verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
-            state.questions.forEach { q -> QuestionCard(q, onAction) }
-            state.typeQuestions.forEach { q -> TypeQuestionCard(q, onAction) }
-            if (state.failures.isNotEmpty()) {
-                Text(stringResource(R.string.import_skipped_files), style = CashFlowTheme.typography.overline, color = c.textSecondary, modifier = Modifier.padding(top = Spacing.s4))
-                state.failures.forEach { f ->
-                    CfCard(Modifier.fillMaxWidth()) {
-                        Column {
-                            Text(f.fileName, style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary)
-                            Text(f.reason.asString(), style = CashFlowTheme.typography.label, color = c.textSecondary)
-                            f.mapUri?.let { uri ->
-                                CfButton(
-                                    stringResource(R.string.import_map_columns),
-                                    { onAction(ImportAction.OnMapColumnsClick(uri)) },
-                                    Modifier.fillMaxWidth().padding(top = Spacing.s3),
-                                    variant = CfButtonVariant.Outline,
+                            ImportPhase.READING, ImportPhase.IMPORTING -> {
+                                CircularProgressIndicator(color = c.accentEventsInk, modifier = Modifier.align(Alignment.CenterHorizontally))
+                                Text(
+                                    if (state.phase == ImportPhase.READING) UiText.PluralResource(R.plurals.import_reading, state.fileCount).asString()
+                                    else stringResource(R.string.import_importing),
+                                    style = CashFlowTheme.typography.body,
+                                    color = c.textPrimary,
+                                    modifier = Modifier.align(Alignment.CenterHorizontally),
                                 )
                             }
+                            ImportPhase.QUESTIONS -> {
+                                val onlyTypes = state.questions.isEmpty()
+                                Text(
+                                    stringResource(if (onlyTypes) R.string.import_type_title else R.string.import_questions_title),
+                                    style = CashFlowTheme.typography.title,
+                                    color = c.textPrimary,
+                                )
+                                Text(
+                                    stringResource(if (onlyTypes) R.string.import_type_body else R.string.import_questions_body),
+                                    style = CashFlowTheme.typography.body,
+                                    color = c.textSecondary,
+                                )
+                                if (state.typeQuestions.isNotEmpty()) {
+                                    Text(stringResource(R.string.import_type_hint), style = CashFlowTheme.typography.label, color = c.textSecondary)
+                                }
+                            }
+                            ImportPhase.FAILED -> {
+                                Text(stringResource(R.string.import_failed_title), style = CashFlowTheme.typography.title, color = c.textPrimary)
+                                state.error?.let { Text(it.asString(), style = CashFlowTheme.typography.body, color = c.dangerStrong) }
+                                CfButton(stringResource(R.string.import_pick_again), { onAction(ImportAction.OnPickFilesClick) }, Modifier.fillMaxWidth())
+                            }
                         }
                     }
                 }
             }
-            if (state.phase == ImportPhase.QUESTIONS) {
-                Spacer(Modifier.height(Spacing.s3))
-                CfButton(
-                    stringResource(R.string.import_button_go),
-                    { onAction(ImportAction.OnImportClick) },
-                    Modifier.fillMaxWidth(),
-                    variant = CfButtonVariant.Accent,
-                    accent = c.actionEvents,
-                    enabled = state.canImport,
-                )
+
+            Column(Modifier.padding(horizontal = Spacing.gutter), verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+                state.questions.forEach { q -> QuestionCard(q, onAction) }
+                state.typeQuestions.forEach { q -> TypeQuestionCard(q, onAction) }
+                if (state.failures.isNotEmpty()) {
+                    Text(stringResource(R.string.import_skipped_files), style = CashFlowTheme.typography.overline, color = c.textSecondary, modifier = Modifier.padding(top = Spacing.s4))
+                    state.failures.forEach { f ->
+                        CfCard(Modifier.fillMaxWidth()) {
+                            Column {
+                                Text(f.fileName, style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary)
+                                Text(f.reason.asString(), style = CashFlowTheme.typography.label, color = c.textSecondary)
+                                f.mapUri?.let { uri ->
+                                    CfButton(
+                                        stringResource(R.string.import_map_columns),
+                                        { onAction(ImportAction.OnMapColumnsClick(uri)) },
+                                        Modifier.fillMaxWidth().padding(top = Spacing.s3),
+                                        variant = CfButtonVariant.Outline,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                if (state.phase == ImportPhase.QUESTIONS) {
+                    Spacer(Modifier.height(Spacing.s3))
+                    CfButton(
+                        stringResource(R.string.import_button_go),
+                        { onAction(ImportAction.OnImportClick) },
+                        Modifier.fillMaxWidth(),
+                        variant = CfButtonVariant.Accent,
+                        accent = c.actionEvents,
+                        enabled = state.canImport,
+                    )
+                }
             }
         }
+        // The band's controls stay at the top while the content scrolls under them.
+        AccentTopBar(accent = Accent.Events, title = stringResource(R.string.import_title), actions = { BandIconButton(CfIcons.Close, stringResource(R.string.cd_cancel_import), { onAction(ImportAction.OnCloseClick) }) })
     }
 }
 

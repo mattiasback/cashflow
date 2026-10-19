@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,6 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -49,6 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandDropdown
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.BandSegmented
@@ -92,7 +96,6 @@ fun FlowRoot(
     onOpenEvents: (categoryId: String?, period: String?) -> Unit,
     onOpenImport: () -> Unit,
     onOpenProfile: () -> Unit = {},
-    onAccentChange: (Accent) -> Unit = {},
     scrollToTop: Flow<Unit> = emptyFlow(),
     viewModel: FlowViewModel = koinViewModel(),
 ) {
@@ -104,8 +107,6 @@ fun FlowRoot(
             FlowEvent.OpenProfile -> onOpenProfile()
         }
     }
-    val accentChange by rememberUpdatedState(onAccentChange)
-    LaunchedEffect(state.tab) { accentChange(state.tab.accent()) }
     FlowScreen(state, viewModel::onAction, contentPadding, scrollToTop)
     FlowSheets(state, viewModel::onAction)
 }
@@ -148,45 +149,49 @@ fun FlowScreen(
     val c = CashFlowTheme.colors
     val listState = rememberLazyListState()
     ObserveAsEvents(scrollToTop) { listState.requestScrollToItem(0) }
-    LazyColumn(
-        state = listState,
-        modifier = Modifier.fillMaxSize().background(c.bgCanvas),
-        contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
-    ) {
-        item(key = "header") { Header(state, onAction) }
-        if (!state.hasData) {
-            if (state.isLoading) item(key = "skeleton") { Skeleton() }
-            return@LazyColumn
-        }
-        item(key = "tabs") {
-            val tabs = FlowTab.entries.map { TabItem(it.key, it.label(), it.ink()) }
-            FlowTabRow(
-                tabs = tabs,
-                selectedKey = state.tab.key,
-                onSelect = { key -> onAction(FlowAction.OnTabSelect(FlowTab.of(key))) },
-                modifier = Modifier.padding(horizontal = Spacing.gutter).padding(top = Spacing.s4),
-            )
-        }
-        item(key = "tiles") { Tiles(state) }
-        section("over-time", R.string.section_over_time)
-        item(key = "chart") { ChartCard(state, onAction) }
-        if (state.tab == FlowTab.CASHFLOW) {
-            state.donut?.let { donut ->
-                section("distribution", R.string.section_distribution)
-                item(key = "donut") { DonutCard(donut, onAction) }
+    Box(Modifier.fillMaxSize().background(c.bgCanvas)) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
+        ) {
+            item(key = "header") { Header(state, onAction) }
+            if (!state.hasData) {
+                if (state.isLoading) item(key = "skeleton") { Skeleton() }
+                return@LazyColumn
             }
-            state.sankey?.let { sankey ->
-                section("flow", R.string.section_flow)
-                item(key = "sankey") { SankeyCard(sankey, onAction) }
+            item(key = "tabs") {
+                val tabs = FlowTab.entries.map { TabItem(it.key, it.label(), it.ink()) }
+                FlowTabRow(
+                    tabs = tabs,
+                    selectedKey = state.tab.key,
+                    onSelect = { key -> onAction(FlowAction.OnTabSelect(FlowTab.of(key))) },
+                    modifier = Modifier.padding(horizontal = Spacing.gutter).padding(top = Spacing.s4),
+                )
             }
-        } else {
-            section("bars", R.string.section_by_category, trailing = state.barsTotal)
-            item(key = "bars") { CategoryBars(state, onAction) }
-            if (state.latest.isNotEmpty()) {
-                section("latest", R.string.section_latest)
-                item(key = "latest") { Latest(state, onAction) }
+            item(key = "tiles") { Tiles(state) }
+            section("over-time", R.string.section_over_time)
+            item(key = "chart") { ChartCard(state, onAction) }
+            if (state.tab == FlowTab.CASHFLOW) {
+                state.donut?.let { donut ->
+                    section("distribution", R.string.section_distribution)
+                    item(key = "donut") { DonutCard(donut, onAction) }
+                }
+                state.sankey?.let { sankey ->
+                    section("flow", R.string.section_flow)
+                    item(key = "sankey") { SankeyCard(sankey, onAction) }
+                }
+            } else {
+                section("bars", R.string.section_by_category, trailing = state.barsTotal)
+                item(key = "bars") { CategoryBars(state, onAction) }
+                if (state.latest.isNotEmpty()) {
+                    section("latest", R.string.section_latest)
+                    item(key = "latest") { Latest(state, onAction) }
+                }
             }
         }
+    // The controls stay at the top while the hero and the rest scroll under them.
+    AccentTopBar(accent = state.tab.accent(), actions = { BarActions(state, onAction) })
     }
 }
 
@@ -194,53 +199,78 @@ fun FlowScreen(
 
 @Composable
 private fun Header(state: FlowState, onAction: (FlowAction) -> Unit) {
+    AccentHeader(accent = state.tab.accent(), pinnedBar = true) {
+        Hero(state, onAction)
+    }
+}
+
+@Composable
+private fun RowScope.BarActions(state: FlowState, onAction: (FlowAction) -> Unit) {
+    if (state.hasData) {
+        // When the band cannot fit pill, switch and profile (large text, narrow phones, longer
+        // English labels) the switch moves into the period sheet (it is there already) and the
+        // pill stays, reading "Alla" in Alla. The pill is never cut.
+        val compact = !bandFits(state)
+        val pill = state.periodPill ?: if (compact) stringResource(R.string.mode_all) else null
+        if (pill != null) {
+            BandDropdown(pill, stringResource(R.string.cd_period_pick, pill), { onAction(FlowAction.OnPickerOpen) }, Modifier.weight(1f, fill = false))
+        }
+        if (!compact) BandSegmented(
+            segments = listOf(
+                Segment(PeriodMode.MONTH.name, stringResource(R.string.mode_month)),
+                Segment(PeriodMode.YEAR.name, stringResource(R.string.mode_year)),
+                Segment(PeriodMode.ALL.name, stringResource(R.string.mode_all)),
+            ),
+            selectedKey = state.mode.name,
+            onSelect = { onAction(FlowAction.OnModeSelect(PeriodMode.valueOf(it))) },
+            contentDescription = stringResource(R.string.cd_mode),
+        )
+    }
+    BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(FlowAction.OnProfileClick) })
+}
+
+// Measures the pill, the three mode labels and the profile button against the window width.
+@Composable
+private fun bandFits(state: FlowState): Boolean {
+    val measurer = rememberTextMeasurer()
+    val style = CashFlowTheme.typography.bodyStrong
+    val density = LocalDensity.current
+    val width = with(density) { LocalWindowInfo.current.containerSize.width.toDp() }
+    val labels = listOf(stringResource(R.string.mode_month), stringResource(R.string.mode_year), stringResource(R.string.mode_all))
+    val pill = state.periodPill ?: ""
+    val needed = with(density) {
+        val text = { s: String -> measurer.measure(s, style).size.width.toDp() }
+        val pillW = if (pill.isEmpty()) 0.dp else text(pill) + 16.dp + 12.dp + 18.dp + 4.dp
+        val switchW = labels.sumOf { (text(it) + 24.dp).value.toDouble() }.dp + 8.dp
+        // Side padding 2×16, profile 48, gaps 2×8.
+        pillW + switchW + 48.dp + 32.dp + 16.dp
+    }
+    return needed <= width
+}
+
+@Composable
+private fun Hero(state: FlowState, onAction: (FlowAction) -> Unit) {
     val c = CashFlowTheme.colors
-    AccentHeader(
-        accent = state.tab.accent(),
-        actions = {
-            if (state.hasData) {
-                // At large text the band cannot fit pill, switch and profile: the switch moves into the
-                // period sheet (it is there already) and the pill stays, reading "Alla" in Alla.
-                val compact = LocalDensity.current.fontScale >= 1.3f
-                val pill = state.periodPill ?: if (compact) stringResource(R.string.mode_all) else null
-                if (pill != null) {
-                    BandDropdown(pill, stringResource(R.string.cd_period_pick, pill), { onAction(FlowAction.OnPickerOpen) }, Modifier.weight(1f, fill = false))
-                }
-                if (!compact) BandSegmented(
-                    segments = listOf(
-                        Segment(PeriodMode.MONTH.name, stringResource(R.string.mode_month)),
-                        Segment(PeriodMode.YEAR.name, stringResource(R.string.mode_year)),
-                        Segment(PeriodMode.ALL.name, stringResource(R.string.mode_all)),
-                    ),
-                    selectedKey = state.mode.name,
-                    onSelect = { onAction(FlowAction.OnModeSelect(PeriodMode.valueOf(it))) },
-                    contentDescription = stringResource(R.string.cd_mode),
-                )
-            }
-            BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(FlowAction.OnProfileClick) })
-        },
-    ) {
-        if (state.hasData) {
-            val label = state.summaryLabel.asString()
-            val delta = state.delta?.asString()
-            val infoTitle = (if (state.tab == FlowTab.CASHFLOW) stringResource(R.string.flow_net_title) else state.tab.label()).lowercase()
-            SummaryCard(
-                label = label,
-                value = state.summaryValue,
-                delta = delta,
-                deltaPositive = state.deltaPositive,
-                accessibilityText = stringResource(R.string.cd_summary, label, state.summarySpoken, delta.orEmpty()),
-                onInfo = { onAction(FlowAction.OnInfoClick) },
-                infoLabel = stringResource(R.string.cd_info, infoTitle),
-                rollDigits = true,
-            )
-        } else if (!state.isLoading) {
-            CfCard(Modifier.fillMaxWidth()) {
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
-                    Text(stringResource(R.string.flow_empty_title), style = CashFlowTheme.typography.title, color = c.textPrimary)
-                    Text(stringResource(R.string.flow_empty_body), style = CashFlowTheme.typography.body, color = c.textSecondary)
-                    CfButton(stringResource(R.string.flow_empty_button), { onAction(FlowAction.OnImportClick) }, Modifier.fillMaxWidth())
-                }
+    if (state.hasData) {
+        val label = state.summaryLabel.asString()
+        val delta = state.delta?.asString()
+        val infoTitle = (if (state.tab == FlowTab.CASHFLOW) stringResource(R.string.flow_net_title) else state.tab.label()).lowercase()
+        SummaryCard(
+            label = label,
+            value = state.summaryValue,
+            delta = delta,
+            deltaPositive = state.deltaPositive,
+            accessibilityText = stringResource(R.string.cd_summary, label, state.summarySpoken, delta.orEmpty()),
+            onInfo = { onAction(FlowAction.OnInfoClick) },
+            infoLabel = stringResource(R.string.cd_info, infoTitle),
+            rollDigits = true,
+        )
+    } else if (!state.isLoading) {
+        CfCard(Modifier.fillMaxWidth()) {
+            Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+                Text(stringResource(R.string.flow_empty_title), style = CashFlowTheme.typography.title, color = c.textPrimary)
+                Text(stringResource(R.string.flow_empty_body), style = CashFlowTheme.typography.body, color = c.textSecondary)
+                CfButton(stringResource(R.string.flow_empty_button), { onAction(FlowAction.OnImportClick) }, Modifier.fillMaxWidth())
             }
         }
     }

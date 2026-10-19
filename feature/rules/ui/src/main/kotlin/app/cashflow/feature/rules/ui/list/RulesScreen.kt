@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -80,77 +81,77 @@ fun RulesScreen(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val c = CashFlowTheme.colors
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().background(c.bgCanvas),
-        contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
-    ) {
-        item(key = "header") {
-            AccentHeader(
-                accent = Accent.Settings,
-                title = stringResource(R.string.rules_title),
-                actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(RulesAction.OnBackClick) }) },
-            ) {
-                CfCard(Modifier.fillMaxWidth()) {
-                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
-                        SegmentedControl(
-                            segments = listOf(
-                                Segment(RulesTab.MINE.name, stringResource(R.string.rules_tab_mine)),
-                                Segment(RulesTab.BUILT_IN.name, stringResource(R.string.rules_tab_builtin)),
-                            ),
-                            selectedKey = state.tab.name,
-                            onSelect = { onAction(RulesAction.OnTabSelect(RulesTab.valueOf(it))) },
-                        )
-                        Text(
-                            stringResource(if (state.tab == RulesTab.MINE) R.string.rules_intro_mine else R.string.rules_intro_builtin),
-                            style = CashFlowTheme.typography.label,
-                            color = c.textSecondary,
-                        )
+    Box(Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().background(c.bgCanvas),
+            contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
+        ) {
+            item(key = "header") {
+                AccentHeader(accent = Accent.Settings, pinnedBar = true) {
+                    CfCard(Modifier.fillMaxWidth()) {
+                        Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+                            SegmentedControl(
+                                segments = listOf(
+                                    Segment(RulesTab.MINE.name, stringResource(R.string.rules_tab_mine)),
+                                    Segment(RulesTab.BUILT_IN.name, stringResource(R.string.rules_tab_builtin)),
+                                ),
+                                selectedKey = state.tab.name,
+                                onSelect = { onAction(RulesAction.OnTabSelect(RulesTab.valueOf(it))) },
+                            )
+                            Text(
+                                stringResource(if (state.tab == RulesTab.MINE) R.string.rules_intro_mine else R.string.rules_intro_builtin),
+                                style = CashFlowTheme.typography.label,
+                                color = c.textSecondary,
+                            )
+                        }
                     }
                 }
             }
-        }
-        item(key = "top") {
-            Column(Modifier.padding(horizontal = Spacing.gutter)) {
-                if (state.tab == RulesTab.MINE) {
-                    CfButton(
-                        stringResource(R.string.rules_new),
-                        { onAction(RulesAction.OnNewRuleClick) },
-                        Modifier.fillMaxWidth().padding(top = Spacing.s4),
-                        variant = CfButtonVariant.Outline,
-                        icon = CfIcons.Plus,
-                    )
-                    GroupHeading(stringResource(R.string.rules_group_mine, state.mineCount))
-                } else {
-                    GroupHeading(stringResource(R.string.rules_group_builtin))
+            item(key = "top") {
+                Column(Modifier.padding(horizontal = Spacing.gutter)) {
+                    if (state.tab == RulesTab.MINE) {
+                        CfButton(
+                            stringResource(R.string.rules_new),
+                            { onAction(RulesAction.OnNewRuleClick) },
+                            Modifier.fillMaxWidth().padding(top = Spacing.s4),
+                            variant = CfButtonVariant.Outline,
+                            icon = CfIcons.Plus,
+                        )
+                        GroupHeading(stringResource(R.string.rules_group_mine, state.mineCount))
+                    } else {
+                        GroupHeading(stringResource(R.string.rules_group_builtin))
+                    }
                 }
             }
-        }
-        if (state.rows.isEmpty() && !state.isLoading) {
-            item(key = "empty") {
+            if (state.rows.isEmpty() && !state.isLoading) {
+                item(key = "empty") {
+                    Text(
+                        stringResource(R.string.rules_empty),
+                        style = CashFlowTheme.typography.body,
+                        color = c.textSecondary,
+                        modifier = Modifier.padding(horizontal = Spacing.gutter + Spacing.s1),
+                    )
+                }
+            }
+            items(state.rows.size, key = { state.rows[it].key }) { i ->
+                val row = state.rows[i]
+                val first = i == 0
+                val last = i == state.rows.lastIndex
+                Box(Modifier.padding(horizontal = Spacing.gutter)) {
+                    RuleRow(row, first, last) { onAction(RulesAction.OnRowClick(row.key)) }
+                }
+            }
+            item(key = "order") {
                 Text(
-                    stringResource(R.string.rules_empty),
-                    style = CashFlowTheme.typography.body,
+                    stringResource(R.string.rules_order),
+                    style = CashFlowTheme.typography.label,
                     color = c.textSecondary,
-                    modifier = Modifier.padding(horizontal = Spacing.gutter + Spacing.s1),
+                    modifier = Modifier.padding(horizontal = Spacing.gutter + Spacing.s1, vertical = Spacing.s4),
                 )
             }
         }
-        items(state.rows.size, key = { state.rows[it].key }) { i ->
-            val row = state.rows[i]
-            val first = i == 0
-            val last = i == state.rows.lastIndex
-            Box(Modifier.padding(horizontal = Spacing.gutter)) {
-                RuleRow(row, first, last) { onAction(RulesAction.OnRowClick(row.key)) }
-            }
-        }
-        item(key = "order") {
-            Text(
-                stringResource(R.string.rules_order),
-                style = CashFlowTheme.typography.label,
-                color = c.textSecondary,
-                modifier = Modifier.padding(horizontal = Spacing.gutter + Spacing.s1, vertical = Spacing.s4),
-            )
-        }
+        // The band's controls stay at the top while the content scrolls under them.
+        AccentTopBar(accent = Accent.Settings, title = stringResource(R.string.rules_title), actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(RulesAction.OnBackClick) }) })
     }
 }
 

@@ -56,6 +56,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -110,60 +111,60 @@ fun ReviewScreen(
 ) {
     val c = CashFlowTheme.colors
     val total = state.decided + state.duplicates.size + state.groups.size
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(c.bgCanvas)
-            .verticalScroll(rememberScrollState())
-            .padding(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
-        verticalArrangement = Arrangement.spacedBy(Spacing.s3),
-    ) {
-        AccentHeader(
-            accent = Accent.Events,
-            title = stringResource(R.string.review_title),
-            actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ReviewAction.OnBackClick) }) },
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(c.bgCanvas)
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
+            verticalArrangement = Arrangement.spacedBy(Spacing.s3),
         ) {
-            CfCard(Modifier.fillMaxWidth()) {
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
-                    Text(
-                        UiText.PluralResource(R.plurals.review_left, state.remainingRows).asString(),
-                        style = CashFlowTheme.typography.headlineL,
-                        color = c.textPrimary,
-                    )
-                    Text(stringResource(R.string.review_intro), style = CashFlowTheme.typography.body, color = c.textSecondary)
-                }
-            }
-        }
-        val duplicate = state.duplicates.firstOrNull()
-        val group = state.groups.firstOrNull()
-        Column(Modifier.padding(horizontal = Spacing.gutter), verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
-            when {
-                state.isLoading -> Unit
-                duplicate == null && group == null -> CfCard(Modifier.fillMaxWidth(), color = c.surfaceStatus) {
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text(stringResource(R.string.review_done_title), style = CashFlowTheme.typography.title, color = c.textOnStatus)
-                        Text(stringResource(R.string.review_done_body), style = CashFlowTheme.typography.body, color = c.textOnStatus)
-                    }
-                }
-                else -> {
-                    DeckProgress(done = state.decided, total = total)
-                    val key = duplicate?.id ?: group!!.key
-                    SwipeDeck(
-                        cardKey = key,
-                        backCards = (state.duplicates.size + state.groups.size - 1).coerceIn(0, 2),
-                        canAccept = duplicate != null || group?.selectedId != null,
-                        onAccept = { if (duplicate != null) onAction(ReviewAction.OnMerge(duplicate.id)) else onAction(ReviewAction.OnApprove(group!!.key)) },
-                        onSkip = { onAction(ReviewAction.OnSkip(key)) },
-                    ) {
-                        if (duplicate != null) DuplicateCard(duplicate, onAction) else ReviewGroupCard(group!!, onAction)
-                    }
-                    Row(Modifier.fillMaxWidth().clearAndSetSemantics { }) {
-                        Text(stringResource(R.string.review_swipe_left), style = CashFlowTheme.typography.caption, color = c.textSecondary, modifier = Modifier.weight(1f))
-                        Text(stringResource(R.string.review_swipe_right), style = CashFlowTheme.typography.caption, color = c.textSecondary)
+            AccentHeader(accent = Accent.Events, pinnedBar = true) {
+                CfCard(Modifier.fillMaxWidth()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
+                        Text(
+                            UiText.PluralResource(R.plurals.review_left, state.remainingRows).asString(),
+                            style = CashFlowTheme.typography.headlineL,
+                            color = c.textPrimary,
+                        )
+                        Text(stringResource(R.string.review_intro), style = CashFlowTheme.typography.body, color = c.textSecondary)
                     }
                 }
             }
+            val duplicate = state.duplicates.firstOrNull()
+            val group = state.groups.firstOrNull()
+            Column(Modifier.padding(horizontal = Spacing.gutter), verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+                when {
+                    state.isLoading -> Unit
+                    duplicate == null && group == null -> CfCard(Modifier.fillMaxWidth(), color = c.surfaceStatus) {
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(stringResource(R.string.review_done_title), style = CashFlowTheme.typography.title, color = c.textOnStatus)
+                            Text(stringResource(R.string.review_done_body), style = CashFlowTheme.typography.body, color = c.textOnStatus)
+                        }
+                    }
+                    else -> {
+                        DeckProgress(done = state.decided, total = total)
+                        val key = duplicate?.id ?: group!!.key
+                        SwipeDeck(
+                            cardKey = key,
+                            backCards = (state.duplicates.size + state.groups.size - 1).coerceIn(0, 2),
+                            canAccept = duplicate != null || group?.selectedId != null,
+                            onAccept = { if (duplicate != null) onAction(ReviewAction.OnMerge(duplicate.id)) else onAction(ReviewAction.OnApprove(group!!.key)) },
+                            onSkip = { onAction(ReviewAction.OnSkip(key)) },
+                        ) {
+                            if (duplicate != null) DuplicateCard(duplicate, onAction) else ReviewGroupCard(group!!, onAction)
+                        }
+                        Row(Modifier.fillMaxWidth().clearAndSetSemantics { }) {
+                            Text(stringResource(R.string.review_swipe_left), style = CashFlowTheme.typography.caption, color = c.textSecondary, modifier = Modifier.weight(1f))
+                            Text(stringResource(R.string.review_swipe_right), style = CashFlowTheme.typography.caption, color = c.textSecondary)
+                        }
+                    }
+                }
+            }
         }
+        // The band's controls stay at the top while the content scrolls under them.
+        AccentTopBar(accent = Accent.Events, title = stringResource(R.string.review_title), actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ReviewAction.OnBackClick) }) })
     }
 }
 

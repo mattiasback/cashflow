@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -105,116 +106,116 @@ fun EventsScreen(
     val c = CashFlowTheme.colors
     val listState = rememberLazyListState()
     ObserveAsEvents(scrollToTop) { listState.requestScrollToItem(0) }
-    LazyColumn(
-        state = listState,
-        modifier = Modifier.fillMaxSize().background(c.bgCanvas),
-        contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
-    ) {
-        item(key = "header") {
-            AccentHeader(
-                accent = Accent.Events,
-                title = stringResource(R.string.events_title),
-                actions = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(EventsAction.OnProfileClick) }) },
-            ) {
-                ImportCard(state, onAction)
+    Box(Modifier.fillMaxSize()) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize().background(c.bgCanvas),
+            contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
+        ) {
+            item(key = "header") {
+                AccentHeader(accent = Accent.Events, pinnedBar = true) {
+                    ImportCard(state, onAction)
+                }
             }
-        }
-        if (state.reviewCount > 0) {
-            item(key = "review") {
-                Column(Modifier.padding(horizontal = Spacing.gutter)) {
-                    SectionHeader(stringResource(R.string.section_review)) {
-                        Text(
-                            UiText.PluralResource(R.plurals.review_left, state.reviewCount).asString(),
-                            style = Theme.typography.label,
-                            color = c.textSecondary,
-                        )
+            if (state.reviewCount > 0) {
+                item(key = "review") {
+                    Column(Modifier.padding(horizontal = Spacing.gutter)) {
+                        SectionHeader(stringResource(R.string.section_review)) {
+                            Text(
+                                UiText.PluralResource(R.plurals.review_left, state.reviewCount).asString(),
+                                style = Theme.typography.label,
+                                color = c.textSecondary,
+                            )
+                        }
+                        ReviewCard(state, onAction)
                     }
-                    ReviewCard(state, onAction)
                 }
             }
-        }
-        item(key = "tx-title") {
-            Column(Modifier.padding(horizontal = Spacing.gutter)) {
-                SectionHeader(stringResource(R.string.section_transactions)) {
-                    state.countText?.let { Text(it.asString(), style = Theme.typography.label, color = c.textSecondary) }
-                }
-                SearchField(
-                    value = state.query,
-                    onValueChange = { onAction(EventsAction.OnQueryChange(it)) },
-                    placeholder = stringResource(R.string.search_placeholder),
-                )
-            }
-        }
-        item(key = "chips") {
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = Spacing.gutter),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.s2),
-                modifier = Modifier.padding(top = Spacing.s3, bottom = Spacing.s3),
-            ) {
-                items(StatusFilter.entries, key = { it.name }) { f ->
-                    CfChip(
-                        label = stringResource(f.label()),
-                        selected = state.statusFilter == f,
-                        onClick = { onAction(EventsAction.OnStatusChipClick(f)) },
+            item(key = "tx-title") {
+                Column(Modifier.padding(horizontal = Spacing.gutter)) {
+                    SectionHeader(stringResource(R.string.section_transactions)) {
+                        state.countText?.let { Text(it.asString(), style = Theme.typography.label, color = c.textSecondary) }
+                    }
+                    SearchField(
+                        value = state.query,
+                        onValueChange = { onAction(EventsAction.OnQueryChange(it)) },
+                        placeholder = stringResource(R.string.search_placeholder),
                     )
                 }
             }
-        }
-        item(key = "filters") {
-            val periodValue = state.periodLabel?.asString().orEmpty()
-            val categoryValue = state.categoryLabel?.asString().orEmpty()
-            Row(
-                Modifier.padding(horizontal = Spacing.gutter).padding(bottom = Spacing.s4),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.s3),
-            ) {
-                FilterButton(
-                    label = stringResource(R.string.filter_period),
-                    value = periodValue,
-                    active = state.periodActive,
-                    accessibilityLabel = stringResource(R.string.cd_filter_period, periodValue),
-                    onClick = { onAction(EventsAction.OnPeriodFilterClick) },
-                    modifier = Modifier.weight(1f),
-                )
-                FilterButton(
-                    label = stringResource(R.string.filter_category),
-                    value = categoryValue,
-                    active = state.categoryActive,
-                    accessibilityLabel = stringResource(R.string.cd_filter_category, categoryValue),
-                    onClick = { onAction(EventsAction.OnCategoryFilterClick) },
-                    modifier = Modifier.weight(1f),
-                )
+            item(key = "chips") {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = Spacing.gutter),
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.s2),
+                    modifier = Modifier.padding(top = Spacing.s3, bottom = Spacing.s3),
+                ) {
+                    items(StatusFilter.entries, key = { it.name }) { f ->
+                        CfChip(
+                            label = stringResource(f.label()),
+                            selected = state.statusFilter == f,
+                            onClick = { onAction(EventsAction.OnStatusChipClick(f)) },
+                        )
+                    }
+                }
             }
-        }
-        if (!state.isLoading && state.days.isEmpty()) {
-            item(key = "empty") {
-                Text(
-                    stringResource(if (state.hasTransactions) R.string.empty_filtered else R.string.empty_none),
-                    style = Theme.typography.body,
-                    color = c.textSecondary,
-                    modifier = Modifier.fillMaxWidth().padding(Spacing.s6),
-                )
+            item(key = "filters") {
+                val periodValue = state.periodLabel?.asString().orEmpty()
+                val categoryValue = state.categoryLabel?.asString().orEmpty()
+                Row(
+                    Modifier.padding(horizontal = Spacing.gutter).padding(bottom = Spacing.s4),
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.s3),
+                ) {
+                    FilterButton(
+                        label = stringResource(R.string.filter_period),
+                        value = periodValue,
+                        active = state.periodActive,
+                        accessibilityLabel = stringResource(R.string.cd_filter_period, periodValue),
+                        onClick = { onAction(EventsAction.OnPeriodFilterClick) },
+                        modifier = Modifier.weight(1f),
+                    )
+                    FilterButton(
+                        label = stringResource(R.string.filter_category),
+                        value = categoryValue,
+                        active = state.categoryActive,
+                        accessibilityLabel = stringResource(R.string.cd_filter_category, categoryValue),
+                        onClick = { onAction(EventsAction.OnCategoryFilterClick) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
-        }
-        state.days.forEach { day ->
-            item(key = "day-${day.key}") {
-                Text(
-                    day.heading,
-                    style = Theme.typography.label,
-                    color = c.textSecondary,
-                    modifier = Modifier
-                        .padding(horizontal = Spacing.gutter + Spacing.s1)
-                        .padding(top = Spacing.s3, bottom = Spacing.s2)
-                        .semantics { heading() },
-                )
+            if (!state.isLoading && state.days.isEmpty()) {
+                item(key = "empty") {
+                    Text(
+                        stringResource(if (state.hasTransactions) R.string.empty_filtered else R.string.empty_none),
+                        style = Theme.typography.body,
+                        color = c.textSecondary,
+                        modifier = Modifier.fillMaxWidth().padding(Spacing.s6),
+                    )
+                }
             }
-            item(key = "rows-${day.key}") {
-                ListGroup(Modifier.padding(horizontal = Spacing.gutter)) {
-                    day.rows.forEachIndexed { i, row ->
-                        TxRow(row = row, showDivider = i > 0, onClick = { onAction(EventsAction.OnTransactionClick(row.id)) })
+            state.days.forEach { day ->
+                item(key = "day-${day.key}") {
+                    Text(
+                        day.heading,
+                        style = Theme.typography.label,
+                        color = c.textSecondary,
+                        modifier = Modifier
+                            .padding(horizontal = Spacing.gutter + Spacing.s1)
+                            .padding(top = Spacing.s3, bottom = Spacing.s2)
+                            .semantics { heading() },
+                    )
+                }
+                item(key = "rows-${day.key}") {
+                    ListGroup(Modifier.padding(horizontal = Spacing.gutter)) {
+                        day.rows.forEachIndexed { i, row ->
+                            TxRow(row = row, showDivider = i > 0, onClick = { onAction(EventsAction.OnTransactionClick(row.id)) })
+                        }
                     }
                 }
             }
         }
+        // The band's controls stay at the top while the content scrolls under them.
+        AccentTopBar(accent = Accent.Events, title = stringResource(R.string.events_title), actions = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(EventsAction.OnProfileClick) }) })
     }
 
     when (state.sheet) {

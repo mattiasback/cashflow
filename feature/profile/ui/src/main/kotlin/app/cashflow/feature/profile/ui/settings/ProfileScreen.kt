@@ -1,6 +1,7 @@
 package app.cashflow.feature.profile.ui.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfCard
 import app.cashflow.core.designsystem.component.CfSwitchRow
@@ -67,85 +69,85 @@ fun ProfileScreen(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val c = CashFlowTheme.colors
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(c.bgCanvas)
-            .verticalScroll(rememberScrollState())
-            .padding(contentPadding),
-    ) {
-        AccentHeader(
-            accent = Accent.Settings,
-            title = stringResource(R.string.profile_title),
-            actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ProfileAction.OnBackClick) }) },
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(c.bgCanvas)
+                .verticalScroll(rememberScrollState())
+                .padding(contentPadding),
         ) {
-            CfCard(Modifier.fillMaxWidth()) {
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
-                    Text(stringResource(R.string.profile_intro_title), style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary)
-                    Text(stringResource(R.string.profile_intro_body), style = CashFlowTheme.typography.label, color = c.textSecondary)
+            AccentHeader(accent = Accent.Settings, pinnedBar = true) {
+                CfCard(Modifier.fillMaxWidth()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
+                        Text(stringResource(R.string.profile_intro_title), style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary)
+                        Text(stringResource(R.string.profile_intro_body), style = CashFlowTheme.typography.label, color = c.textSecondary)
+                    }
                 }
+            }
+            Column(Modifier.padding(horizontal = Spacing.gutter)) {
+                GroupHeading(stringResource(R.string.profile_group_accounts))
+                ListGroup {
+                    NavRow(stringResource(R.string.profile_accounts), state.accountsLine.asString()) { onAction(ProfileAction.OnAccountsClick) }
+                    NavRow(stringResource(R.string.profile_import_history), state.importsLine.asString(), divider = true) { onAction(ProfileAction.OnImportHistoryClick) }
+                }
+
+                GroupHeading(stringResource(R.string.profile_group_calc))
+                ListGroup {
+                    Column(Modifier.padding(horizontal = Spacing.s4, vertical = Spacing.s2)) {
+                        CfSwitchRow(
+                            label = stringResource(R.string.profile_mortgage_switch),
+                            checked = state.mortgageEnabled,
+                            onCheckedChange = { onAction(ProfileAction.OnMortgageToggle(it)) },
+                        )
+                        Text(stringResource(R.string.profile_mortgage_hint), style = CashFlowTheme.typography.label, color = c.textSecondary)
+                    }
+                    state.mortgageLine?.let { line ->
+                        NavRow(stringResource(R.string.profile_mortgage_split), line.asString(), divider = true) { onAction(ProfileAction.OnMortgageClick) }
+                    }
+                }
+
+                GroupHeading(stringResource(R.string.profile_group_categories))
+                ListGroup {
+                    NavRow(stringResource(R.string.profile_rules), state.rulesLine.asString()) { onAction(ProfileAction.OnRulesClick) }
+                }
+
+                GroupHeading(stringResource(R.string.profile_group_display))
+                ListGroup {
+                    Column(Modifier.padding(Spacing.s4), verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+                        CfSwitchRow(
+                            label = stringResource(R.string.profile_percent_decimals),
+                            checked = state.percentDecimals,
+                            onCheckedChange = { onAction(ProfileAction.OnPercentDecimalsToggle(it)) },
+                        )
+                        Text(
+                            stringResource(R.string.profile_percent_example, if (state.percentDecimals) "28,6 %" else "29 %"),
+                            style = CashFlowTheme.typography.label,
+                            color = c.textSecondary,
+                        )
+                        Text(stringResource(R.string.profile_theme), style = CashFlowTheme.typography.body, color = c.textPrimary)
+                        SegmentedControl(
+                            segments = listOf(
+                                Segment(ThemeMode.SYSTEM.name, stringResource(R.string.profile_theme_system)),
+                                Segment(ThemeMode.LIGHT.name, stringResource(R.string.profile_theme_light)),
+                                Segment(ThemeMode.DARK.name, stringResource(R.string.profile_theme_dark)),
+                            ),
+                            selectedKey = state.theme.name,
+                            onSelect = { onAction(ProfileAction.OnThemeSelect(ThemeMode.valueOf(it))) },
+                        )
+                    }
+                }
+                Text(
+                    stringResource(R.string.profile_footer),
+                    style = CashFlowTheme.typography.label,
+                    color = c.textSecondary,
+                    modifier = Modifier.fillMaxWidth().padding(top = Spacing.s6, bottom = Spacing.s6),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                )
             }
         }
-        Column(Modifier.padding(horizontal = Spacing.gutter)) {
-            GroupHeading(stringResource(R.string.profile_group_accounts))
-            ListGroup {
-                NavRow(stringResource(R.string.profile_accounts), state.accountsLine.asString()) { onAction(ProfileAction.OnAccountsClick) }
-                NavRow(stringResource(R.string.profile_import_history), state.importsLine.asString(), divider = true) { onAction(ProfileAction.OnImportHistoryClick) }
-            }
-
-            GroupHeading(stringResource(R.string.profile_group_calc))
-            ListGroup {
-                Column(Modifier.padding(horizontal = Spacing.s4, vertical = Spacing.s2)) {
-                    CfSwitchRow(
-                        label = stringResource(R.string.profile_mortgage_switch),
-                        checked = state.mortgageEnabled,
-                        onCheckedChange = { onAction(ProfileAction.OnMortgageToggle(it)) },
-                    )
-                    Text(stringResource(R.string.profile_mortgage_hint), style = CashFlowTheme.typography.label, color = c.textSecondary)
-                }
-                state.mortgageLine?.let { line ->
-                    NavRow(stringResource(R.string.profile_mortgage_split), line.asString(), divider = true) { onAction(ProfileAction.OnMortgageClick) }
-                }
-            }
-
-            GroupHeading(stringResource(R.string.profile_group_categories))
-            ListGroup {
-                NavRow(stringResource(R.string.profile_rules), state.rulesLine.asString()) { onAction(ProfileAction.OnRulesClick) }
-            }
-
-            GroupHeading(stringResource(R.string.profile_group_display))
-            ListGroup {
-                Column(Modifier.padding(Spacing.s4), verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
-                    CfSwitchRow(
-                        label = stringResource(R.string.profile_percent_decimals),
-                        checked = state.percentDecimals,
-                        onCheckedChange = { onAction(ProfileAction.OnPercentDecimalsToggle(it)) },
-                    )
-                    Text(
-                        stringResource(R.string.profile_percent_example, if (state.percentDecimals) "28,6 %" else "29 %"),
-                        style = CashFlowTheme.typography.label,
-                        color = c.textSecondary,
-                    )
-                    Text(stringResource(R.string.profile_theme), style = CashFlowTheme.typography.body, color = c.textPrimary)
-                    SegmentedControl(
-                        segments = listOf(
-                            Segment(ThemeMode.SYSTEM.name, stringResource(R.string.profile_theme_system)),
-                            Segment(ThemeMode.LIGHT.name, stringResource(R.string.profile_theme_light)),
-                            Segment(ThemeMode.DARK.name, stringResource(R.string.profile_theme_dark)),
-                        ),
-                        selectedKey = state.theme.name,
-                        onSelect = { onAction(ProfileAction.OnThemeSelect(ThemeMode.valueOf(it))) },
-                    )
-                }
-            }
-            Text(
-                stringResource(R.string.profile_footer),
-                style = CashFlowTheme.typography.label,
-                color = c.textSecondary,
-                modifier = Modifier.fillMaxWidth().padding(top = Spacing.s6, bottom = Spacing.s6),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            )
-        }
+        // The band's controls stay at the top while the content scrolls under them.
+        AccentTopBar(accent = Accent.Settings, title = stringResource(R.string.profile_title), actions = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ProfileAction.OnBackClick) }) })
     }
 }
 
