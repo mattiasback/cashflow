@@ -31,7 +31,8 @@ internal data class BottomSheetScene<T : Any>(
         val lifecycleOwner = rememberLifecycleOwner()
         ModalBottomSheet(
             onDismissRequest = onBack,
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false),
+            // Sheets open to their full content height, so actions at the bottom (undo, save) are visible.
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
             containerColor = CashFlowTheme.colors.surfaceSheet,
             scrimColor = CashFlowTheme.colors.scrim,
             shape = Radius.sheetTop,
