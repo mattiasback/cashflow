@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.CfBottomSheet
 import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
@@ -120,7 +121,7 @@ fun ImportHistoryScreen(
     }
 
     state.sheet?.let { sheet ->
-        ModalBottomSheet(onDismissRequest = { onAction(ImportHistoryAction.OnSheetDismiss) }, containerColor = c.surfaceSheet) {
+        CfBottomSheet(onDismissRequest = { onAction(ImportHistoryAction.OnSheetDismiss) }) {
             ImportSheetContent(sheet, state.isWorking, state.error, onAction)
         }
     }

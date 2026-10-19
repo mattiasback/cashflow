@@ -28,6 +28,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import app.cashflow.core.designsystem.component.CfBottomSheet
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
 import app.cashflow.core.designsystem.component.CfChip
@@ -47,18 +48,10 @@ import app.cashflow.core.ui.colors
 internal fun FlowSheets(state: FlowState, onAction: (FlowAction) -> Unit) {
     val c = CashFlowTheme.colors
     state.picker?.let { picker ->
-        ModalBottomSheet(
-            onDismissRequest = { onAction(FlowAction.OnPickerClose) },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            containerColor = c.surfaceSheet,
-        ) { PickerContent(state, picker, onAction) }
+        CfBottomSheet(onDismissRequest = { onAction(FlowAction.OnPickerClose) }) { PickerContent(state, picker, onAction) }
     }
     state.sheet?.let { sheet ->
-        ModalBottomSheet(
-            onDismissRequest = { onAction(FlowAction.OnSheetDismiss) },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            containerColor = c.surfaceSheet,
-        ) { NodeSheetContent(sheet, onAction) }
+        CfBottomSheet(onDismissRequest = { onAction(FlowAction.OnSheetDismiss) }) { NodeSheetContent(sheet, onAction) }
     }
 }
 
@@ -66,7 +59,7 @@ internal fun FlowSheets(state: FlowState, onAction: (FlowAction) -> Unit) {
 private fun PickerContent(state: FlowState, picker: PickerUi, onAction: (FlowAction) -> Unit) {
     val c = CashFlowTheme.colors
     Column(
-        Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Spacing.s4).padding(bottom = Spacing.s4).navigationBarsPadding(),
+        Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Spacing.s4).padding(bottom = Spacing.s4),
         verticalArrangement = Arrangement.spacedBy(Spacing.s4),
     ) {
         SheetHeader(
@@ -125,7 +118,7 @@ private fun PickerContent(state: FlowState, picker: PickerUi, onAction: (FlowAct
 private fun NodeSheetContent(sheet: NodeSheetUi, onAction: (FlowAction) -> Unit) {
     val c = CashFlowTheme.colors
     Column(
-        Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Spacing.s4).padding(bottom = Spacing.s4).navigationBarsPadding(),
+        Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Spacing.s4).padding(bottom = Spacing.s4),
         verticalArrangement = Arrangement.spacedBy(Spacing.s4),
     ) {
         SheetHeader(eyebrow = sheet.eyebrow.asString(), title = sheet.title.asString(), figure = sheet.figure)

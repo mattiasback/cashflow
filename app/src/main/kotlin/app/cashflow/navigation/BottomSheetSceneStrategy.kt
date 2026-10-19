@@ -1,8 +1,6 @@
 package app.cashflow.navigation
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -12,8 +10,7 @@ import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
-import app.cashflow.core.designsystem.theme.CashFlowTheme
-import app.cashflow.core.designsystem.theme.Radius
+import app.cashflow.core.designsystem.component.CfBottomSheet
 
 /** Renders an entry inside a ModalBottomSheet (Nav3 bottom-sheet recipe). */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,14 +26,7 @@ internal data class BottomSheetScene<T : Any>(
 
     override val content: @Composable () -> Unit = {
         val lifecycleOwner = rememberLifecycleOwner()
-        ModalBottomSheet(
-            onDismissRequest = onBack,
-            // Sheets open to their full content height, so actions at the bottom (undo, save) are visible.
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            containerColor = CashFlowTheme.colors.surfaceSheet,
-            scrimColor = CashFlowTheme.colors.scrim,
-            shape = Radius.sheetTop,
-        ) {
+        CfBottomSheet(onDismissRequest = onBack) {
             CompositionLocalProvider(LocalLifecycleOwner provides lifecycleOwner) {
                 entry.Content()
             }

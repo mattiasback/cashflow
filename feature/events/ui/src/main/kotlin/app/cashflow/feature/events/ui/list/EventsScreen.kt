@@ -42,6 +42,7 @@ import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
+import app.cashflow.core.designsystem.component.CfBottomSheet
 import app.cashflow.core.designsystem.component.CfCard
 import app.cashflow.core.designsystem.component.CfChip
 import app.cashflow.core.designsystem.component.FilterButton
@@ -219,10 +220,7 @@ fun EventsScreen(
     }
 
     when (state.sheet) {
-        EventsSheet.CATEGORY -> ModalBottomSheet(
-            onDismissRequest = { onAction(EventsAction.OnSheetDismiss) },
-            containerColor = c.surfaceSheet,
-        ) {
+        EventsSheet.CATEGORY -> CfBottomSheet(onDismissRequest = { onAction(EventsAction.OnSheetDismiss) }) {
             FilterSheetContent(
                 title = stringResource(R.string.sheet_pick_category),
                 options = state.categoryOptions.map { o ->
@@ -231,10 +229,7 @@ fun EventsScreen(
                 onPick = { onAction(EventsAction.OnCategoryPicked(it)) },
             )
         }
-        EventsSheet.PERIOD -> ModalBottomSheet(
-            onDismissRequest = { onAction(EventsAction.OnSheetDismiss) },
-            containerColor = c.surfaceSheet,
-        ) {
+        EventsSheet.PERIOD -> CfBottomSheet(onDismissRequest = { onAction(EventsAction.OnSheetDismiss) }) {
             FilterSheetContent(
                 title = stringResource(R.string.sheet_pick_period),
                 options = state.periodOptions.map { OptionRow(it.key, it.label, null, null, null, it.selected) },
