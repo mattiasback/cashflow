@@ -39,7 +39,6 @@ import app.cashflow.core.designsystem.component.BadgeKind
 import app.cashflow.core.designsystem.component.StatusBadge
 import app.cashflow.core.designsystem.theme.Radius
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -61,6 +60,7 @@ import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
 import app.cashflow.core.designsystem.component.CfCard
+import app.cashflow.core.designsystem.component.CfSnackbarHost
 import app.cashflow.core.designsystem.component.CfChip
 import app.cashflow.core.designsystem.component.CfSwitchRow
 import app.cashflow.core.designsystem.icon.CfIcons
@@ -99,8 +99,11 @@ fun ReviewRoot(
             }
         }
     }
-    ReviewScreen(state, viewModel::onAction, contentPadding)
-    SnackbarHost(snackbar, Modifier.padding(contentPadding))
+    Box(Modifier.fillMaxSize()) {
+        ReviewScreen(state, viewModel::onAction, contentPadding)
+        // Bottom of the screen, just above the nav pill.
+        CfSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(bottom = contentPadding.calculateBottomPadding()))
+    }
 }
 
 @Composable
