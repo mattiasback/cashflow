@@ -47,9 +47,9 @@
     <string name="account_eyebrow">Konto</string>
     <string name="account_name">Namn</string>
     <string name="account_type">Typ av konto</string>
-    <string name="account_market_value">Marknadsvärde</string>
-    <string name="account_market_value_hint">Från Avanza eller Lysa</string>
-    <string name="account_market_value_why">Exporterna saknar marknadsvärde. Ange det, annars räknas kontot med insatt belopp plus avkastning.</string>
+    <string name="account_market_value">Värde idag</string>
+    <string name="account_market_value_hint">Från banken, Avanza eller Lysa</string>
+    <string name="account_market_value_why">Exporterna visar inte vad kontot är värt. Ange det, annars räknas kontot med det som satts in och tagits ut i de importerade filerna.</string>
     <string name="account_value_updated">Uppdaterat %1$s</string>
     <string name="account_rows">Transaktioner</string>
     <string name="account_balance">Saldo utan köp och sälj</string>

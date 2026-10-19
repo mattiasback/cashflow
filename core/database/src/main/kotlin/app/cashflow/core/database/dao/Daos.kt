@@ -9,6 +9,7 @@ import androidx.room.Upsert
 import app.cashflow.core.database.entity.AccountEntity
 import app.cashflow.core.database.entity.BalanceStateEntity
 import app.cashflow.core.database.entity.CategoryEntity
+import app.cashflow.core.database.entity.GoalEntity
 import app.cashflow.core.database.entity.CsvProfileEntity
 import app.cashflow.core.database.entity.ImportBatchEntity
 import app.cashflow.core.database.entity.MerchantMemoryEntity
@@ -219,4 +220,13 @@ interface CsvProfileDao {
 
     @Query("DELETE FROM csv_profiles WHERE id = :id")
     suspend fun delete(id: String)
+}
+
+@Dao
+interface GoalDao {
+    @Query("SELECT * FROM goals")
+    fun observeGoals(): Flow<List<GoalEntity>>
+
+    @Upsert
+    suspend fun upsert(goal: GoalEntity)
 }

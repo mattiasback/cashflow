@@ -134,6 +134,14 @@ data class MerchantMemoryEntity(
     val createdAtEpochMillis: Long? = null,
 )
 
+/** v4: one household goal per type (Buffert months, Sparkvot percent). */
+@Entity(tableName = "goals")
+data class GoalEntity(
+    @PrimaryKey val type: String,
+    val target: Double,
+    val updatedAtEpochMillis: Long,
+)
+
 /** v2: a column mapping saved for a file format the app did not know. */
 @Entity(tableName = "csv_profiles")
 data class CsvProfileEntity(

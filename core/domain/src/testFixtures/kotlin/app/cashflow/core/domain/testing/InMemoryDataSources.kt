@@ -7,6 +7,7 @@ import app.cashflow.core.domain.datasource.AccountLocalDataSource
 import app.cashflow.core.domain.datasource.CategoryLocalDataSource
 import app.cashflow.core.domain.datasource.Classification
 import app.cashflow.core.domain.datasource.CsvProfileLocalDataSource
+import app.cashflow.core.domain.datasource.GoalLocalDataSource
 import app.cashflow.core.domain.datasource.ImportBatchLocalDataSource
 import app.cashflow.core.domain.datasource.MerchantMemoryLocalDataSource
 import app.cashflow.core.domain.datasource.RuleCatalog
@@ -20,6 +21,7 @@ import app.cashflow.core.domain.model.BalanceState
 import app.cashflow.core.domain.model.Category
 import app.cashflow.core.domain.model.CategoryRule
 import app.cashflow.core.domain.model.CsvProfile
+import app.cashflow.core.domain.model.Goal
 import app.cashflow.core.domain.model.ImportBatch
 import app.cashflow.core.domain.model.ImportId
 import app.cashflow.core.domain.model.InsertSummary
@@ -238,6 +240,15 @@ class InMemorySettingsDataSource(initial: AppSettings = AppSettings()) : Setting
     override val settings: Flow<AppSettings> = state
     override suspend fun update(transform: (AppSettings) -> AppSettings): EmptyResult<DataError.Local> {
         state.update(transform)
+        return Result.Success(Unit)
+    }
+}
+
+class InMemoryGoalDataSource : GoalLocalDataSource {
+    val goals = MutableStateFlow<List<Goal>>(emptyList())
+    override fun observeGoals(): Flow<List<Goal>> = goals
+    override suspend fun setGoal(goal: Goal): EmptyResult<DataError.Local> {
+        goals.update { list -> list.filterNot { it.type == goal.type } + goal }
         return Result.Success(Unit)
     }
 }

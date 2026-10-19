@@ -4,6 +4,7 @@ import app.cashflow.core.categorization.BundledCatalog
 import app.cashflow.core.data.local.RoomAccountDataSource
 import app.cashflow.core.data.local.RoomCategoryDataSource
 import app.cashflow.core.data.local.RoomCsvProfileDataSource
+import app.cashflow.core.data.local.RoomGoalDataSource
 import app.cashflow.core.data.local.RoomImportBatchDataSource
 import app.cashflow.core.data.local.RoomMerchantMemoryDataSource
 import app.cashflow.core.data.local.RoomRuleDataSource
@@ -13,6 +14,7 @@ import app.cashflow.core.database.CashFlowDatabase
 import app.cashflow.core.domain.datasource.AccountLocalDataSource
 import app.cashflow.core.domain.datasource.CategoryLocalDataSource
 import app.cashflow.core.domain.datasource.CsvProfileLocalDataSource
+import app.cashflow.core.domain.datasource.GoalLocalDataSource
 import app.cashflow.core.domain.datasource.ImportBatchLocalDataSource
 import app.cashflow.core.domain.datasource.MerchantMemoryLocalDataSource
 import app.cashflow.core.domain.datasource.RuleCatalog
@@ -37,6 +39,7 @@ val coreDataModule = module {
     singleOf(::RoomMerchantMemoryDataSource) { bind<MerchantMemoryLocalDataSource>() }
     singleOf(::RoomImportBatchDataSource) { bind<ImportBatchLocalDataSource>() }
     singleOf(::RoomCsvProfileDataSource) { bind<CsvProfileLocalDataSource>() }
+    singleOf(::RoomGoalDataSource) { bind<GoalLocalDataSource>() }
     // Lambda form: the DataStore file lives in the app's private files, excluded from backup.
     single<SettingsDataSource> {
         DataStoreSettingsDataSource.create(File(androidContext().filesDir, "datastore/${DataStoreSettingsDataSource.FILE_NAME}"))

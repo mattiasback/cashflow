@@ -6,6 +6,7 @@ import app.cashflow.core.domain.Result
 import app.cashflow.core.domain.model.Account
 import app.cashflow.core.domain.model.AccountId
 import app.cashflow.core.domain.model.AppSettings
+import app.cashflow.core.domain.model.Goal
 import app.cashflow.core.domain.model.BalanceState
 import app.cashflow.core.domain.model.Category
 import app.cashflow.core.domain.model.CategoryId
@@ -118,6 +119,12 @@ interface CsvProfileLocalDataSource {
     suspend fun getProfiles(): Result<List<CsvProfile>, DataError.Local>
     suspend fun upsertProfile(profile: CsvProfile): EmptyResult<DataError.Local>
     suspend fun deleteProfile(id: String): EmptyResult<DataError.Local>
+}
+
+/** Household goals (Buffert, Sparkvot), one row per type. */
+interface GoalLocalDataSource {
+    fun observeGoals(): Flow<List<Goal>>
+    suspend fun setGoal(goal: Goal): EmptyResult<DataError.Local>
 }
 
 /** Small settings in DataStore, read as a Flow. */

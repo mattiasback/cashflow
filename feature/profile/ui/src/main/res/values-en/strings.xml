@@ -47,9 +47,9 @@
     <string name="account_eyebrow">Account</string>
     <string name="account_name">Name</string>
     <string name="account_type">Account type</string>
-    <string name="account_market_value">Market value</string>
-    <string name="account_market_value_hint">From Avanza or Lysa</string>
-    <string name="account_market_value_why">The exports have no market value. Enter it, or the account counts at the amount put in plus return.</string>
+    <string name="account_market_value">Value today</string>
+    <string name="account_market_value_hint">From the bank, Avanza or Lysa</string>
+    <string name="account_market_value_why">The exports do not show what the account is worth. Enter it, or the account counts at what was put in and taken out in the imported files.</string>
     <string name="account_value_updated">Updated %1$s</string>
     <string name="account_rows">Transactions</string>
     <string name="account_balance">Balance without trades</string>

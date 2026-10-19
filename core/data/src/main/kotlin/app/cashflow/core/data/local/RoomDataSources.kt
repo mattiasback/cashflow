@@ -3,6 +3,7 @@ package app.cashflow.core.data.local
 import android.database.sqlite.SQLiteFullException
 import androidx.room.withTransaction
 import app.cashflow.core.database.CashFlowDatabase
+import app.cashflow.core.database.entity.GoalEntity
 import app.cashflow.core.domain.DataError
 import app.cashflow.core.domain.EmptyResult
 import app.cashflow.core.domain.Result
@@ -10,6 +11,7 @@ import app.cashflow.core.domain.datasource.AccountLocalDataSource
 import app.cashflow.core.domain.datasource.CategoryLocalDataSource
 import app.cashflow.core.domain.datasource.Classification
 import app.cashflow.core.domain.datasource.CsvProfileLocalDataSource
+import app.cashflow.core.domain.datasource.GoalLocalDataSource
 import app.cashflow.core.domain.datasource.ImportBatchLocalDataSource
 import app.cashflow.core.domain.datasource.MerchantMemoryLocalDataSource
 import app.cashflow.core.domain.datasource.RuleLocalDataSource
@@ -20,6 +22,8 @@ import app.cashflow.core.domain.model.BalanceState
 import app.cashflow.core.domain.model.Category
 import app.cashflow.core.domain.model.CategoryRule
 import app.cashflow.core.domain.model.CsvProfile
+import app.cashflow.core.domain.model.Goal
+import app.cashflow.core.domain.model.GoalType
 import app.cashflow.core.domain.model.ImportBatch
 import app.cashflow.core.domain.model.ImportId
 import app.cashflow.core.domain.model.InsertSummary
@@ -166,4 +170,14 @@ class RoomCsvProfileDataSource(db: CashFlowDatabase) : CsvProfileLocalDataSource
     override suspend fun getProfiles() = dbCall { dao.getProfiles().map { it.toProfile() } }
     override suspend fun upsertProfile(profile: CsvProfile): EmptyResult<DataError.Local> = dbCall { dao.upsert(profile.toEntity()) }
     override suspend fun deleteProfile(id: String): EmptyResult<DataError.Local> = dbCall { dao.delete(id) }
+}
+
+class RoomGoalDataSource(db: CashFlowDatabase) : GoalLocalDataSource {
+    private val dao = db.goalDao()
+    override fun observeGoals(): Flow<List<Goal>> = dao.observeGoals().map { list ->
+        list.mapNotNull { e -> GoalType.entries.firstOrNull { it.name == e.type }?.let { Goal(it, e.target) } }
+    }
+    override suspend fun setGoal(goal: Goal): EmptyResult<DataError.Local> = dbCall {
+        dao.upsert(GoalEntity(goal.type.name, goal.target, kotlin.time.Clock.System.now().toEpochMilliseconds()))
+    }
 }

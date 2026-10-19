@@ -53,6 +53,17 @@ class MigrationTest {
                 assertThat(c.getInt(0)).isEqualTo(1)
             }
         }
+        // v4 adds the goals table; existing data is untouched and no goal is set yet.
+        helper.runMigrationsAndValidate(DB, 4, true).use { db ->
+            db.query("SELECT COUNT(*) FROM goals").use { c ->
+                c.moveToFirst()
+                assertThat(c.getInt(0)).isEqualTo(0)
+            }
+            db.query("SELECT COUNT(*) FROM transactions").use { c ->
+                c.moveToFirst()
+                assertThat(c.getInt(0)).isEqualTo(1)
+            }
+        }
     }
 
     private companion object {
