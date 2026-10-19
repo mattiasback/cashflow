@@ -130,7 +130,9 @@ fun AccentTopBar(
     leading: @Composable RowScope.() -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    Column(modifier.fillMaxWidth().background(animatedBand(accent)).windowInsetsPadding(WindowInsets.statusBars)) {
+    // Semi-transparent: content scrolling underneath shows through, tinted by the accent. At the
+    // top the band behind it has the same colour, so the bar looks solid there.
+    Column(modifier.fillMaxWidth().background(animatedBand(accent).copy(alpha = 0.82f)).windowInsetsPadding(WindowInsets.statusBars)) {
         BarRow(title, actions, leading)
     }
 }
