@@ -35,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -56,6 +57,8 @@ import app.cashflow.core.designsystem.component.AccentTopBar
 import app.cashflow.core.designsystem.component.BandDropdown
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.BandStatusBar
+import app.cashflow.core.designsystem.component.rememberOnBand
+import app.cashflow.core.designsystem.component.rememberScrollAwayState
 import app.cashflow.core.designsystem.component.BandSegmented
 import app.cashflow.core.designsystem.component.BarChart
 import app.cashflow.core.designsystem.component.BarGroup
@@ -151,8 +154,12 @@ fun FlowScreen(
 ) {
     val c = CashFlowTheme.colors
     val listState = rememberLazyListState()
-    ObserveAsEvents(scrollToTop) { listState.requestScrollToItem(0) }
-    Box(Modifier.fillMaxSize().background(c.bgCanvas)) {
+    val bar = rememberScrollAwayState()
+    ObserveAsEvents(scrollToTop) {
+        listState.requestScrollToItem(0)
+        bar.show()
+    }
+    Box(Modifier.fillMaxSize().background(c.bgCanvas).nestedScroll(bar.connection)) {
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
@@ -193,11 +200,13 @@ fun FlowScreen(
                 }
             }
         }
-        // The band stays behind the status bar here, so its icons stay light.
-        BandStatusBar(onBand = true)
-        // The controls stay at the top while the hero and the rest scroll under them.
+        // Light icons while the bar or the band is behind the status bar; once both are gone the
+        // status bar is transparent over content.
+        BandStatusBar(onBand = !bar.hidden || rememberOnBand(listState))
+        // The controls slide away while scrolling down and come back on any scroll up (like Gmail).
         AccentTopBar(
             accent = state.tab.accent(),
+            modifier = bar.modifier,
             leading = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(FlowAction.OnProfileClick) }) },
             actions = { BarActions(state, onAction) },
         )
