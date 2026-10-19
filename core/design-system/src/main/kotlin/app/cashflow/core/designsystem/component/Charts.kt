@@ -45,12 +45,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
@@ -79,6 +81,7 @@ import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.hypot
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
@@ -242,12 +245,23 @@ fun BarChart(
                         val delay = (index * 0.04f).coerceAtMost(0.5f)
                         val grow = ((rise.value - delay) / (1f - delay)).coerceIn(0f, 1f)
                         group.bars.forEach { stack ->
-                            var y = size.height
-                            stack.forEach { seg ->
-                                val h = seg.value / maxValue * (size.height - 8.dp.toPx()) * grow
-                                if (h > 0f) {
-                                    drawRect(seg.color.copy(alpha = seg.color.alpha * alpha), Offset(x, y - h), Size(bw, h))
-                                    y -= h
+                            // The whole stack is clipped to one bar with a rounded top, so it reads as a single bar.
+                            val heights = stack.map { it.value / maxValue * (size.height - 8.dp.toPx()) * grow }
+                            val total = heights.sum()
+                            if (total > 0f) {
+                                val r = min(6.dp.toPx(), min(bw / 2, total))
+                                val outline = Path().apply {
+                                    addRoundRect(RoundRect(Rect(x, size.height - total, x + bw, size.height), topLeft = CornerRadius(r), topRight = CornerRadius(r)))
+                                }
+                                clipPath(outline) {
+                                    var y = size.height
+                                    stack.forEachIndexed { i, seg ->
+                                        val h = heights[i]
+                                        if (h > 0f) {
+                                            drawRect(seg.color.copy(alpha = seg.color.alpha * alpha), Offset(x, y - h), Size(bw, h))
+                                            y -= h
+                                        }
+                                    }
                                 }
                             }
                             x += bw + gap

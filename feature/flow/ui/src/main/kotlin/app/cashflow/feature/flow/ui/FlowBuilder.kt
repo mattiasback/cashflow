@@ -579,7 +579,7 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
                 barTone = FlowTone.Savings,
                 rows = listOf(
                     SheetRowUi(res(R.string.key_income), res(R.string.row_inflow), kr(a.income), null, FlowTone.Income),
-                    SheetRowUi(res(R.string.key_expenses), res(R.string.row_outflow), kr(-a.expenses.ore), null, FlowTone.Fixed),
+                    SheetRowUi(res(R.string.key_expenses), res(R.string.row_outflow), kr(a.expenses), null, FlowTone.Fixed),
                     SheetRowUi(res(R.string.row_of_which_saved), res(R.string.row_to_savings), kr(a.savings), null, FlowTone.Savings),
                     SheetRowUi(res(R.string.node_left), res(R.string.row_not_placed), kr(a.left, signed = true), null, FlowTone.Neutral),
                 ),
@@ -633,7 +633,7 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
                     shareB = kr(a.expenses),
                     bar = bar(deficit, inc),
                     barTone = FlowTone.Fixed,
-                    rows = nodes[VARIABLE]?.kids.orEmpty().take(3).map { SheetRowUi(it.label, res(R.string.row_biggest_variable), kr(-it.v), null, FlowTone.Variable) },
+                    rows = nodes[VARIABLE]?.kids.orEmpty().take(3).map { SheetRowUi(it.label, res(R.string.row_biggest_variable), kr(it.v), null, FlowTone.Variable) },
                     cta = res(R.string.cta_show_expenses),
                     action = SheetCta.Tab(FlowTab.EXPENSE),
                 )
@@ -662,7 +662,7 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
                 NodeSheetUi(
                     eyebrow = text(r.label),
                     title = n.label,
-                    figure = kr(if (isSavings) n.v else -n.v),
+                    figure = kr(n.v),
                     description = if (n.id == UNCAT) res(R.string.sheet_uncat_desc) else kids?.let { UiText.PluralResource(R.plurals.sheet_category_count, it.size) },
                     shareALabel = res(R.string.share_of_income),
                     shareA = ofIncome(n.v),
@@ -708,12 +708,11 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
             else -> Quad(a.expensesByCategory[id], a.expenses, R.string.key_expenses, R.string.share_of_expenses)
         }
         val value = v?.ore ?: return null
-        val gain = kind == CategoryKind.INCOME || kind == CategoryKind.SAVINGS
         val avg = (valuesOf(if (kind == CategoryKind.INCOME) FlowTab.INCOME else if (kind == CategoryKind.SAVINGS) FlowTab.SAVINGS else FlowTab.EXPENSE, r.a12)[id]?.ore ?: 0L) / r.months12.size.coerceAtLeast(1)
         return NodeSheetUi(
             eyebrow = res(R.string.flow_summary_label, res(eyebrowRes), r.label),
             title = nameOf(input, id),
-            figure = kr(if (gain) value else -value),
+            figure = kr(value),
             description = null,
             shareALabel = res(shareRes),
             shareA = share(value, group.ore),

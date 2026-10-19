@@ -127,7 +127,7 @@ class FlowViewModelTest {
         vm.onAction(FlowAction.OnDonutSegment("fasta"))
         vm.onAction(FlowAction.OnDonutSegment("boende"))
         val sheet = vm.awaitState { it.sheet != null }.sheet!!
-        assertThat(sheet.figure).isEqualTo("−9 000 kr")
+        assertThat(sheet.figure).isEqualTo("9 000 kr")
         assertThat(sheet.action).isEqualTo(SheetCta.Events("boende"))
     }
 
