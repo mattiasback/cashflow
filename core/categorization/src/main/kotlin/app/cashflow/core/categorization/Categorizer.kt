@@ -71,6 +71,8 @@ class Categorizer(
         when (input.transferKind) {
             TransferKind.INTERNAL -> return CategoryDecision(CategoryId.TRANSFER, CategorizedBy.TRANSFER)
             TransferKind.TO_SAVINGS, TransferKind.FROM_SAVINGS -> {
+                // A choice the user made for this payee ("Kom ihåg", e.g. Överföring) wins over the account type.
+                context.memory[key]?.let { return CategoryDecision(it, CategorizedBy.MEMORY) }
                 // The savings account says what kind of saving it is; else a savings rule may; else "Övrigt sparande".
                 input.savingsCategory?.let { return CategoryDecision(it, CategorizedBy.TRANSFER) }
                 val rule = context.user.firstMatch(key, upper, input.amount, input.accountId)

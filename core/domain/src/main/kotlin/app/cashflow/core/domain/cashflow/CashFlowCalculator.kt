@@ -62,7 +62,8 @@ class CashFlowCalculator {
                 TransferKind.INTERNAL -> continue
                 TransferKind.LONE_LEG -> if (tx.loneLegConfirmed) continue
                 TransferKind.TO_SAVINGS, TransferKind.FROM_SAVINGS -> {
-                    savings.merge(tx.categoryId, -ore, Long::plus)
+                    // Set to Överföring by hand: just moving money (e.g. into the buffer and back), not saving.
+                    if (kindOf(tx.categoryId) != CategoryKind.TRANSFER) savings.merge(tx.categoryId, -ore, Long::plus)
                     continue
                 }
                 TransferKind.NONE -> Unit

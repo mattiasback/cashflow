@@ -20,6 +20,7 @@ class CashFlowCalculatorTest {
         "mat" to CategoryKind.VARIABLE,
         "boende" to CategoryKind.FIXED,
         "fonder" to CategoryKind.SAVINGS,
+        "sparande" to CategoryKind.SAVINGS,
         "overforing" to CategoryKind.TRANSFER,
         "okat" to CategoryKind.UNCATEGORIZED,
     )

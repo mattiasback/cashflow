@@ -86,6 +86,17 @@ class CategorizerTest {
     }
 
     @Test
+    fun `a remembered payee wins over the savings account, so Överföring sticks`() = runTest {
+        val ctx = CategorizationContext(
+            listOf(MerchantMemory(normalizer.key("Lysa Spar"), CategoryId.TRANSFER)), emptyList(), BundledCatalog.load().builtInRules(),
+        )
+        val decision = categorizer.categorize(
+            CategorizationInput("Lysa Spar", Money.kr(-500), TransferKind.TO_SAVINGS, loneLegConfirmed = false, savingsCategory = CategoryId.BUFFER), ctx,
+        )
+        assertThat(decision.categoryId).isEqualTo(CategoryId.TRANSFER)
+    }
+
+    @Test
     fun `a user rule can be limited to an account and an amount`() = runTest {
         val rule = CategoryRule(
             "u1", "BOLÅN", RuleMatch.STARTS_WITH, CategoryId("boende"), isBuiltIn = false,
