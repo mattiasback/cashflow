@@ -556,7 +556,8 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
         FlowTab.EXPENSE -> expenseRows(input, months)
         FlowTab.INCOME -> counted(input, months).filter { it.transferKind == TransferKind.NONE && it.amount.ore > 0 && kindOf(input, it.categoryId).let { k -> k == CategoryKind.INCOME || k == CategoryKind.UNCATEGORIZED } }
         FlowTab.SAVINGS -> counted(input, months).filter {
-            it.transferKind == TransferKind.TO_SAVINGS || it.transferKind == TransferKind.FROM_SAVINGS ||
+            // A savings transfer set to Överföring is not saving, so it is not listed here.
+            ((it.transferKind == TransferKind.TO_SAVINGS || it.transferKind == TransferKind.FROM_SAVINGS) && kindOf(input, it.categoryId) != CategoryKind.TRANSFER) ||
                 (it.transferKind == TransferKind.NONE && kindOf(input, it.categoryId) == CategoryKind.SAVINGS)
         }
         FlowTab.CASHFLOW -> emptyList()
