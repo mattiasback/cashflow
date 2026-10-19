@@ -15,14 +15,12 @@ data object InsightsRoute : NavKey
 fun EntryProviderScope<NavKey>.insightsEntries(
     contentPadding: PaddingValues,
     scrollToTop: Flow<Unit>,
-    onOpenSavings: () -> Unit,
     onOpenProfile: () -> Unit,
     onOpenImport: () -> Unit,
 ) {
     entry<InsightsRoute> {
         InsightsRoot(
             contentPadding = contentPadding,
-            onOpenSavings = onOpenSavings,
             onOpenProfile = onOpenProfile,
             onOpenImport = onOpenImport,
             scrollToTop = scrollToTop,

@@ -22,7 +22,7 @@ import com.android.tools.screenshot.PreviewTest
 @Preview(locale = "sv", name = "font150", widthDp = 400, heightDp = 500, fontScale = 1.5f, showBackground = true)
 annotation class InsightsSizes
 
-/** The whole screen: plan, suggestions, Tänk om, benchmarks and the AI card. */
+/** The whole screen: suggestions, Tänk om, benchmarks and the AI card. */
 @Preview(locale = "sv", name = "full-light", widthDp = 400, heightDp = 3200, showBackground = true)
 @Preview(locale = "sv", name = "full-dark", widthDp = 400, heightDp = 3200, uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 annotation class InsightsTall

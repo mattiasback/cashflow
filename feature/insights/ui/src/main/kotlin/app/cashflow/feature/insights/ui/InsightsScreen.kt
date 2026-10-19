@@ -72,7 +72,6 @@ import app.cashflow.core.designsystem.theme.CashFlowTheme
 import app.cashflow.core.designsystem.theme.Radius
 import app.cashflow.core.designsystem.theme.Spacing
 import app.cashflow.core.ui.ObserveAsEvents
-import app.cashflow.feature.insights.domain.StepState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -81,7 +80,6 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun InsightsRoot(
     contentPadding: PaddingValues,
-    onOpenSavings: () -> Unit,
     onOpenProfile: () -> Unit,
     onOpenImport: () -> Unit,
     scrollToTop: Flow<Unit> = emptyFlow(),
@@ -104,7 +102,6 @@ fun InsightsRoot(
                 val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, event.text)
                 context.startActivity(Intent.createChooser(send, shareTitle))
             }
-            InsightsEvent.OpenSavings -> onOpenSavings()
             InsightsEvent.OpenProfile -> onOpenProfile()
             InsightsEvent.OpenImport -> onOpenImport()
         }
@@ -167,10 +164,6 @@ fun InsightsScreen(
 }
 
 private fun LazyListScope.content(state: InsightsState, onAction: (InsightsAction) -> Unit) {
-    section("plan", R.string.section_plan, trailing = state.planDone?.let { { it.asString() } }, intro = R.string.plan_intro)
-    items(state.steps.size, key = { "step-${state.steps[it].id}" }) { i ->
-        StepCard(state.steps[i], onAction, Modifier.padding(horizontal = Spacing.gutter).padding(bottom = Spacing.s3))
-    }
     section("opps", R.string.section_opps, intro = R.string.opps_intro)
     item(key = "opps") {
         CfCard(Modifier.padding(horizontal = Spacing.gutter).fillMaxWidth(), contentPadding = PaddingValues(horizontal = Spacing.s4, vertical = 4.dp)) {
@@ -234,75 +227,6 @@ private fun EmptyCard(hasData: Boolean, onAction: (InsightsAction) -> Unit) {
             CfButton(stringResource(R.string.import_cta), { onAction(InsightsAction.OnImportClick) }, Modifier.fillMaxWidth(), icon = CfIcons.File)
         }
     }
-}
-
-// ───────────────────────────── Er plan ─────────────────────────────
-
-@Composable
-private fun StepCard(step: PlanStepUi, onAction: (InsightsAction) -> Unit, modifier: Modifier = Modifier) {
-    val c = CashFlowTheme.colors
-    val now = step.state == StepState.NOW
-    val done = step.state == StepState.DONE
-    Row(
-        modifier
-            .fillMaxWidth()
-            .clip(Radius.sm)
-            .background(c.surfaceCard)
-            .then(if (now) Modifier.border(2.dp, c.accentInsightsInk, Radius.sm) else Modifier)
-            .alpha(if (done) 0.7f else 1f)
-            .padding(Spacing.s4),
-        horizontalArrangement = Arrangement.spacedBy(Spacing.s3),
-    ) {
-        Box(
-            Modifier.size(36.dp).clip(CircleShape).background(if (now) c.accentInsights else c.accentInsightsTint),
-            contentAlignment = Alignment.Center,
-        ) {
-            if (done) {
-                Icon(CfIcons.Check, contentDescription = null, tint = c.textOnInsightsTint, modifier = Modifier.size(18.dp))
-            } else {
-                Text(step.number.toString(), style = CashFlowTheme.typography.bodyStrong.copy(fontSize = 15.sp), color = if (now) Color.White else c.textOnInsightsTint)
-            }
-        }
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s2), verticalAlignment = Alignment.Top) {
-                Text(step.title.asString(), style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary, modifier = Modifier.weight(1f).semantics { heading() })
-                Tag(step.tag.asString(), step.tagTone)
-            }
-            Text(step.text.asString(), style = CashFlowTheme.typography.body, color = c.textSecondary)
-            if (step.bar != null) {
-                GoalBar(step.bar, c.accentInsightsInk, Modifier.padding(top = 4.dp))
-                step.barText?.let { Text(it.asString(), style = CashFlowTheme.typography.label, color = c.textSecondary) }
-            }
-            Row(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(Spacing.s4), verticalAlignment = Alignment.CenterVertically) {
-                CfButton(step.cta.asString(), { onAction(InsightsAction.OnStepCta(step.id)) }, variant = CfButtonVariant.Outline)
-                step.toggle?.let { label ->
-                    Box(
-                        Modifier.heightIn(min = 48.dp).clickable(role = Role.Button) { onAction(InsightsAction.OnStepToggle(step.id)) },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(label.asString(), style = CashFlowTheme.typography.body.copy(textDecoration = TextDecoration.Underline), color = c.textLink)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun Tag(text: String, tone: TagTone) {
-    val c = CashFlowTheme.colors
-    val (bg, fg) = when (tone) {
-        TagTone.Good -> c.surfaceStatus to c.textOnStatus
-        TagTone.Watch -> c.surfaceCelebrate to c.textOnCelebrate
-        TagTone.Insights -> c.accentInsightsTint to c.textOnInsightsTint
-    }
-    Text(
-        text,
-        style = CashFlowTheme.typography.caption.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold),
-        color = fg,
-        maxLines = 1,
-        modifier = Modifier.clip(Radius.pill).background(bg).padding(horizontal = 10.dp, vertical = 2.dp),
-    )
 }
 
 // ───────────────────────────── Spara utan att märka det ─────────────────────────────

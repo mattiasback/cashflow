@@ -16,10 +16,7 @@ import app.cashflow.core.ui.format.PeriodFormatter
 import app.cashflow.feature.insights.domain.InsightFacts
 import app.cashflow.feature.insights.domain.Opportunity
 import app.cashflow.feature.insights.domain.OpportunityEngine
-import app.cashflow.feature.insights.domain.PlanEvaluator
-import app.cashflow.feature.insights.domain.PlanStep
-import app.cashflow.feature.insights.domain.PlanStepId
-import app.cashflow.feature.insights.domain.StepState
+import app.cashflow.feature.insights.domain.BufferMath
 import app.cashflow.feature.insights.domain.WhatIfCalculator
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
@@ -37,12 +34,11 @@ internal class InsightsInput(
 /** The household's figures behind the screen, kept for the actions (marking, sheets). */
 internal class InsightsModel(
     val facts: InsightFacts?,
-    val steps: List<PlanStep>,
     val opportunities: List<Opportunity>,
 )
 
 /**
- * Insikter: the plan, suggestions sorted by kr per year, the what-if and the benchmarks, all
+ * Insikter: suggestions sorted by kr per year, the what-if and the benchmarks, all
  * computed from the household's own rows. Pure and unit-tested.
  */
 internal class InsightsBuilder(private val locale: AppLocale = AppLocale.current()) {
@@ -59,12 +55,11 @@ internal class InsightsBuilder(private val locale: AppLocale = AppLocale.current
     private fun round(m: Money, to: Long) = Money((m.ore.toDouble() / (to * 100)).roundToLong() * to * 100)
 
     fun model(input: InsightsInput): InsightsModel {
-        if (input.data.periods.size < OpportunityEngine.MIN_MONTHS) return InsightsModel(null, emptyList(), emptyList())
+        if (input.data.periods.size < OpportunityEngine.MIN_MONTHS) return InsightsModel(null, emptyList())
         val kindOf = { id: CategoryId -> input.categories[id]?.kind ?: app.cashflow.core.domain.model.CategoryKind.UNCATEGORIZED }
         val facts = InsightFacts.of(input.data, input.goals, input.bufferNow)
         return InsightsModel(
             facts = facts,
-            steps = PlanEvaluator.evaluate(facts, input.done),
             opportunities = OpportunityEngine.find(input.data, input.transactions, kindOf),
         )
     }
@@ -79,7 +74,6 @@ internal class InsightsBuilder(private val locale: AppLocale = AppLocale.current
         val open = model.opportunities.filter { it.id !in input.done }
         val gainLeft = Money(open.sumOf { it.perYear.ore })
         val doneCount = model.opportunities.size - open.size
-        val stepsDone = model.steps.count { it.state == StepState.DONE }
         return InsightsState(
             isLoading = false,
             hasData = true,
@@ -90,8 +84,6 @@ internal class InsightsBuilder(private val locale: AppLocale = AppLocale.current
                 doneCount == 0 -> plural(R.plurals.gain_left, open.size, open.size)
                 else -> res(R.string.gain_left_done, plural(R.plurals.gain_left, open.size, open.size), doneCount)
             },
-            planDone = res(R.string.plan_done, stepsDone, model.steps.size),
-            steps = model.steps.map { step(it, facts, last) },
             opportunities = model.opportunities.map { opportunity(it, it.id in input.done, input) },
             whatIf = whatIf(facts, extraKronor, last),
             benchmarks = benchmarks(facts),
@@ -99,73 +91,6 @@ internal class InsightsBuilder(private val locale: AppLocale = AppLocale.current
             copied = copied,
             sheet = sheet?.let { sheet(it, input, model, facts, last) },
         )
-    }
-
-    // ───────────────────────────── Er plan ─────────────────────────────
-
-    private fun step(step: PlanStep, f: InsightFacts, last: Period): PlanStepUi {
-        val done = step.state == StepState.DONE
-        val goalMonths = f.bufferGoalMonths.roundToInt()
-        val base = when (step.id) {
-            PlanStepId.BUFFER -> {
-                val now = f.bufferNow
-                PlanStepUi(
-                    step.id, 1, step.state,
-                    title = res(R.string.step_buffer_title, goalMonths),
-                    tag = res(R.string.tag_ongoing), tagTone = TagTone.Watch,
-                    text = if (now != null) res(R.string.step_buffer_text, kr(now), kr(f.bufferTarget)) else res(R.string.step_buffer_text_no_balance, kr(f.bufferTarget), goalMonths),
-                    bar = if (now != null && f.bufferTarget.isPositive) (now.ore.toFloat() / f.bufferTarget.ore).coerceIn(0f, 1f) else null,
-                    barText = if (now != null) bufferProgress(f, last) else null,
-                    cta = res(R.string.step_buffer_cta), toggle = null,
-                )
-            }
-            PlanStepId.SURPLUS -> PlanStepUi(
-                step.id, 2, step.state,
-                title = res(R.string.step_surplus_title),
-                tag = res(R.string.tag_biggest), tagTone = TagTone.Insights,
-                text = res(if (step.doneByData) R.string.step_surplus_text_done else R.string.step_surplus_text, kr(f.leftPerMonth.coerceAtLeastZero())),
-                cta = res(R.string.step_surplus_cta), toggle = null,
-            )
-            PlanStepId.EXPENSIVE_LOAN -> PlanStepUi(
-                step.id, 3, step.state,
-                title = res(R.string.step_loan_title),
-                tag = res(R.string.tag_loans), tagTone = TagTone.Watch,
-                text = if (step.doneByData) res(R.string.step_loan_text_none) else res(R.string.step_loan_text, kr(f.loansPerMonth)),
-                cta = res(R.string.step_loan_cta), toggle = null,
-            )
-            PlanStepId.LONG_TERM -> PlanStepUi(
-                step.id, 4, step.state,
-                title = res(R.string.step_long_title),
-                tag = res(R.string.tag_yearly), tagTone = TagTone.Good,
-                text = res(
-                    if (f.savingsRate >= f.savingsRateGoal) R.string.step_long_text_over else R.string.step_long_text_under,
-                    pct(f.savingsRate), pct(f.savingsRateGoal),
-                ),
-                cta = res(R.string.step_long_cta), toggle = null,
-            )
-        }
-        return base.copy(
-            tag = if (done) res(R.string.tag_done) else base.tag,
-            tagTone = if (done) TagTone.Good else base.tagTone,
-            bar = if (done) null else base.bar,
-            barText = if (done) null else base.barText,
-            toggle = when {
-                step.doneByData -> null
-                done -> res(R.string.undo)
-                else -> res(R.string.mark_done)
-            },
-        )
-    }
-
-    private fun bufferProgress(f: InsightFacts, last: Period): UiText {
-        val months = f.bufferMonths?.let(::one) ?: "0"
-        val goal = f.bufferGoalMonths.roundToInt()
-        val fullIn = PlanEvaluator.monthsToFull(f.bufferNeed, f.bufferPerMonth)
-        return when (fullIn) {
-            null -> res(R.string.step_buffer_bar_stalled, months, goal)
-            0 -> res(R.string.step_buffer_bar_full, months, goal)
-            else -> res(R.string.step_buffer_bar, months, goal, month(last.plus(fullIn)), kr(f.bufferPerMonth))
-        }
     }
 
     // ───────────────────────────── Spara utan att märka det ─────────────────────────────
@@ -282,14 +207,6 @@ internal class InsightsBuilder(private val locale: AppLocale = AppLocale.current
                 done = null,
             )
         }
-        is InsightSheet.Step -> model.steps.firstOrNull { it.id == sheet.id }?.let { s ->
-            val ui = step(s, f, last)
-            InsightSheetUi(
-                eyebrow = res(R.string.step_eyebrow, ui.number), title = ui.title, figure = null, description = null,
-                why = ui.text, assume = ui.barText, how = stepHow(s.id, f, last),
-                done = ui.toggle,
-            )
-        }
         is InsightSheet.Suggestion -> model.opportunities.firstOrNull { it.id == sheet.id }?.let { o ->
             val ui = opportunity(o, o.id in input.done, input)
             InsightSheetUi(
@@ -300,28 +217,6 @@ internal class InsightsBuilder(private val locale: AppLocale = AppLocale.current
                 done = res(if (o.id in input.done) R.string.undo_done else R.string.i_fixed_it),
             )
         }
-    }
-
-    private fun stepHow(id: PlanStepId, f: InsightFacts, last: Period): UiText = when (id) {
-        PlanStepId.BUFFER -> {
-            val plus = Money.kr(2_000)
-            val faster = PlanEvaluator.monthsToFull(f.bufferNeed, f.bufferPerMonth + plus)
-            val now = PlanEvaluator.monthsToFull(f.bufferNeed, f.bufferPerMonth)
-            if (faster != null && faster > 0) {
-                res(
-                    R.string.step_buffer_how, kr(plus), month(last.plus(faster)),
-                    now?.let { month(last.plus(it)) }?.let { res(R.string.step_buffer_how_instead, it) } ?: UiText.DynamicString(""),
-                )
-            } else {
-                res(R.string.step_buffer_how_plain)
-            }
-        }
-        PlanStepId.SURPLUS -> {
-            val standing = Money.kr(((f.leftPerMonth.ore / 100_000.0).roundToLong() * 1_000 - 2_000).coerceAtLeast(0))
-            if (standing.isPositive) res(R.string.step_surplus_how, kr(standing)) else res(R.string.step_surplus_how_plain)
-        }
-        PlanStepId.EXPENSIVE_LOAN -> res(R.string.step_loan_how)
-        PlanStepId.LONG_TERM -> res(R.string.step_long_how)
     }
 
     private fun why(o: Opportunity, input: InsightsInput): UiText = when (o) {

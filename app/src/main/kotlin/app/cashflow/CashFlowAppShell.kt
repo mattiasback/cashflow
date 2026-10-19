@@ -111,7 +111,6 @@ fun CashFlowAppShell(
         insightsEntries(
             contentPadding = contentPadding,
             scrollToTop = insightsReselect,
-            onOpenSavings = { navigator.selectTab(FlowRoute) },
             onOpenProfile = { navigator.navigate(ProfileRoute) },
             onOpenImport = { navigator.navigateIn(EventsRoute, ImportRoute()) },
         )

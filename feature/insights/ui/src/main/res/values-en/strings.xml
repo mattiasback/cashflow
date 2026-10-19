@@ -13,49 +13,10 @@
     </plurals>
     <string name="gain_left_done">%1$s · %2$d done</string>
 
-    <!-- Er plan -->
-    <string name="section_plan">Your plan</string>
-    <string name="plan_intro">The order that usually pays off best: safety first, then expensive loans, then long-term saving.</string>
-    <string name="plan_done">%1$d of %2$d done</string>
-    <string name="tag_ongoing">Ongoing</string>
-    <string name="tag_biggest">Biggest effect</string>
-    <string name="tag_loans">Loans</string>
-    <string name="tag_yearly">Every year</string>
-    <string name="tag_done">Done</string>
-    <string name="mark_done">Mark as done</string>
-    <string name="undo">Undo</string>
-    <string name="cd_step">Step %1$d: %2$s, %3$s. %4$s</string>
-    <string name="step_eyebrow">Step %1$d of the plan</string>
 
-    <string name="step_buffer_title">Fill the buffer to %1$d months</string>
-    <string name="step_buffer_text">A buffer keeps you from expensive loans when something unexpected happens. You have %1$s, the goal is %2$s.</string>
-    <string name="step_buffer_text_no_balance">A buffer keeps you from expensive loans when something unexpected happens. The goal is %1$s, %2$d months of your fixed expenses. Enter the buffer\'s balance in Profile and the app follows how far you have left.</string>
-    <string name="step_buffer_bar">%1$s of %2$d mo · full %3$s at %4$s/mo</string>
-    <string name="step_buffer_bar_full">%1$s of %2$d mo · full</string>
-    <string name="step_buffer_bar_stalled">%1$s of %2$d mo · nothing goes in right now</string>
-    <string name="step_buffer_cta">Raise the transfer</string>
-    <string name="step_buffer_how">Raise the automatic transfer to the buffer account. With %1$s more a month it is full %2$s%3$s.</string>
-    <string name="step_buffer_how_instead"> instead of %1$s</string>
-    <string name="step_buffer_how_plain">Set up a standing transfer to the buffer account the day after payday.</string>
 
-    <string name="step_surplus_title">Give the surplus a job</string>
-    <string name="step_surplus_text">On average %1$s is left on the account each month without being placed. An automatic transfer the day after payday puts the money to work.</string>
-    <string name="step_surplus_text_done">On average only %1$s is left on the account a month, so the surplus already has a job.</string>
-    <string name="step_surplus_cta">Set up a transfer</string>
-    <string name="step_surplus_how">Set up a standing transfer of %1$s the day after payday, and leave about 2,000 kr as a margin.</string>
-    <string name="step_surplus_how_plain">Leave a small margin on the account and move the rest the day after payday.</string>
 
-    <string name="step_loan_title">Pay off the most expensive loan first</string>
-    <string name="step_loan_text">You pay %1$s a month on loans besides the mortgage. Extra payments on the loan with the highest rate give a safe return, often more than saving after tax.</string>
-    <string name="step_loan_text_none">No loans other than the mortgage show in the transactions.</string>
-    <string name="step_loan_cta">Work out an extra payment</string>
-    <string name="step_loan_how">Once the buffer is full: pay extra on the loan with the highest rate, every month or as a lump sum.</string>
 
-    <string name="step_long_title">Review long-term saving</string>
-    <string name="step_long_text_over">The savings rate is %1$s, above the goal of %2$s. Check fees and that the funds are in an ISK.</string>
-    <string name="step_long_text_under">The savings rate is %1$s, below the goal of %2$s. Check fees and that the funds are in an ISK.</string>
-    <string name="step_long_cta">Show savings</string>
-    <string name="step_long_how">Check the fund fees once a year and move anything in a regular custody account to an ISK.</string>
 
     <!-- Spara utan att märka det -->
     <string name="section_opps">Save without noticing</string>
@@ -137,13 +98,13 @@
     <!-- Fråga en AI -->
     <string name="section_ai">Ask an AI</string>
     <string name="ai_title">Get a second opinion</string>
-    <string name="ai_text">Copy an anonymous summary of your plan and figures to the AI chat you already use.</string>
+    <string name="ai_text">Copy an anonymous summary of your cash flow to the AI chat you already use.</string>
     <string name="ai_preview">Preview of the summary</string>
     <string name="ai_privacy">No names, account numbers or payees. The text is made on the phone and never sent by us.</string>
     <string name="ai_copy">Copy anonymous summary</string>
     <string name="ai_copied">Copied</string>
     <string name="ai_share">Share …</string>
-    <string name="prompt">You are an experienced personal finance adviser in Sweden.\nOur household, monthly average over the last %1$d months:\nIncome %2$s, expenses %3$s (fixed %4$s), savings %5$s (savings rate %6$s).\nLeft unplaced on the account on average %7$s a month.\n%8$s%9$sOur plan: 1) fill the buffer 2) give the surplus a job 3) pay off expensive loans 4) review long-term saving.\nIs the order sensible? What would you change?</string>
+    <string name="prompt">You are an experienced personal finance adviser in Sweden.\nOur household, monthly average over the last %1$d months:\nIncome %2$s, expenses %3$s (fixed %4$s), savings %5$s (savings rate %6$s).\nLeft unplaced on the account on average %7$s a month.\n%8$s%9$sHow can we improve our cash flow, and how do we compare with other households in Sweden?</string>
     <string name="prompt_buffer">Buffer %1$s of the goal %2$s (%3$d months of fixed expenses).\n</string>
     <string name="prompt_buffer_target">Buffer goal %1$s (%2$d months of fixed expenses), balance unknown.\n</string>
     <string name="prompt_loans">Loans besides the mortgage: %1$s a month.\n</string>

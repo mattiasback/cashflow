@@ -8,7 +8,7 @@ import app.cashflow.core.domain.model.Money
 import kotlin.math.ceil
 import kotlin.math.pow
 
-/** The household's figures the plan, the what-if and the benchmarks read. Averages are over 12 months. */
+/** The household's figures the what-if, the benchmarks and the AI summary read. Averages are over 12 months. */
 data class InsightFacts(
     val months: Int,
     val incomePerMonth: Money,
@@ -60,47 +60,7 @@ data class InsightFacts(
     }
 }
 
-/** Er plan: trygghet först, sedan överskottet, dyra lån och långsiktigt sparande. */
-enum class PlanStepId(val key: String) {
-    BUFFER("plan:buffer"),
-    SURPLUS("plan:surplus"),
-    EXPENSIVE_LOAN("plan:loan"),
-    LONG_TERM("plan:longterm"),
-}
-
-enum class StepState { DONE, NOW, NEXT }
-
-data class PlanStep(
-    val id: PlanStepId,
-    val state: StepState,
-    /** Done because the data says so, not because it was marked; it cannot be undone by hand. */
-    val doneByData: Boolean,
-)
-
-object PlanEvaluator {
-
-    /** Less than this left on the account each month means the surplus already has a job. */
-    val SMALL_SURPLUS = Money.kr(1_000)
-
-    fun evaluate(facts: InsightFacts, marked: Set<String>): List<PlanStep> {
-        val byData = mapOf(
-            PlanStepId.BUFFER to (facts.bufferNow != null && facts.bufferNow >= facts.bufferTarget && facts.bufferTarget.isPositive),
-            PlanStepId.SURPLUS to (facts.leftPerMonth < SMALL_SURPLUS),
-            PlanStepId.EXPENSIVE_LOAN to (facts.loansPerMonth.ore <= 0),
-            PlanStepId.LONG_TERM to false,
-        )
-        var nowGiven = false
-        return PlanStepId.entries.map { id ->
-            val dataDone = byData.getValue(id)
-            val done = dataDone || id.key in marked
-            val state = when {
-                done -> StepState.DONE
-                !nowGiven -> StepState.NOW.also { nowGiven = true }
-                else -> StepState.NEXT
-            }
-            PlanStep(id, state, dataDone)
-        }
-    }
+object BufferMath {
 
     /** Whole months until the buffer is full at [perMonth]; 0 when it already is, null when it never fills. */
     fun monthsToFull(need: Money?, perMonth: Money): Int? = when {
@@ -134,8 +94,8 @@ object WhatIfCalculator {
      */
     fun calculate(facts: InsightFacts, extra: Money): WhatIf {
         val need = facts.bufferNeed
-        val fullIn = PlanEvaluator.monthsToFull(need, facts.bufferPerMonth + extra)
-        val fullInNow = PlanEvaluator.monthsToFull(need, facts.bufferPerMonth)
+        val fullIn = BufferMath.monthsToFull(need, facts.bufferPerMonth + extra)
+        val fullInNow = BufferMath.monthsToFull(need, facts.bufferPerMonth)
         val toFundsFrom = if (need == null) 0 else fullIn ?: Int.MAX_VALUE
         val rate = if (facts.incomePerMonth.ore > 0) (facts.savingsPerMonth + extra).ore.toDouble() / facts.incomePerMonth.ore * 100 else 0.0
         return WhatIf(

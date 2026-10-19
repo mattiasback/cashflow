@@ -2,14 +2,13 @@ package app.cashflow.feature.insights.domain
 
 import app.cashflow.core.domain.model.Money
 import assertk.assertThat
-import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
 import assertk.assertions.isNull
 import org.junit.jupiter.api.Test
 
 /** All figures are fictional. */
-class PlanTest {
+class WhatIfTest {
 
     private val facts = InsightFacts(
         months = 12,
@@ -25,19 +24,6 @@ class PlanTest {
         bufferNow = Money.kr(100_000),
         savingsRateGoal = 10.0,
     )
-
-    @Test
-    fun `the first open step is now, the rest are next, and marked steps are done`() {
-        val steps = PlanEvaluator.evaluate(facts, marked = setOf(PlanStepId.SURPLUS.key))
-        assertThat(steps.map { it.state }).containsExactly(StepState.NOW, StepState.DONE, StepState.NEXT, StepState.NEXT)
-    }
-
-    @Test
-    fun `data closes the steps it can see, a full buffer, a small surplus and no other loans`() {
-        val steps = PlanEvaluator.evaluate(facts.copy(bufferNow = Money.kr(130_000), leftPerMonth = Money.kr(500), loansPerMonth = Money.ZERO), emptySet())
-        assertThat(steps.map { it.state }).containsExactly(StepState.DONE, StepState.DONE, StepState.DONE, StepState.NOW)
-        assertThat(steps.map { it.doneByData }).containsExactly(true, true, true, false)
-    }
 
     @Test
     fun `the buffer fills in 10 months at 2 000 kr, and in 5 with 2 000 kr extra`() {
@@ -59,6 +45,6 @@ class PlanTest {
     fun `without an entered balance the buffer date is unknown`() {
         val w = WhatIfCalculator.calculate(facts.copy(bufferNow = null), Money.kr(1_000))
         assertThat(w.bufferFullIn).isNull()
-        assertThat(PlanEvaluator.monthsToFull(Money.kr(1), Money.ZERO)).isNull()
+        assertThat(BufferMath.monthsToFull(Money.kr(1), Money.ZERO)).isNull()
     }
 }

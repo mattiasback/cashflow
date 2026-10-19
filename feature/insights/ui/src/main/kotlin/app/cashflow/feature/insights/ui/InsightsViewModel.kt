@@ -10,7 +10,6 @@ import app.cashflow.core.domain.datasource.SettingsDataSource
 import app.cashflow.core.domain.datasource.TransactionLocalDataSource
 import app.cashflow.core.domain.model.CategoryKind
 import app.cashflow.core.domain.model.Goals
-import app.cashflow.feature.insights.domain.PlanStepId
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -25,7 +24,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 /**
- * Insikter: the plan, suggestions and what-if over the same rows as Flöde. The heavy part (the
+ * Insikter: suggestions and what-if over the same rows as Flöde. The heavy part (the
  * detectors) runs only when the data changes; the slider and the sheets only rebuild the UI models.
  */
 class InsightsViewModel(
@@ -72,14 +71,10 @@ class InsightsViewModel(
 
     fun onAction(action: InsightsAction) {
         when (action) {
-            is InsightsAction.OnStepCta ->
-                if (action.id == PlanStepId.LONG_TERM) openSavings() else ui.value = ui.value.copy(sheet = InsightSheet.Step(action.id))
-            is InsightsAction.OnStepToggle -> toggle(action.id.key)
             is InsightsAction.OnOpportunityClick -> ui.value = ui.value.copy(sheet = InsightSheet.Suggestion(action.id))
             InsightsAction.OnAboutClick -> ui.value = ui.value.copy(sheet = InsightSheet.About)
             InsightsAction.OnSheetDone -> {
                 when (val s = ui.value.sheet) {
-                    is InsightSheet.Step -> toggle(s.id.key)
                     is InsightSheet.Suggestion -> toggle(s.id)
                     InsightSheet.About, null -> Unit
                 }
@@ -103,13 +98,6 @@ class InsightsViewModel(
         }
     }
 
-    /** Flöde reads its sub-tab and period from settings, like Hem's trend rows. */
-    private fun openSavings() {
-        viewModelScope.launch {
-            settings.update { it.copy(lastTab = "savings") }
-            _events.send(InsightsEvent.OpenSavings)
-        }
-    }
 
     private fun send(e: InsightsEvent) {
         viewModelScope.launch { _events.send(e) }

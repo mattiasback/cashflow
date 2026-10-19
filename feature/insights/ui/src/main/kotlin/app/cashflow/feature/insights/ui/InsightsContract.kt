@@ -2,28 +2,6 @@ package app.cashflow.feature.insights.ui
 
 import androidx.compose.runtime.Immutable
 import app.cashflow.core.ui.UiText
-import app.cashflow.feature.insights.domain.PlanStepId
-import app.cashflow.feature.insights.domain.StepState
-
-/** Colour of a plan step's tag (design cf-tag tones). */
-enum class TagTone { Good, Watch, Insights }
-
-@Immutable
-data class PlanStepUi(
-    val id: PlanStepId,
-    val number: Int,
-    val state: StepState,
-    val title: UiText,
-    val tag: UiText,
-    val tagTone: TagTone,
-    val text: UiText,
-    /** Progress toward the step's goal, with a line under it; null hides both. */
-    val bar: Float? = null,
-    val barText: UiText? = null,
-    val cta: UiText,
-    /** "Markera som klart" / "Ångra"; null when the data closed the step. */
-    val toggle: UiText?,
-)
 
 enum class OpportunityIcon { Subscriptions, SmallCharges, Category }
 
@@ -60,7 +38,7 @@ data class BenchmarkUi(val label: UiText, val value: String, val fraction: Float
 
 enum class BenchTone { Savings, Fixed }
 
-/** The explanation sheet for a suggestion, a plan step or the hero figure. */
+/** The explanation sheet for a suggestion or the hero figure. */
 @Immutable
 data class InsightSheetUi(
     val eyebrow: UiText,
@@ -76,7 +54,6 @@ data class InsightSheetUi(
 
 sealed interface InsightSheet {
     data object About : InsightSheet
-    data class Step(val id: PlanStepId) : InsightSheet
     data class Suggestion(val id: String) : InsightSheet
 }
 
@@ -89,8 +66,6 @@ data class InsightsState(
     val gain: String = "",
     val gainDelta: UiText? = null,
     val gainSpoken: UiText? = null,
-    val planDone: UiText? = null,
-    val steps: List<PlanStepUi> = emptyList(),
     val opportunities: List<OpportunityUi> = emptyList(),
     val whatIf: WhatIfUi? = null,
     val benchmarks: List<BenchmarkUi> = emptyList(),
@@ -101,8 +76,6 @@ data class InsightsState(
 )
 
 sealed interface InsightsAction {
-    data class OnStepCta(val id: PlanStepId) : InsightsAction
-    data class OnStepToggle(val id: PlanStepId) : InsightsAction
     data class OnOpportunityClick(val id: String) : InsightsAction
     data object OnAboutClick : InsightsAction
     data object OnSheetDone : InsightsAction
@@ -117,7 +90,6 @@ sealed interface InsightsAction {
 sealed interface InsightsEvent {
     data class Copy(val text: String) : InsightsEvent
     data class Share(val text: String) : InsightsEvent
-    data object OpenSavings : InsightsEvent
     data object OpenProfile : InsightsEvent
     data object OpenImport : InsightsEvent
 }

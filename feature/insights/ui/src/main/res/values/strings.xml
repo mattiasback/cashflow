@@ -13,49 +13,10 @@
     </plurals>
     <string name="gain_left_done">%1$s · %2$d klart</string>
 
-    <!-- Er plan -->
-    <string name="section_plan">Er plan</string>
-    <string name="plan_intro">Ordningen som brukar löna sig bäst: trygghet först, sedan dyra lån, sedan långsiktigt sparande.</string>
-    <string name="plan_done">%1$d av %2$d klara</string>
-    <string name="tag_ongoing">Pågår</string>
-    <string name="tag_biggest">Störst effekt</string>
-    <string name="tag_loans">Lån</string>
-    <string name="tag_yearly">Varje år</string>
-    <string name="tag_done">Klart</string>
-    <string name="mark_done">Markera som klart</string>
-    <string name="undo">Ångra</string>
-    <string name="cd_step">Steg %1$d: %2$s, %3$s. %4$s</string>
-    <string name="step_eyebrow">Steg %1$d i planen</string>
 
-    <string name="step_buffer_title">Fyll bufferten till %1$d månader</string>
-    <string name="step_buffer_text">En buffert skyddar mot dyra lån när något oväntat händer. Ni har %1$s, målet är %2$s.</string>
-    <string name="step_buffer_text_no_balance">En buffert skyddar mot dyra lån när något oväntat händer. Målet är %1$s, %2$d månader av era fasta utgifter. Ange buffertens saldo i Profil så följer appen hur långt ni har kvar.</string>
-    <string name="step_buffer_bar">%1$s av %2$d mån · full %3$s med %4$s/mån</string>
-    <string name="step_buffer_bar_full">%1$s av %2$d mån · full</string>
-    <string name="step_buffer_bar_stalled">%1$s av %2$d mån · inget sätts in just nu</string>
-    <string name="step_buffer_cta">Öka överföringen</string>
-    <string name="step_buffer_how">Höj den automatiska överföringen till buffertkontot. Med %1$s mer per månad är den full %2$s%3$s.</string>
-    <string name="step_buffer_how_instead"> i stället för %1$s</string>
-    <string name="step_buffer_how_plain">Lägg en stående överföring till buffertkontot dagen efter lön.</string>
 
-    <string name="step_surplus_title">Ge överskottet ett jobb</string>
-    <string name="step_surplus_text">I snitt blir %1$s kvar på kontot varje månad utan att placeras. En automatisk överföring dagen efter lön gör att pengarna jobbar.</string>
-    <string name="step_surplus_text_done">I snitt blir bara %1$s kvar på kontot per månad, så överskottet har redan ett jobb.</string>
-    <string name="step_surplus_cta">Sätt upp överföring</string>
-    <string name="step_surplus_how">Lägg en stående överföring på %1$s dagen efter lön, och låt ca 2 000 kr ligga kvar som marginal.</string>
-    <string name="step_surplus_how_plain">Låt en liten marginal ligga kvar på kontot och flytta resten dagen efter lön.</string>
 
-    <string name="step_loan_title">Betala av det dyraste lånet först</string>
-    <string name="step_loan_text">Ni betalar %1$s per månad på lån utöver bolånet. Extra betalning på lånet med högst ränta ger en säker avkastning, ofta mer än sparande efter skatt.</string>
-    <string name="step_loan_text_none">Inga andra lån än bolånet syns i transaktionerna.</string>
-    <string name="step_loan_cta">Räkna på extra betalning</string>
-    <string name="step_loan_how">När bufferten är full: betala extra på lånet med högst ränta, varje månad eller med en engångssumma.</string>
 
-    <string name="step_long_title">Se över det långsiktiga sparandet</string>
-    <string name="step_long_text_over">Sparkvoten är %1$s, över målet %2$s. Kontrollera avgifter och att fonderna ligger på ISK.</string>
-    <string name="step_long_text_under">Sparkvoten är %1$s, under målet %2$s. Kontrollera avgifter och att fonderna ligger på ISK.</string>
-    <string name="step_long_cta">Visa sparandet</string>
-    <string name="step_long_how">Kontrollera fondavgifterna en gång om året och flytta till ISK om något ligger på en vanlig depå.</string>
 
     <!-- Spara utan att märka det -->
     <string name="section_opps">Spara utan att märka det</string>
@@ -137,13 +98,13 @@
     <!-- Fråga en AI -->
     <string name="section_ai">Fråga en AI</string>
     <string name="ai_title">Få en second opinion</string>
-    <string name="ai_text">Kopiera en anonym sammanfattning av er plan och era siffror till den AI-chatt du redan använder.</string>
+    <string name="ai_text">Kopiera en anonym sammanfattning av ert kassaflöde till den AI-chatt du redan använder.</string>
     <string name="ai_preview">Förhandsvisning av sammanfattningen</string>
     <string name="ai_privacy">Inga namn, kontonummer eller handlare. Texten skapas på telefonen och skickas aldrig av oss.</string>
     <string name="ai_copy">Kopiera anonym sammanfattning</string>
     <string name="ai_copied">Kopierad</string>
     <string name="ai_share">Dela …</string>
-    <string name="prompt">Du är en erfaren privatekonomisk rådgivare i Sverige.\nVårt hushåll, snitt per månad de senaste %1$d månaderna:\nInkomst %2$s, utgifter %3$s (fasta %4$s), sparande %5$s (sparkvot %6$s).\nOplacerat på kontot i snitt %7$s per månad.\n%8$s%9$sVår plan: 1) fyll bufferten 2) ge överskottet ett jobb 3) betala av dyra lån 4) se över det långsiktiga sparandet.\nÄr ordningen rimlig? Vad skulle du ändra?</string>
+    <string name="prompt">Du är en erfaren privatekonomisk rådgivare i Sverige.\nVårt hushåll, snitt per månad de senaste %1$d månaderna:\nInkomst %2$s, utgifter %3$s (fasta %4$s), sparande %5$s (sparkvot %6$s).\nOplacerat på kontot i snitt %7$s per månad.\n%8$s%9$sHur kan vi förbättra vårt kassaflöde, och hur står vi oss jämfört med andra hushåll i Sverige?</string>
     <string name="prompt_buffer">Buffert %1$s av målet %2$s (%3$d månader av fasta utgifter).\n</string>
     <string name="prompt_buffer_target">Buffertmål %1$s (%2$d månader av fasta utgifter), saldot okänt.\n</string>
     <string name="prompt_loans">Andra lån än bolånet: %1$s per månad.\n</string>
