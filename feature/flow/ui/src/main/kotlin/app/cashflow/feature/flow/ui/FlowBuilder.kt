@@ -380,12 +380,13 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
                     TileUi(res(R.string.tile_buffer), text("–"), res(R.string.sub_no_buffer))
                 }
                 listOf(
+                    // "Snitt per månad" comes first on every tab.
+                    avgTile { it.savings },
                     TileUi(
                         res(R.string.tile_rate), text(pct(rate)),
                         res(if (rate >= SAVINGS_GOAL_PERCENT) R.string.sub_rate_reached else R.string.sub_rate, SAVINGS_GOAL_PERCENT),
                         goal = (rate / SAVINGS_GOAL_PERCENT).toFloat().coerceIn(0f, 1f),
                     ),
-                    avgTile { it.savings },
                     bufferTile,
                     TileUi(res(R.string.tile_saved_ytd), text(kr(ytd.savings)), res(R.string.sub_saved_ytd, ytdLabel, kr(ytd.savings.ore / ytdMonths.size.coerceAtLeast(1)))),
                 )
