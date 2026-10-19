@@ -54,7 +54,6 @@
     <string name="tile_vs_last_year">Mot samma period i fjol</string>
     <string name="tile_salary_share">Lön av inkomsten</string>
     <string name="tile_top_source">Största källa</string>
-    <string name="tile_fixed_share">Fasta kostnader</string>
     <string name="tile_variable_vs_avg">Rörliga mot snitt</string>
     <string name="tile_biggest">Största utgift</string>
     <string name="tile_most_common">Vanligaste utgift</string>
@@ -70,7 +69,6 @@
     <string name="sub_no_compare">Ingen jämförelse</string>
     <string name="sub_salary">%1$s i lön</string>
     <string name="sub_top_source">%1$s · %2$s av inkomsten</string>
-    <string name="sub_fixed_share">av utgifterna · %1$s</string>
     <string name="sub_avg_12">Snitt 12 mån %1$s</string>
     <string name="sub_avg_12_label">Snitt 12 mån</string>
     <plurals name="sub_most_common">

@@ -50,7 +50,6 @@
     <string name="tile_vs_last_year">Vs same period last year</string>
     <string name="tile_salary_share">Salary share</string>
     <string name="tile_top_source">Largest source</string>
-    <string name="tile_fixed_share">Fixed costs</string>
     <string name="tile_variable_vs_avg">Variable vs average</string>
     <string name="tile_biggest">Largest expense</string>
     <string name="tile_most_common">Most frequent expense</string>
@@ -66,7 +65,6 @@
     <string name="sub_no_compare">No comparison</string>
     <string name="sub_salary">%1$s in salary</string>
     <string name="sub_top_source">%1$s · %2$s of income</string>
-    <string name="sub_fixed_share">of expenses · %1$s</string>
     <string name="sub_avg_12">12-month avg %1$s</string>
     <string name="sub_avg_12_label">12-month average</string>
     <plurals name="sub_most_common">

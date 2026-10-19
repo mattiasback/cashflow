@@ -277,6 +277,11 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
             PeriodMode.YEAR -> res(R.string.sub_per_month_in, r.label)
             PeriodMode.ALL -> res(R.string.sub_per_month_since, monthLabel(data.periods.first()))
         }
+        // "Snitt per månad": 12 months back in Månad, the chosen year or all months otherwise.
+        fun avgTile(get: (CashFlowSummary) -> Money): TileUi {
+            val avg = if (mode == PeriodMode.MONTH) get(r.a12).ore / n12 else get(a).ore / n
+            return TileUi(res(R.string.tile_avg_month), text(kr(avg)), avgSub)
+        }
         fun savedOfFlow(): TileUi = if (a.net.ore > 0) {
             val v = a.savings.ore.toDouble() / a.net.ore * 100
             TileUi(res(R.string.tile_saved_of_flow), text(pct(v)), null, goal = (v / 100).toFloat().coerceIn(0f, 1f))
@@ -341,7 +346,7 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
                 val varNow = if (mode == PeriodMode.MONTH) a.variableExpenses.ore else a.variableExpenses.ore / n
                 val vd = if (varAvg > 0) (varNow - varAvg).toDouble() / varAvg * 100 else null
                 listOf(
-                    TileUi(res(R.string.tile_fixed_share), text(if (a.expenses.ore > 0) pct(a.fixedExpenses.ore.toDouble() / a.expenses.ore * 100) else "–"), res(R.string.sub_fixed_share, kr(a.fixedExpenses))),
+                    avgTile { it.expenses },
                     TileUi(res(R.string.tile_variable_vs_avg), text(vd?.let { pct(it, signed = true) } ?: "–"), res(R.string.sub_avg_12, kr(varAvg))),
                     if (biggest != null) {
                         TileUi(res(R.string.tile_biggest), text(kr(-biggest.amount.ore)), res(R.string.sub_label_amount, payee(biggest), PeriodFormatter.iso(biggest.transactionDate, locale)))
@@ -380,7 +385,7 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
                         res(if (rate >= SAVINGS_GOAL_PERCENT) R.string.sub_rate_reached else R.string.sub_rate, SAVINGS_GOAL_PERCENT),
                         goal = (rate / SAVINGS_GOAL_PERCENT).toFloat().coerceIn(0f, 1f),
                     ),
-                    savedOfFlow(),
+                    avgTile { it.savings },
                     bufferTile,
                     TileUi(res(R.string.tile_saved_ytd), text(kr(ytd.savings)), res(R.string.sub_saved_ytd, ytdLabel, kr(ytd.savings.ore / ytdMonths.size.coerceAtLeast(1)))),
                 )
