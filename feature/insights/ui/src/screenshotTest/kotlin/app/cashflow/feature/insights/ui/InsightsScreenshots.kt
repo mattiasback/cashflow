@@ -20,6 +20,7 @@ import com.android.tools.screenshot.PreviewTest
 @Preview(locale = "sv", name = "900x500", widthDp = 900, heightDp = 500, showBackground = true)
 @Preview(locale = "sv", name = "dark", widthDp = 400, heightDp = 500, uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Preview(locale = "sv", name = "font150", widthDp = 400, heightDp = 500, fontScale = 1.5f, showBackground = true)
+@Preview(locale = "sv", name = "font200", widthDp = 400, heightDp = 900, fontScale = 2f, showBackground = true)
 annotation class InsightsSizes
 
 /** The whole screen: suggestions, Tänk om, benchmarks and the AI card. */

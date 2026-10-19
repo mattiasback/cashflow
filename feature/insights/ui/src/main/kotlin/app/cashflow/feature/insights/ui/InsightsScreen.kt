@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -258,11 +259,9 @@ private fun OpportunityRow(o: OpportunityUi, onClick: () -> Unit) {
             }
             Icon(icon, contentDescription = null, tint = c.textOnInsightsTint, modifier = Modifier.size(18.dp))
         }
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(o.title.asString(), style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(o.sub.asString(), style = CashFlowTheme.typography.label, color = c.textSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        }
-        Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        // From 1.5× text the amount moves under the title, so nothing is cut off.
+        val large = LocalDensity.current.fontScale >= 1.5f
+        val gain: @Composable () -> Unit = {
             Text(
                 o.gain,
                 style = CashFlowTheme.typography.bodyStrong.copy(
@@ -273,6 +272,12 @@ private fun OpportunityRow(o: OpportunityUi, onClick: () -> Unit) {
             )
             Text(o.effort.asString(), style = CashFlowTheme.typography.label, color = c.textSecondary)
         }
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(o.title.asString(), style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(o.sub.asString(), style = CashFlowTheme.typography.label, color = c.textSecondary, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            if (large) Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s2), verticalAlignment = Alignment.CenterVertically) { gain() }
+        }
+        if (!large) Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(2.dp)) { gain() }
     }
 }
 

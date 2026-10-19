@@ -24,6 +24,7 @@ import com.android.tools.screenshot.PreviewTest
 @Preview(locale = "sv", name = "900x1000", widthDp = 900, heightDp = 1000, showBackground = true)
 @Preview(locale = "sv", name = "dark", widthDp = 400, heightDp = 500, uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Preview(locale = "sv", name = "font150", widthDp = 400, heightDp = 500, fontScale = 1.5f, showBackground = true)
+@Preview(locale = "sv", name = "font200", widthDp = 400, heightDp = 900, fontScale = 2f, showBackground = true)
 annotation class FlowSizes
 
 /** A tall render of each tab so the lower sections (donut, Sankey, bars, latest) are checked too. */
