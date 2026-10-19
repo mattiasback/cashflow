@@ -3,7 +3,9 @@ package app.cashflow.feature.flow.ui
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import app.cashflow.core.domain.cashflow.PeriodMode
+import app.cashflow.core.ui.DetailSheetUi
 import app.cashflow.core.ui.FlowTone
+import app.cashflow.core.ui.SheetRowUi
 import app.cashflow.core.ui.UiText
 
 /** The four Flöde sub-tabs. [key] is what is stored in settings. */
@@ -103,9 +105,6 @@ data class CategoryBarUi(
 @Immutable
 data class LatestTxUi(val id: String, val title: String, val sub: UiText, val amount: String, val tone: FlowTone)
 
-@Immutable
-data class SheetRowUi(val title: UiText, val sub: UiText?, val amount: String, val share: String?, val tone: FlowTone)
-
 /** Target of a node sheet's button. */
 sealed interface SheetCta {
     data class Tab(val tab: FlowTab) : SheetCta
@@ -128,7 +127,9 @@ data class NodeSheetUi(
     val rows: List<SheetRowUi>,
     val cta: UiText,
     val action: SheetCta,
-)
+) {
+    fun toDetail() = DetailSheetUi(eyebrow, title, figure, description, shareALabel, shareA, shareBLabel, shareB, bar, barTone, rows, cta)
+}
 
 @Immutable
 data class PickerChipUi(val key: String, val label: String, val selected: Boolean, val enabled: Boolean = true, val spoken: String = label)

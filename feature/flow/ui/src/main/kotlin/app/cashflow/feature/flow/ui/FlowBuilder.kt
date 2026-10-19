@@ -14,6 +14,7 @@ import app.cashflow.core.domain.model.Period
 import app.cashflow.core.domain.model.Transaction
 import app.cashflow.core.domain.model.TransferKind
 import app.cashflow.core.ui.FlowTone
+import app.cashflow.core.ui.SheetRowUi
 import app.cashflow.core.ui.UiText
 import app.cashflow.core.ui.categoryName
 import app.cashflow.core.ui.format.AppLocale
