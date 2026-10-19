@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
 import app.cashflow.core.designsystem.component.CfBottomSheet
-import app.cashflow.core.designsystem.component.AccentTopBar
+import app.cashflow.core.designsystem.component.AccentStatusBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -79,7 +79,7 @@ fun ImportHistoryScreen(
             contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
         ) {
             item(key = "header") {
-                AccentHeader(accent = Accent.Settings, pinnedBar = true) {
+                AccentHeader(accent = Accent.Settings, title = stringResource(R.string.history_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ImportHistoryAction.OnBackClick) }) }) {
                     CfCard(Modifier.fillMaxWidth()) {
                         Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
                             Text(stringResource(R.string.history_intro_title), style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary)
@@ -116,8 +116,7 @@ fun ImportHistoryScreen(
                 )
             }
         }
-        // The band's controls stay at the top while the content scrolls under them.
-        AccentTopBar(accent = Accent.Settings, title = stringResource(R.string.history_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ImportHistoryAction.OnBackClick) }) })
+        AccentStatusBar(accent = Accent.Settings)
     }
 
     state.sheet?.let { sheet ->

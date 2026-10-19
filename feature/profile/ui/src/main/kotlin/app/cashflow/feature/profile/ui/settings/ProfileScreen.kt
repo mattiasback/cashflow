@@ -33,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
-import app.cashflow.core.designsystem.component.AccentTopBar
+import app.cashflow.core.designsystem.component.AccentStatusBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfCard
 import app.cashflow.core.designsystem.component.CfSwitchRow
@@ -92,7 +92,7 @@ fun ProfileScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(contentPadding),
         ) {
-            AccentHeader(accent = Accent.Settings, pinnedBar = true) {
+            AccentHeader(accent = Accent.Settings, title = stringResource(R.string.profile_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ProfileAction.OnBackClick) }) }) {
                 CfCard(Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
                         Text(stringResource(R.string.profile_intro_title), style = CashFlowTheme.typography.bodyStrong, color = c.textPrimary)
@@ -179,8 +179,7 @@ fun ProfileScreen(
                 )
             }
         }
-        // The band's controls stay at the top while the content scrolls under them.
-        AccentTopBar(accent = Accent.Settings, title = stringResource(R.string.profile_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ProfileAction.OnBackClick) }) })
+        AccentStatusBar(accent = Accent.Settings)
     }
 }
 

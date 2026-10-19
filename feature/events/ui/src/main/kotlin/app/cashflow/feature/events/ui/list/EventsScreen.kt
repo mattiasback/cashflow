@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
-import app.cashflow.core.designsystem.component.AccentTopBar
+import app.cashflow.core.designsystem.component.AccentStatusBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -115,7 +115,7 @@ fun EventsScreen(
             contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
         ) {
             item(key = "header") {
-                AccentHeader(accent = Accent.Events, pinnedBar = true) {
+                AccentHeader(accent = Accent.Events, title = stringResource(R.string.events_title), leading = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(EventsAction.OnProfileClick) }) }) {
                     ImportCard(state, onAction)
                 }
             }
@@ -216,8 +216,7 @@ fun EventsScreen(
                 }
             }
         }
-        // The band's controls stay at the top while the content scrolls under them.
-        AccentTopBar(accent = Accent.Events, title = stringResource(R.string.events_title), leading = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(EventsAction.OnProfileClick) }) })
+        AccentStatusBar(accent = Accent.Events)
     }
 
     when (state.sheet) {

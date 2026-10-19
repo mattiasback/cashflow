@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
-import app.cashflow.core.designsystem.component.AccentTopBar
+import app.cashflow.core.designsystem.component.AccentStatusBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -87,7 +87,7 @@ fun RulesScreen(
             contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
         ) {
             item(key = "header") {
-                AccentHeader(accent = Accent.Settings, pinnedBar = true) {
+                AccentHeader(accent = Accent.Settings, title = stringResource(R.string.rules_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(RulesAction.OnBackClick) }) }) {
                     CfCard(Modifier.fillMaxWidth()) {
                         Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
                             SegmentedControl(
@@ -150,8 +150,7 @@ fun RulesScreen(
                 )
             }
         }
-        // The band's controls stay at the top while the content scrolls under them.
-        AccentTopBar(accent = Accent.Settings, title = stringResource(R.string.rules_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(RulesAction.OnBackClick) }) })
+        AccentStatusBar(accent = Accent.Settings)
     }
 }
 

@@ -55,7 +55,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
-import app.cashflow.core.designsystem.component.AccentTopBar
+import app.cashflow.core.designsystem.component.AccentStatusBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -124,7 +124,7 @@ fun ReviewScreen(
                 .padding(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
             verticalArrangement = Arrangement.spacedBy(Spacing.s3),
         ) {
-            AccentHeader(accent = Accent.Events, pinnedBar = true) {
+            AccentHeader(accent = Accent.Events, title = stringResource(R.string.review_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ReviewAction.OnBackClick) }) }) {
                 CfCard(Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(Spacing.s1)) {
                         Text(
@@ -167,8 +167,7 @@ fun ReviewScreen(
                 }
             }
         }
-        // The band's controls stay at the top while the content scrolls under them.
-        AccentTopBar(accent = Accent.Events, title = stringResource(R.string.review_title), leading = { BandIconButton(CfIcons.ChevronLeft, stringResource(R.string.cd_back), { onAction(ReviewAction.OnBackClick) }) })
+        AccentStatusBar(accent = Accent.Events)
     }
 }
 

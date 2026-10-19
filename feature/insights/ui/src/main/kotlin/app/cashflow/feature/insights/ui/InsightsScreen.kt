@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
-import app.cashflow.core.designsystem.component.AccentTopBar
+import app.cashflow.core.designsystem.component.AccentStatusBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfBottomSheet
 import app.cashflow.core.designsystem.component.CfButton
@@ -134,7 +134,10 @@ fun InsightsScreen(
             contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
         ) {
             item(key = "header") {
-                AccentHeader(accent = Accent.Insights, pinnedBar = true) {
+                AccentHeader(
+                    accent = Accent.Insights,
+                    leading = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(InsightsAction.OnProfileClick) }) },
+                ) {
                     when {
                         state.enoughData -> {
                             val label = stringResource(R.string.hero_label)
@@ -156,10 +159,7 @@ fun InsightsScreen(
             }
             if (state.enoughData) content(state, onAction)
         }
-        AccentTopBar(
-            accent = Accent.Insights,
-            leading = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(InsightsAction.OnProfileClick) }) },
-        )
+        AccentStatusBar(accent = Accent.Insights)
     }
 }
 

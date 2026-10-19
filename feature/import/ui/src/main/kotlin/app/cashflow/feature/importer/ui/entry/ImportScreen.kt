@@ -37,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
-import app.cashflow.core.designsystem.component.AccentTopBar
+import app.cashflow.core.designsystem.component.AccentStatusBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.CfButton
 import app.cashflow.core.designsystem.component.CfButtonVariant
@@ -94,7 +94,7 @@ fun ImportScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = Spacing.s12),
         ) {
-            AccentHeader(accent = Accent.Events, pinnedBar = true) {
+            AccentHeader(accent = Accent.Events, title = stringResource(R.string.import_title), leading = { BandIconButton(CfIcons.Close, stringResource(R.string.cd_cancel_import), { onAction(ImportAction.OnCloseClick) }) }) {
                 CfCard(Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(Spacing.s2), modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) {
                         when (state.phase) {
@@ -174,8 +174,7 @@ fun ImportScreen(
                 }
             }
         }
-        // The band's controls stay at the top while the content scrolls under them.
-        AccentTopBar(accent = Accent.Events, title = stringResource(R.string.import_title), leading = { BandIconButton(CfIcons.Close, stringResource(R.string.cd_cancel_import), { onAction(ImportAction.OnCloseClick) }) })
+        AccentStatusBar(accent = Accent.Events)
     }
 }
 

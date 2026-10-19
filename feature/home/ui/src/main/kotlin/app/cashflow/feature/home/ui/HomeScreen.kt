@@ -32,7 +32,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
-import app.cashflow.core.designsystem.component.AccentTopBar
+import app.cashflow.core.designsystem.component.AccentStatusBar
 import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.BandSegmented
 import app.cashflow.core.designsystem.component.CfBottomSheet
@@ -110,7 +110,19 @@ fun HomeScreen(
             contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding() + Spacing.s4),
         ) {
             item(key = "header") {
-                AccentHeader(accent = Accent.Home, pinnedBar = true) {
+                AccentHeader(
+                    accent = Accent.Home,
+                    leading = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(HomeAction.OnProfileClick) }) },
+                    actions = {
+                        // Privat/Gemensamt is a stub until household sharing (step 6): Gemensamt is shown.
+                        BandSegmented(
+                            segments = listOf(Segment("private", stringResource(R.string.scope_private)), Segment("joint", stringResource(R.string.scope_joint))),
+                            selectedKey = "joint",
+                            onSelect = { if (it == "private") onAction(HomeAction.OnScopePrivate) },
+                            contentDescription = stringResource(R.string.cd_scope),
+                        )
+                    },
+                ) {
                     if (state.hasData) {
                         val label = state.summaryLabel.asString()
                         val delta = state.delta?.asString()
@@ -164,19 +176,7 @@ fun HomeScreen(
                 }
             }
         }
-        AccentTopBar(
-            accent = Accent.Home,
-            leading = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(HomeAction.OnProfileClick) }) },
-            actions = {
-                // Privat/Gemensamt is a stub until household sharing (step 6): Gemensamt is shown.
-                BandSegmented(
-                    segments = listOf(Segment("private", stringResource(R.string.scope_private)), Segment("joint", stringResource(R.string.scope_joint))),
-                    selectedKey = "joint",
-                    onSelect = { if (it == "private") onAction(HomeAction.OnScopePrivate) },
-                    contentDescription = stringResource(R.string.cd_scope),
-                )
-            },
-        )
+        AccentStatusBar(accent = Accent.Home)
     }
 }
 

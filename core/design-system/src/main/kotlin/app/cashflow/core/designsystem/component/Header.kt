@@ -52,7 +52,8 @@ private val Emphasized = CubicBezierEasing(0.2f, 0f, 0f, 1f)
  * canvas behind the hero card, and hosts round controls on an `overlay-on-accent` track.
  * Body text never sits on the band itself; the hero content is a card.
  *
- * With [pinnedBar] the controls row is left out (its space is kept): the screen draws an
+ * The controls row (profile or back at the start, [actions] at the end) scrolls away with the
+ * band, which leaves the most room for content. With [pinnedBar] the controls row is left out (its space is kept): the screen draws an
  * [AccentTopBar] over its scrolling content instead, so the controls stay while the hero
  * card scrolls under them.
  */
@@ -61,6 +62,7 @@ fun AccentHeader(
     accent: Accent,
     modifier: Modifier = Modifier,
     title: String? = null,
+    leading: @Composable RowScope.() -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
     pinnedBar: Boolean = false,
     hero: @Composable ColumnScope.() -> Unit = {},
@@ -79,7 +81,7 @@ fun AccentHeader(
             )
         }
         Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.statusBars)) {
-            if (pinnedBar) Spacer(Modifier.fillMaxWidth().height(BarHeight)) else BarRow(title, actions)
+            if (pinnedBar) Spacer(Modifier.fillMaxWidth().height(BarHeight)) else BarRow(title, actions, leading)
             Column(Modifier.fillMaxWidth().padding(horizontal = Spacing.s4), content = hero)
         }
     }
@@ -135,6 +137,15 @@ fun AccentTopBar(
     Column(modifier.fillMaxWidth().background(animatedBand(accent).copy(alpha = 0.82f)).windowInsetsPadding(WindowInsets.statusBars)) {
         BarRow(title, actions, leading)
     }
+}
+
+/**
+ * Only the status bar in the band colour, for screens whose controls scroll away with the band
+ * (every tab but Flöde): content scrolls under it, and the status bar icons stay readable.
+ */
+@Composable
+fun AccentStatusBar(accent: Accent, modifier: Modifier = Modifier) {
+    Spacer(modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(animatedBand(accent).copy(alpha = 0.82f)))
 }
 
 /** Round 40dp control on the band (profile, filter). */
