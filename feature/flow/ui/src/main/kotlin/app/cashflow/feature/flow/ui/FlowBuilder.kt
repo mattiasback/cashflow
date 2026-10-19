@@ -373,13 +373,15 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
                 val ytdLabel = year.toString()
                 val bufferGoal = input.goals.bufferMonths
                 val rateGoal = input.goals.savingsRatePercent
-                val months = Buffer.months(input.buffer, Money(r.a12.fixedExpenses.ore / n12))
-                val bufferTile = if (months != null) {
+                // Flows cannot tell how big the buffer is, so the tile recommends a size and shows
+                // what was moved into Buffert this year (net).
+                val fixedPerMonth = Money(r.a12.fixedExpenses.ore / n12)
+                val bufferYtd = Buffer.movedIn(data, ytdMonths)
+                val bufferTile = if (fixedPerMonth.ore > 0) {
                     TileUi(
                         res(R.string.tile_buffer),
-                        res(R.string.value_months, PercentFormatter.format(months, decimals = 1, locale = locale).replace("%", "").trim()),
-                        res(R.string.sub_buffer, bufferGoal.roundToInt(), pct(months / bufferGoal * 100)),
-                        goal = (months / bufferGoal).toFloat().coerceIn(0f, 1f),
+                        text(kr(Buffer.target(bufferGoal, fixedPerMonth))),
+                        res(if (bufferYtd.ore >= 0) R.string.sub_buffer_in else R.string.sub_buffer_out, ytdLabel, kr(abs(bufferYtd.ore))),
                     )
                 } else {
                     TileUi(res(R.string.tile_buffer), text("–"), res(R.string.sub_no_buffer))

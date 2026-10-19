@@ -58,7 +58,7 @@
     <string name="tile_biggest">Största utgift</string>
     <string name="tile_most_common">Vanligaste utgift</string>
     <string name="tile_rate">Sparkvot</string>
-    <string name="tile_buffer">Buffert</string>
+    <string name="tile_buffer">Buffertmål</string>
     <string name="tile_saved_ytd">Sparat hittills i år</string>
     <string name="sub_last_12">senaste 12 mån</string>
     <string name="sub_12_to">12 mån t.o.m. %1$s</string>
@@ -77,9 +77,9 @@
     </plurals>
     <string name="sub_rate">av inkomsten · mål %1$d %%</string>
     <string name="sub_rate_reached">av inkomsten · mål %1$d %% · nått</string>
-    <string name="value_months">%1$s mån</string>
-    <string name="sub_buffer">Mål %1$d mån · %2$s</string>
-    <string name="sub_no_buffer">Inget sparkonto än</string>
+    <string name="sub_buffer_in">Insatt %1$s: %2$s</string>
+    <string name="sub_buffer_out">Uttaget %1$s: %2$s</string>
+    <string name="sub_no_buffer">Inga fasta utgifter än</string>
     <string name="sub_saved_ytd">%1$s · snitt %2$s/mån</string>
 
     <!-- Donut and Sankey -->

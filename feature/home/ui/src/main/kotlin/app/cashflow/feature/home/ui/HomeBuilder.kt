@@ -101,8 +101,10 @@ internal class HomeBuilder(private val locale: AppLocale = AppLocale.current()) 
         val rateGoal = input.goals.savingsRatePercent
         val bufferGoal = input.goals.bufferMonths
         val fixedPerMonth = Money(a12.fixedExpenses.ore / n12)
-        val bufferMonths = Buffer.months(input.buffer, fixedPerMonth)
         val buffer = input.buffer
+        /** What the buffer should be; flows cannot tell what it is, so there is nothing to measure against. */
+        val bufferTarget: Money? = if (fixedPerMonth.ore > 0) Buffer.target(bufferGoal, fixedPerMonth) else null
+        val bufferYear: Money = Buffer.movedIn(data, data.periods.filter { it.year == last.year })
     }
 
     // ───────────────────────────── Key figures ─────────────────────────────
@@ -137,8 +139,6 @@ internal class HomeBuilder(private val locale: AppLocale = AppLocale.current()) 
         val expGood = dExp?.let { it < 0 }
         val rateGood = dRate?.let { it > 0 }
         val rateReached = m.rate >= m.rateGoal
-        val bufferShare = m.bufferMonths?.let { it / m.bufferGoal }
-        val bufferReached = bufferShare != null && bufferShare >= 1.0
 
         fun spoken(label: Int, value: String, trend: UiText?, goal: UiText?) =
             res(R.string.cd_kpi, res(label), value, trend ?: text(""), goal ?: text(""))
@@ -146,7 +146,8 @@ internal class HomeBuilder(private val locale: AppLocale = AppLocale.current()) 
         val incValue = kr(m.a.income)
         val expValue = kr(m.a.expenses)
         val rateValue = pct(m.rate)
-        val bufferValue = bufferShare?.let { pct(minOf(999.0, it * 100)) } ?: "–"
+        val bufferValue = m.bufferTarget?.let { kr(it) } ?: "–"
+        val bufferSub = bufferYear(m)
         return listOf(
             KpiUi(
                 KpiId.INCOME, res(R.string.kpi_income), incValue,
@@ -170,14 +171,15 @@ internal class HomeBuilder(private val locale: AppLocale = AppLocale.current()) 
             ),
             KpiUi(
                 KpiId.BUFFER, res(R.string.kpi_buffer), bufferValue,
-                spoken(
-                    R.string.kpi_buffer, bufferValue, null,
-                    m.bufferMonths?.let { res(R.string.cd_buffer_months, one(it), m.bufferGoal.roundToInt()) } ?: res(R.string.cd_no_buffer),
-                ),
-                goal = bufferShare?.toFloat()?.coerceIn(0f, 1f) ?: 0f, goalReached = bufferReached,
+                spoken(R.string.kpi_buffer, bufferValue, null, res(R.string.cd_buffer, m.bufferGoal.roundToInt(), bufferSub)),
+                sub = bufferSub,
             ),
         )
     }
+
+    /** "Insatt i år 12 000 kr", or "Uttaget i år …" when more came out than went in. */
+    private fun bufferYear(m: Metrics): UiText =
+        res(if (m.bufferYear.ore >= 0) R.string.buffer_in_year else R.string.buffer_out_year, kr(Money(abs(m.bufferYear.ore))))
 
     // ───────────────────────────── Trender ─────────────────────────────
 
@@ -350,40 +352,31 @@ internal class HomeBuilder(private val locale: AppLocale = AppLocale.current()) 
                 ),
                 HomeTarget.Flow(TrendId.SAVINGS_RATE),
             )
-            HomeSheet.BUFFER -> {
-                val goalValue = m.fixedPerMonth.ore * m.bufferGoal
-                val rest = (goalValue - (m.buffer?.ore ?: 0L)).toLong()
-                HomeSheetUi(
-                    DetailSheetUi(
-                        eyebrow = res(R.string.sheet_kpi_eyebrow, label),
-                        title = res(R.string.sheet_buffer_title),
-                        figure = m.bufferMonths?.let { one(it) + MONTHS_UNIT.getValue(locale) } ?: "–",
-                        description = if (m.bufferMonths != null) res(R.string.sheet_buffer_desc, m.bufferGoal.roundToInt()) else res(R.string.sheet_buffer_desc_empty),
-                        shareALabel = res(R.string.sheet_buffer),
-                        shareA = m.buffer?.let { kr(it) } ?: "–",
-                        shareBLabel = res(R.string.sheet_fixed_per_month),
-                        shareB = kr(m.fixedPerMonth),
-                        bar = m.bufferMonths?.let { (it / m.bufferGoal).toFloat().coerceIn(0f, 1f) } ?: 0f,
-                        barTone = FlowTone.Savings,
-                        rows = listOf(
-                            SheetRowUi(res(R.string.row_buffer_total), res(R.string.row_since, month(input.data.periods.first())), m.buffer?.let { kr(it) } ?: kr(0L), null, FlowTone.Savings),
-                            SheetRowUi(res(R.string.row_buffer_12), null, kr(m.a12.savingsByCategory[CategoryId.BUFFER] ?: Money.ZERO, signed = true), null, FlowTone.Savings),
-                        ) + if (m.bufferMonths != null) {
-                            listOf(
-                                SheetRowUi(
-                                    res(R.string.row_buffer_goal, m.bufferGoal.roundToInt()),
-                                    res(if (rest > 0) R.string.row_left_to_save else R.string.row_goal_reached),
-                                    kr(abs(rest)), null, FlowTone.Neutral,
-                                ),
-                            )
-                        } else {
-                            emptyList()
-                        },
-                        cta = res(R.string.cta_open_savings),
+            HomeSheet.BUFFER -> HomeSheetUi(
+                DetailSheetUi(
+                    eyebrow = res(R.string.sheet_kpi_eyebrow, label),
+                    title = res(R.string.sheet_buffer_title),
+                    figure = m.bufferTarget?.let { kr(it) } ?: "–",
+                    description = if (m.bufferTarget != null) {
+                        res(R.string.sheet_buffer_desc, m.bufferGoal.roundToInt(), kr(m.fixedPerMonth))
+                    } else {
+                        res(R.string.sheet_buffer_desc_empty)
+                    },
+                    shareALabel = res(R.string.sheet_goal),
+                    shareA = m.bufferGoal.roundToInt().toString() + MONTHS_UNIT.getValue(locale),
+                    shareBLabel = res(R.string.sheet_fixed_per_month),
+                    shareB = kr(m.fixedPerMonth),
+                    bar = null,
+                    barTone = FlowTone.Savings,
+                    rows = listOf(
+                        SheetRowUi(res(R.string.row_buffer_year, m.last.year), null, kr(m.bufferYear, signed = true), null, FlowTone.Savings),
+                        SheetRowUi(res(R.string.row_buffer_12), null, kr(m.a12.savingsByCategory[CategoryId.BUFFER] ?: Money.ZERO, signed = true), null, FlowTone.Savings),
+                        SheetRowUi(res(R.string.row_buffer_total), res(R.string.row_since, month(input.data.periods.first())), kr(m.buffer ?: Money.ZERO, signed = true), null, FlowTone.Savings),
                     ),
-                    HomeTarget.Flow(TrendId.SAVINGS_RATE),
-                )
-            }
+                    cta = res(R.string.cta_open_savings),
+                ),
+                HomeTarget.Flow(TrendId.SAVINGS_RATE),
+            )
         }
     }
 

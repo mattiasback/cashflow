@@ -49,7 +49,8 @@ data class DetailSheetUi(
     val shareA: String,
     val shareBLabel: UiText,
     val shareB: String,
-    val bar: Float,
+    /** Progress bar; null hides it (a figure with nothing to measure against). */
+    val bar: Float?,
     val barTone: FlowTone,
     val rows: List<SheetRowUi>,
     val cta: UiText,
@@ -68,7 +69,7 @@ fun DetailSheetContent(sheet: DetailSheetUi, onCta: () -> Unit) {
             KeyValue(sheet.shareALabel.asString(), sheet.shareA, Modifier.weight(1f))
             KeyValue(sheet.shareBLabel.asString(), sheet.shareB, Modifier.weight(1f))
         }
-        GoalBar(sheet.bar, sheet.barTone.colors().strong)
+        sheet.bar?.let { GoalBar(it, sheet.barTone.colors().strong) }
         if (sheet.rows.isNotEmpty()) {
             Column {
                 sheet.rows.forEachIndexed { i, row ->

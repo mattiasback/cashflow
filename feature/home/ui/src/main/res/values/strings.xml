@@ -17,7 +17,11 @@
     <string name="kpi_income">Inkomst</string>
     <string name="kpi_expenses">Utgifter</string>
     <string name="kpi_rate">Sparkvot</string>
-    <string name="kpi_buffer">Buffert</string>
+    <string name="kpi_buffer">Buffertmål</string>
+    <string name="row_buffer_year">Insatt %1$d, netto</string>
+    <string name="cd_buffer">, %1$d månader av fasta utgifter, %2$s</string>
+    <string name="buffer_out_year">Uttaget i år %1$s</string>
+    <string name="buffer_in_year">Insatt i år %1$s</string>
     <string name="goal_reached">Mål nått</string>
     <string name="cd_kpi">%1$s %2$s%3$s%4$s. Visa detaljer</string>
     <string name="cd_trend_up">, upp %1$s mot %2$s, %3$s</string>
@@ -28,8 +32,6 @@
     <string name="points">%1$s procentenheter</string>
     <string name="cd_goal_reached">, målet %1$s är nått</string>
     <string name="cd_goal_progress">, %1$s av målet %2$s</string>
-    <string name="cd_buffer_months">, %1$s av %2$d månader</string>
-    <string name="cd_no_buffer">, inget sparkonto med värde än</string>
 
     <!-- Trender -->
     <string name="section_trends">Trender</string>
@@ -84,19 +86,15 @@
     <string name="sheet_rate_desc">Andel av inkomsten som går till sparande. Mål %1$s, ändras i Profil.</string>
     <string name="sheet_rate_desc_amort">Andel av inkomsten som går till sparande och amortering. Mål %1$s, ändras i Profil.</string>
     <string name="sheet_goal">Mål</string>
-    <string name="sheet_buffer_title">Bufferttäckning</string>
-    <string name="sheet_buffer_desc">Det ni satt in i Buffert (minus uttag) i de importerade filerna, räknat i månader av fasta utgifter. Mål %1$d månader, ändras i Profil. Saldot före den första filen räknas inte med.</string>
-    <string name="sheet_buffer_desc_empty">Inga överföringar till Buffert än. Kategorisera överföringar till buffertkontot som Buffert, så räknas bufferten ut.</string>
-    <string name="sheet_buffer">Buffert</string>
+    <string name="sheet_buffer_title">Rekommenderad buffert</string>
+    <string name="sheet_buffer_desc">%1$d månader av era fasta utgifter, som i snitt är %2$s per månad de senaste 12 månaderna. Appen ser bara det som flyttas in i och ut ur Buffert, inte saldot, så den kan inte mäta hur stor bufferten är nu. Målet ändras i Profil.</string>
+    <string name="sheet_buffer_desc_empty">Inga fasta utgifter än, så det finns inget att räkna fram en buffert från.</string>
     <string name="sheet_fixed_per_month">Fasta per månad</string>
     <string name="row_saved">Sparat</string>
     <string name="row_left">Kvar på konto</string>
-    <string name="row_buffer_total">Satt in i Buffert, netto</string>
+    <string name="row_buffer_total">Insatt totalt, netto</string>
     <string name="row_since">Sedan %1$s</string>
     <string name="row_buffer_12">Senaste 12 mån</string>
-    <string name="row_buffer_goal">Mål %1$d månader</string>
-    <string name="row_left_to_save">Kvar att spara</string>
-    <string name="row_goal_reached">Målet är nått</string>
     <string name="group_fixed">Fasta</string>
     <string name="group_variable">Rörliga</string>
     <string name="group_uncategorized">Ej kategoriserat</string>

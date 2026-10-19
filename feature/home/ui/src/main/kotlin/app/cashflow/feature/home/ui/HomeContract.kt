@@ -20,6 +20,8 @@ data class KpiUi(
     /** 0..1 progress toward the goal; null for figures without a goal. */
     val goal: Float? = null,
     val goalReached: Boolean = false,
+    /** A line of context under the value, for figures without a goal. */
+    val sub: UiText? = null,
 )
 
 /** Which Flöde sub-tab a trend row opens (the Flöde tab keys). */

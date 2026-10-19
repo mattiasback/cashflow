@@ -14,10 +14,13 @@ import app.cashflow.core.domain.model.MortgageSplit
 import app.cashflow.core.domain.model.Transaction
 import app.cashflow.core.domain.testing.Fixtures.tx
 import app.cashflow.core.ui.format.AppLocale
+import app.cashflow.core.ui.format.MoneyFormatter
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import kotlinx.datetime.LocalDate
 import org.junit.jupiter.api.Test
@@ -72,10 +75,12 @@ class HomeBuilderTest {
     }
 
     @Test
-    fun `buffer counts months of fixed expenses against the goal`() {
-        // Fixed costs are 10 000 kr a month, so 30 000 kr covers 3 months: half of the default 6.
-        val state = HomeBuilder(AppLocale.SV).build(input(buffer = Money.kr(30000)), null)
-        assertThat(state.kpis.first { it.id == KpiId.BUFFER }.goal).isEqualTo(0.5f)
+    fun `buffer recommends goal months of fixed expenses, with no goal bar`() {
+        // Fixed costs are 10 000 kr a month, so the default 6 months recommends 60 000 kr.
+        val buffer = HomeBuilder(AppLocale.SV).build(input(buffer = Money.kr(30000)), null).kpis.first { it.id == KpiId.BUFFER }
+        assertThat(buffer.value).isEqualTo(MoneyFormatter.format(Money.kr(60000), locale = AppLocale.SV))
+        assertThat(buffer.goal).isNull()
+        assertThat(buffer.sub).isNotNull()
     }
 
     @Test

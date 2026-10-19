@@ -27,6 +27,14 @@ class BufferTest {
         )
         assertThat(Buffer.value(FlowData.of(rows, MortgageSplit(), kindOf))).isEqualTo(Money.kr(3500))
         assertThat(Buffer.value(FlowData.of(rows.takeLast(1), MortgageSplit(), kindOf))).isNull()
+        val data = FlowData.of(rows, MortgageSplit(), kindOf)
+        assertThat(Buffer.movedIn(data, data.periods.takeLast(1))).isEqualTo(Money.kr(1500))
         assertThat(Buffer.months(Money.kr(3500), Money.kr(7000))).isEqualTo(0.5)
+    }
+
+    @Test
+    fun `the recommended buffer is goal months of fixed costs, to the nearest hundred`() {
+        assertThat(Buffer.target(6.0, Money(833_333))).isEqualTo(Money.kr(50000))
+        assertThat(Buffer.target(3.0, Money(1_004_900))).isEqualTo(Money.kr(30100))
     }
 }

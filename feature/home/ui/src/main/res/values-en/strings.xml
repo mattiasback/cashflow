@@ -16,7 +16,11 @@
     <string name="kpi_income">Income</string>
     <string name="kpi_expenses">Expenses</string>
     <string name="kpi_rate">Savings rate</string>
-    <string name="kpi_buffer">Buffer</string>
+    <string name="kpi_buffer">Buffer goal</string>
+    <string name="row_buffer_year">Moved in %1$d, net</string>
+    <string name="cd_buffer">, %1$d months of fixed expenses, %2$s</string>
+    <string name="buffer_out_year">Taken out this year %1$s</string>
+    <string name="buffer_in_year">Moved in this year %1$s</string>
     <string name="goal_reached">Goal reached</string>
     <string name="cd_kpi">%1$s %2$s%3$s%4$s. Show details</string>
     <string name="cd_trend_up">, up %1$s vs %2$s, %3$s</string>
@@ -27,8 +31,6 @@
     <string name="points">%1$s percentage points</string>
     <string name="cd_goal_reached">, goal %1$s reached</string>
     <string name="cd_goal_progress">, %1$s of the goal %2$s</string>
-    <string name="cd_buffer_months">, %1$s of %2$d months</string>
-    <string name="cd_no_buffer">, no savings account with a value yet</string>
 
     <string name="section_trends">Trends</string>
     <string name="trends_span">12 mo</string>
@@ -80,19 +82,15 @@
     <string name="sheet_rate_desc">Share of income that goes to savings. Goal %1$s, change it in Profile.</string>
     <string name="sheet_rate_desc_amort">Share of income that goes to savings and amortization. Goal %1$s, change it in Profile.</string>
     <string name="sheet_goal">Goal</string>
-    <string name="sheet_buffer_title">Buffer coverage</string>
-    <string name="sheet_buffer_desc">What you moved into Buffer (less withdrawals) in the imported files, in months of fixed expenses. Goal %1$d months, change it in Profile. The balance before the first file is not included.</string>
-    <string name="sheet_buffer_desc_empty">No transfers to Buffer yet. Categorize transfers to the buffer account as Buffer and the buffer is worked out.</string>
-    <string name="sheet_buffer">Buffer</string>
+    <string name="sheet_buffer_title">Recommended buffer</string>
+    <string name="sheet_buffer_desc">%1$d months of your fixed expenses, which averaged %2$s a month over the last 12 months. The app only sees what moves into and out of Buffer, not the balance, so it cannot measure how big the buffer is now. Change the goal in Profile.</string>
+    <string name="sheet_buffer_desc_empty">No fixed expenses yet, so there is nothing to work out a buffer from.</string>
     <string name="sheet_fixed_per_month">Fixed per month</string>
     <string name="row_saved">Saved</string>
     <string name="row_left">Left in account</string>
-    <string name="row_buffer_total">Moved into Buffer, net</string>
+    <string name="row_buffer_total">Moved in total, net</string>
     <string name="row_since">Since %1$s</string>
     <string name="row_buffer_12">Last 12 months</string>
-    <string name="row_buffer_goal">Goal %1$d months</string>
-    <string name="row_left_to_save">Left to save</string>
-    <string name="row_goal_reached">Goal reached</string>
     <string name="group_fixed">Fixed</string>
     <string name="group_variable">Variable</string>
     <string name="group_uncategorized">Uncategorized</string>

@@ -68,6 +68,7 @@ fun KpiTile(
     goal: Float? = null,
     goalColor: Color = CashFlowTheme.colors.accentHomeInk,
     goalReachedLabel: String? = null,
+    sub: String? = null,
 ) {
     val c = CashFlowTheme.colors
     Column(
@@ -121,7 +122,10 @@ fun KpiTile(
                 Spacer(Modifier.heightIn(min = 22.dp))
             }
         } else {
-            Spacer(Modifier.heightIn(min = 36.dp))
+            // A figure without a goal can carry one line of context instead of the bar.
+            Box(Modifier.heightIn(min = 36.dp), contentAlignment = Alignment.BottomStart) {
+                if (sub != null) Text(sub, style = CashFlowTheme.typography.caption, color = c.textSecondary, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            }
         }
     }
 }

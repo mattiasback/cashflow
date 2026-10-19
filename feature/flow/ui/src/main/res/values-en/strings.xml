@@ -54,7 +54,7 @@
     <string name="tile_biggest">Largest expense</string>
     <string name="tile_most_common">Most frequent expense</string>
     <string name="tile_rate">Savings rate</string>
-    <string name="tile_buffer">Buffer</string>
+    <string name="tile_buffer">Buffer goal</string>
     <string name="tile_saved_ytd">Saved this year</string>
     <string name="sub_last_12">last 12 months</string>
     <string name="sub_12_to">12 months to %1$s</string>
@@ -73,9 +73,9 @@
     </plurals>
     <string name="sub_rate">of income · goal %1$d%%</string>
     <string name="sub_rate_reached">of income · goal %1$d%% · reached</string>
-    <string name="value_months">%1$s mo</string>
-    <string name="sub_buffer">Goal %1$d mo · %2$s</string>
-    <string name="sub_no_buffer">No savings account yet</string>
+    <string name="sub_buffer_in">Moved in %1$s: %2$s</string>
+    <string name="sub_buffer_out">Taken out %1$s: %2$s</string>
+    <string name="sub_no_buffer">No fixed expenses yet</string>
     <string name="sub_saved_ytd">%1$s · avg %2$s/mo</string>
 
     <string name="node_expenses">Expenses</string>

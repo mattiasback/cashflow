@@ -211,6 +211,7 @@ private fun Kpis(state: HomeState, onAction: (HomeAction) -> Unit) {
                         trendGood = k.trendGood,
                         goal = k.goal,
                         goalReachedLabel = if (k.goalReached) reached else null,
+                        sub = k.sub?.asString(),
                         modifier = Modifier.weight(1f).fillMaxHeight(),
                     )
                 }
