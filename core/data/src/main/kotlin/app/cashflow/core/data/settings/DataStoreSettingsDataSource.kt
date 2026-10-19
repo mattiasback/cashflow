@@ -9,6 +9,7 @@ import app.cashflow.core.domain.DataError
 import app.cashflow.core.domain.EmptyResult
 import app.cashflow.core.domain.datasource.SettingsDataSource
 import app.cashflow.core.domain.model.AppSettings
+import app.cashflow.core.domain.model.BufferBalance
 import app.cashflow.core.domain.model.HouseholdScope
 import app.cashflow.core.domain.model.Money
 import app.cashflow.core.domain.model.MortgageSplit
@@ -16,6 +17,7 @@ import app.cashflow.core.domain.model.MortgageSplitMode
 import app.cashflow.core.domain.model.ThemeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -55,6 +57,9 @@ data class StoredSettings(
     val lastTab: String? = null,
     val lastPeriod: String? = null,
     val seenFlags: Set<String> = emptySet(),
+    val insightsDone: Set<String> = emptySet(),
+    val bufferBalanceOre: Long? = null,
+    val bufferBalanceDate: String? = null,
 )
 
 internal fun StoredSettings.toSettings() = AppSettings(
@@ -71,6 +76,8 @@ internal fun StoredSettings.toSettings() = AppSettings(
     lastTab = lastTab,
     lastPeriod = lastPeriod,
     seenFlags = seenFlags,
+    insightsDone = insightsDone,
+    bufferBalance = bufferBalanceOre?.let { ore -> bufferBalanceDate?.let { runCatching { LocalDate.parse(it) }.getOrNull() }?.let { BufferBalance(Money(ore), it) } },
 )
 
 internal fun AppSettings.toStored() = StoredSettings(
@@ -85,6 +92,9 @@ internal fun AppSettings.toStored() = StoredSettings(
     lastTab = lastTab,
     lastPeriod = lastPeriod,
     seenFlags = seenFlags,
+    insightsDone = insightsDone,
+    bufferBalanceOre = bufferBalance?.amount?.ore,
+    bufferBalanceDate = bufferBalance?.date?.toString(),
 )
 
 private inline fun <reified E : Enum<E>> enumOr(name: String, default: E): E =

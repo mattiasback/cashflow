@@ -1,8 +1,11 @@
 package app.cashflow.core.domain.cashflow
 
+import app.cashflow.core.domain.model.BufferBalance
 import app.cashflow.core.domain.model.CategoryId
 import app.cashflow.core.domain.model.Money
 import app.cashflow.core.domain.model.Period
+import app.cashflow.core.domain.model.Transaction
+import app.cashflow.core.domain.model.TransferKind
 import kotlin.math.roundToLong
 
 /**
@@ -29,6 +32,20 @@ object Buffer {
     /** Net amount moved into Buffert during [months]. */
     fun movedIn(data: FlowData, months: List<Period>): Money =
         Money(months.sumOf { data.month(it).savingsByCategory[CategoryId.BUFFER]?.ore ?: 0L })
+
+    /**
+     * The buffer now: the balance you entered plus what moved into Buffert (net) after its date.
+     * Null when no balance is entered, since flows alone cannot tell.
+     */
+    fun estimate(balance: BufferBalance?, transactions: List<Transaction>): Money? {
+        if (balance == null) return null
+        val moved = transactions.sumOf { tx ->
+            val counts = tx.countsInCashFlow && !tx.hidden && tx.categoryId == CategoryId.BUFFER && tx.transactionDate > balance.date &&
+                tx.transferKind != TransferKind.INTERNAL && !(tx.transferKind == TransferKind.LONE_LEG && tx.loneLegConfirmed)
+            if (counts) -tx.amount.ore else 0L
+        }
+        return balance.amount + Money(moved)
+    }
 
     /** Months of fixed expenses the buffer covers; null when there is no buffer or no fixed costs yet. */
     fun months(value: Money?, fixedPerMonth: Money): Double? {

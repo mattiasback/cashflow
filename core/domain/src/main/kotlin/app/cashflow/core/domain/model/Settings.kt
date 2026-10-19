@@ -1,5 +1,7 @@
 package app.cashflow.core.domain.model
 
+import kotlinx.datetime.LocalDate
+
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
 /** "Privat" or "Gemensamt": which household view opens first. */
@@ -56,4 +58,11 @@ data class AppSettings(
     val lastPeriod: String? = null,
     /** Flags for one-time tips, e.g. "card deck explained". */
     val seenFlags: Set<String> = emptySet(),
+    /** Insikter plan steps and suggestions marked "klart", by their stable ids. */
+    val insightsDone: Set<String> = emptySet(),
+    /** The buffer balance you entered; flows after its date move it (see Buffer.estimate). */
+    val bufferBalance: BufferBalance? = null,
 )
+
+/** A balance of the buffer account on a day, entered by hand since the exports have none. */
+data class BufferBalance(val amount: Money, val date: LocalDate)
