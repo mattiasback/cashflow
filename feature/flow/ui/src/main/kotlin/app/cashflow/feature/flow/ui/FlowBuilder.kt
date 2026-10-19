@@ -449,7 +449,8 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
         val a = r.a
         val nodes = tree(input, a)
         val out = ArrayList<SankeyNodeUiModel>()
-        val links = ArrayList<Triple<String, String, Float>>()
+        // Link values in öre, exact; turned into floats only for drawing.
+        val links = ArrayList<Triple<String, String, Long>>()
         fun node(id: String, label: UiText, v: Long, tone: FlowTone, column: Int) {
             out += SankeyNodeUiModel(id, label, kr(v), tone, column)
         }
@@ -460,38 +461,42 @@ internal class FlowBuilder(private val locale: AppLocale = AppLocale.current()) 
         if (fromAccount > 0) node(FROM_ACCOUNT, res(R.string.node_from_account), fromAccount, FlowTone.Neutral, 0)
         node(EXPENSES, res(R.string.node_expenses), a.expenses.ore, FlowTone.Fixed, 1)
         node(SAVINGS, res(R.string.node_savings), a.savings.ore, FlowTone.Savings, 1)
-        links += Triple(INCOME, EXPENSES, (a.expenses.ore - toExpenses).toFloat())
-        links += Triple(INCOME, SAVINGS, (a.savings.ore - toSavings).toFloat())
-        if (toExpenses > 0) links += Triple(FROM_ACCOUNT, EXPENSES, toExpenses.toFloat())
-        if (toSavings > 0) links += Triple(FROM_ACCOUNT, SAVINGS, toSavings.toFloat())
+        links += Triple(INCOME, EXPENSES, a.expenses.ore - toExpenses)
+        links += Triple(INCOME, SAVINGS, a.savings.ore - toSavings)
+        if (toExpenses > 0) links += Triple(FROM_ACCOUNT, EXPENSES, toExpenses)
+        if (toSavings > 0) links += Triple(FROM_ACCOUNT, SAVINGS, toSavings)
         if (a.left.ore > 0) {
             node(LEFT, res(R.string.node_left), a.left.ore, FlowTone.Neutral, 1)
-            links += Triple(INCOME, LEFT, a.left.ore.toFloat())
+            links += Triple(INCOME, LEFT, a.left.ore)
         }
         nodes[EXPENSES]?.kids.orEmpty().forEach { k ->
             node(k.id, k.label, k.v, k.tone, 2)
-            links += Triple(EXPENSES, k.id, k.v.toFloat())
+            links += Triple(EXPENSES, k.id, k.v)
         }
         // At most three savings nodes: the two largest and "Övrigt sparande".
         val kids = nodes[SAVINGS]?.kids.orEmpty()
         val shown = if (kids.size > 3) kids.take(2) else kids
         shown.forEach { k ->
             node(k.id, k.label, k.v, FlowTone.Savings, 2)
-            links += Triple(SAVINGS, k.id, k.v.toFloat())
+            links += Triple(SAVINGS, k.id, k.v)
         }
         if (kids.size > 3) {
             val rest = kids.drop(2).sumOf { it.v }
             node(OTHER_SAVINGS, res(R.string.node_other_savings), rest, FlowTone.Savings, 2)
-            links += Triple(SAVINGS, OTHER_SAVINGS, rest.toFloat())
+            links += Triple(SAVINGS, OTHER_SAVINGS, rest)
         }
-        val keptLinks = links.filter { it.third > 0f }
+        val keptLinks = links.filter { it.third > 0L }
         val used = keptLinks.flatMap { listOf(it.first, it.second) }.toSet()
         val spokenText = if (fromAccount > 0) {
             res(R.string.cd_sankey_from_account, r.label, spoken(a.income), spoken(a.expenses), spoken(a.savings), spoken(Money(fromAccount)))
         } else {
             res(R.string.cd_sankey, r.label, spoken(a.income), spoken(a.expenses), spoken(a.savings), spoken(a.left))
         }
-        return SankeyUi(out.filter { it.id in used }, keptLinks, spokenText)
+        // Each node shows the flow drawn through it, so no amount is ever negative: a group whose
+        // refunds outweigh its spending (e.g. Fasta −500 kr) simply drops out instead.
+        fun drawn(id: String) = maxOf(keptLinks.filter { it.second == id }.sumOf { it.third }, keptLinks.filter { it.first == id }.sumOf { it.third })
+        val shownNodes = out.filter { it.id in used }.map { it.copy(amount = kr(drawn(it.id))) }
+        return SankeyUi(shownNodes, keptLinks.map { Triple(it.first, it.second, it.third.toFloat()) }, spokenText)
     }
 
     // ───────────────────────────── Category bars and latest rows ─────────────────────────────
