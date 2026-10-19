@@ -133,16 +133,20 @@ class ReviewViewModel(
 
     private val choices = MutableStateFlow<Map<String, Choice>>(emptyMap())
     private val saving = MutableStateFlow<Set<String>>(emptySet())
+
+    /** Cards decided this session leave the deck at once, before the database catches up; an error puts them back. */
+    private val decidedKeys = MutableStateFlow<Set<String>>(emptySet())
     private var rowsByGroup: Map<String, List<Transaction>> = emptyMap()
 
     /** The latest decision, so "Ångra" can put it back. */
     private var lastUndo: CategorizeUndo? = null
+    private var lastUndoKey: String? = null
     private val locale = AppLocale.current()
 
     init {
-        val session = combine(choices, saving, skipped, decided) { ch, sv, sk, d -> Session(ch, sv, sk, d) }
+        val session = combine(choices, saving, skipped, decided, decidedKeys) { ch, sv, sk, d, gone -> Session(ch, sv, sk, d, gone) }
         combine(transactions.observeAll(), categories.observeCategories(), batches.observeBatches(), session) { txs, cats, imports, s ->
-            build(txs, cats, s.choices, s.saving, imports.associate { it.id to it.fileName }, s.skipped, s.decided)
+            build(txs, cats, s.choices, s.saving, imports.associate { it.id to it.fileName }, s.skipped, s.decided, s.gone)
         }.onEach { s -> _state.update { s } }.launchIn(viewModelScope)
     }
 
@@ -163,18 +167,26 @@ class ReviewViewModel(
 
     private fun undo() {
         val token = lastUndo ?: return
+        val key = lastUndoKey
         lastUndo = null
+        lastUndoKey = null
         viewModelScope.launch {
             val r = categorize.undo(token)
             if (r is Result.Error) _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
+            // The card comes back into the deck.
+            else if (key != null) decidedKeys.update { it - key }
         }
     }
 
     private fun decide(key: String, block: suspend () -> app.cashflow.core.domain.EmptyResult<app.cashflow.core.domain.DataError.Local>) {
         viewModelScope.launch {
+            decidedKeys.update { it + key }
             saving.update { it + key }
             when (val r = block()) {
-                is Result.Error -> _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
+                is Result.Error -> {
+                    decidedKeys.update { it - key }
+                    _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
+                }
                 is Result.Success -> decided.update { it + 1 }
             }
             saving.update { it - key }
@@ -189,13 +201,18 @@ class ReviewViewModel(
         val choice = choices.value[key] ?: return
         val category = choice.categoryId ?: return
         viewModelScope.launch {
+            decidedKeys.update { it + key }
             saving.update { it + key }
             when (val r = categorize.categorize(rows, category, choice.remember)) {
-                is Result.Error -> _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
+                is Result.Error -> {
+                    decidedKeys.update { it - key }
+                    _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
+                }
                 is Result.Success -> {
                     choices.update { it - key }
                     decided.update { it + 1 }
                     lastUndo = r.data
+                    lastUndoKey = key
                     _events.send(ReviewEvent.ShowUndo(UiText.StringResource(R.string.review_saved, arrayOf(rows.first().normalizedText.ifBlank { rows.first().rawText }))))
                 }
             }
@@ -206,12 +223,17 @@ class ReviewViewModel(
     private fun household(key: String) {
         val rows = rowsByGroup[key] ?: return
         viewModelScope.launch {
+            decidedKeys.update { it + key }
             saving.update { it + key }
             when (val r = categorize.confirmHouseholdTransfer(rows)) {
-                is Result.Error -> _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
+                is Result.Error -> {
+                    decidedKeys.update { it - key }
+                    _events.send(ReviewEvent.ShowMessage(r.error.toUiText()))
+                }
                 is Result.Success -> {
                     decided.update { it + 1 }
                     lastUndo = r.data
+                    lastUndoKey = key
                     _events.send(ReviewEvent.ShowUndo(UiText.StringResource(R.string.review_saved, arrayOf(rows.first().normalizedText.ifBlank { rows.first().rawText }))))
                 }
             }
@@ -227,6 +249,7 @@ class ReviewViewModel(
         fileOf: Map<app.cashflow.core.domain.model.ImportId, String>,
         sk: List<String>,
         done: Int,
+        gone: Set<String> = emptySet(),
     ): ReviewState {
         val waiting = txs.filter { it.status == TransactionStatus.TO_REVIEW && !it.isPossibleDuplicate }
         val byTxId = txs.associateBy { it.id }
@@ -241,7 +264,7 @@ class ReviewViewModel(
                 newer = side(t),
                 isSaving = t.id.value in sv,
             )
-        }.sortedBy { it.id in sk }
+        }.filter { it.id !in gone }.sortedBy { it.id in sk }
         val groups = waiting.groupBy { categorize.payeeKey(it) }
         rowsByGroup = groups
         val byId = cats.associateBy { it.id }
@@ -274,7 +297,7 @@ class ReviewViewModel(
                 )
             }
         // Skipped cards go to the back, in the order they were skipped.
-        val ordered = ui.sortedBy { g -> sk.indexOf(g.key).let { if (it < 0) -1 else it } }
+        val ordered = ui.filter { it.key !in gone }.sortedBy { g -> sk.indexOf(g.key).let { if (it < 0) -1 else it } }
         return ReviewState(groups = ordered, duplicates = duplicates, decided = done, remainingRows = waiting.size + duplicates.size, isLoading = false)
     }
 
@@ -297,4 +320,4 @@ class ReviewViewModel(
     }
 }
 
-private data class Session(val choices: Map<String, Choice>, val saving: Set<String>, val skipped: List<String>, val decided: Int)
+private data class Session(val choices: Map<String, Choice>, val saving: Set<String>, val skipped: List<String>, val decided: Int, val gone: Set<String>)

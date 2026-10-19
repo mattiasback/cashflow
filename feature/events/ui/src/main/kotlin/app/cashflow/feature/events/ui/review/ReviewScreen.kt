@@ -72,6 +72,7 @@ import app.cashflow.core.ui.ObserveAsEvents
 import app.cashflow.core.ui.UiText
 import app.cashflow.core.ui.colors
 import app.cashflow.feature.events.ui.R
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -214,6 +215,15 @@ private fun SwipeDeck(
     val currentAccept by rememberUpdatedState(onAccept)
     val currentSkip by rememberUpdatedState(onSkip)
     val currentCanAccept by rememberUpdatedState(canAccept)
+    // A card leaves the screen when it is decided. If it is still the top card shortly after (the
+    // save failed, or the same payee group still has rows), it springs back instead of leaving an
+    // empty slot. A new card gets new animation state, so this never touches the next card.
+    suspend fun comeBackIfStillHere() {
+        delay(700)
+        appear.snapTo(0.96f)
+        offset.snapTo(0f)
+        appear.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow))
+    }
     Box(Modifier.fillMaxWidth().padding(bottom = (backCards * 8).dp)) {
         // The next cards peek out below the top card.
         for (i in backCards downTo 1) {
@@ -248,10 +258,12 @@ private fun SwipeDeck(
                                     (x > threshold || velocity > FLICK) && x > 0 && currentCanAccept -> {
                                         offset.animateTo(size.width * 1.5f, tween(220))
                                         currentAccept()
+                                        comeBackIfStillHere()
                                     }
                                     (x < -threshold || velocity < -FLICK) && x < 0 -> {
                                         offset.animateTo(-size.width * 1.5f, tween(220))
                                         currentSkip()
+                                        comeBackIfStillHere()
                                     }
                                     else -> offset.animateTo(0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
                                 }
