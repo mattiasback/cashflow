@@ -88,7 +88,7 @@
     <string name="row_saved">Saved</string>
     <string name="row_left">Left in account</string>
     <string name="row_value_updated">Value %1$s</string>
-    <string name="row_value_imported">No value entered</string>
+    <string name="row_value_imported">From imported files</string>
     <string name="row_buffer_goal">Goal %1$d months</string>
     <string name="row_left_to_save">Left to save</string>
     <string name="row_goal_reached">Goal reached</string>

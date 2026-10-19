@@ -92,7 +92,7 @@
     <string name="row_saved">Sparat</string>
     <string name="row_left">Kvar på konto</string>
     <string name="row_value_updated">Värde %1$s</string>
-    <string name="row_value_imported">Inget värde angivet</string>
+    <string name="row_value_imported">Från importerade filer</string>
     <string name="row_buffer_goal">Mål %1$d månader</string>
     <string name="row_left_to_save">Kvar att spara</string>
     <string name="row_goal_reached">Målet är nått</string>

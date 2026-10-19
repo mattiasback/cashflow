@@ -349,7 +349,7 @@ internal class HomeBuilder(private val locale: AppLocale = AppLocale.current()) 
                 HomeTarget.Flow(TrendId.SAVINGS_RATE),
             )
             HomeSheet.BUFFER -> {
-                val buffers = input.accounts.filter { it.type == AccountType.SAVINGS }
+                val buffers = Buffer.accounts(input.accounts, input.transactions, m.last.year)
                 val goalValue = m.fixedPerMonth.ore * m.bufferGoal
                 val rest = (goalValue - (m.buffer?.ore ?: 0L)).toLong()
                 HomeSheetUi(
@@ -364,11 +364,11 @@ internal class HomeBuilder(private val locale: AppLocale = AppLocale.current()) 
                         shareB = kr(m.fixedPerMonth),
                         bar = m.bufferMonths?.let { (it / m.bufferGoal).toFloat().coerceIn(0f, 1f) } ?: 0f,
                         barTone = FlowTone.Savings,
-                        rows = buffers.map { acc ->
+                        rows = buffers.map { (acc, value) ->
                             SheetRowUi(
                                 text(acc.name),
                                 acc.marketValueDate?.let { res(R.string.row_value_updated, PeriodFormatter.iso(it, locale)) } ?: res(R.string.row_value_imported),
-                                acc.marketValue?.let { kr(it) } ?: "–",
+                                kr(value),
                                 null, FlowTone.Savings,
                             )
                         } + if (m.bufferMonths != null) {

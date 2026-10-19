@@ -41,7 +41,7 @@
     <string name="profile_theme_system">System</string>
     <string name="profile_theme_light">Light</string>
     <string name="profile_theme_dark">Dark</string>
-    <string name="profile_footer">CashFlow 0.2.0 · step 2</string>
+    <string name="profile_footer">CashFlow 0.4.0 · step 4</string>
 
     <string name="accounts_title">Accounts</string>
     <string name="accounts_savings_title">Own savings</string>

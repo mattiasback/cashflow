@@ -13,9 +13,15 @@ object Buffer {
 
     /** Sum of the savings accounts' value (entered value, else the imported balance); null without any. */
     fun value(accounts: List<Account>, transactions: List<Transaction>, year: Int): Money? {
+        val each = accounts(accounts, transactions, year)
+        if (each.isEmpty()) return null
+        return Money(each.sumOf { it.second.ore })
+    }
+
+    /** Each savings account with its value: the entered value, else its imported balance. */
+    fun accounts(accounts: List<Account>, transactions: List<Transaction>, year: Int): List<Pair<Account, Money>> {
         val savings = accounts.filter { it.type == AccountType.SAVINGS }
-        if (savings.isEmpty()) return null
-        return Money(SavingsCalculator().summarize(savings, transactions, year).sumOf { it.value.ore })
+        return SavingsCalculator().summarize(savings, transactions, year).map { it.account to it.value }
     }
 
     /** Months of fixed expenses the buffer covers; null when there is no buffer or no fixed costs yet. */

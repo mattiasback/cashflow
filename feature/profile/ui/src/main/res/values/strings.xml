@@ -41,7 +41,7 @@
     <string name="profile_theme_system">System</string>
     <string name="profile_theme_light">Ljust</string>
     <string name="profile_theme_dark">Mörkt</string>
-    <string name="profile_footer">CashFlow 0.2.0 · steg 2</string>
+    <string name="profile_footer">CashFlow 0.4.0 · steg 4</string>
 
     <string name="accounts_title">Konton</string>
     <string name="accounts_savings_title">Eget sparande</string>
