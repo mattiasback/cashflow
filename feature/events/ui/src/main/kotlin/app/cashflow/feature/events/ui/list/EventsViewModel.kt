@@ -25,6 +25,8 @@ import app.cashflow.feature.events.ui.common.TxDayUi
 import app.cashflow.feature.events.ui.common.toRowUi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import app.cashflow.core.ui.retryOn
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -85,17 +87,22 @@ class EventsViewModel(
     )
     private val locale = AppLocale.current()
 
+    private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
     init {
         val searchHits = filters.map { it.query.trim() }
             .flatMapLatest { q -> if (q.isEmpty()) flowOf(null) else transactions.search(q) }
 
         combine(transactions.observeAll(), categories.observeCategories(), batches.observeBatches(), filters, searchHits) { txs, cats, imports, f, hits ->
             buildState(txs, cats.associateBy { it.id }, imports, f, hits)
-        }.onEach { s -> _state.update { s } }.launchIn(viewModelScope)
+        }
+            .retryOn(retries, onError = { _state.update { it.copy(isLoading = false, loadError = true) } }, onRetry = { _state.update { it.copy(isLoading = true, loadError = false) } })
+            .onEach { s -> _state.update { s } }.launchIn(viewModelScope)
     }
 
     fun onAction(action: EventsAction) {
         when (action) {
+            EventsAction.OnRetry -> retries.tryEmit(Unit)
             is EventsAction.OnQueryChange -> filters.update { it.copy(query = action.query) }
             is EventsAction.OnStatusChipClick -> filters.update { it.copy(status = action.filter) }
             EventsAction.OnCategoryFilterClick -> filters.update { it.copy(sheet = EventsSheet.CATEGORY) }

@@ -17,6 +17,8 @@ import app.cashflow.core.ui.UiText
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import app.cashflow.core.ui.retryOn
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -57,6 +60,8 @@ class HomeViewModel(
     private val sheet = MutableStateFlow<HomeSheet?>(null)
     private var input: HomeInput? = null
 
+    private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
     init {
         val base = combine(transactions.observeAll(), categories.observeCategories(), accounts.observeAccounts(), batches.observeBatches(), goals.observeGoals()) { txs, cats, accs, imports, goalList ->
             Base(txs, cats, accs, imports, goalList)
@@ -80,6 +85,7 @@ class HomeViewModel(
             input = i
             builder.build(i, s)
         }.flowOn(compute)
+            .retryOn(retries, onError = { _state.update { it.copy(isLoading = false, loadError = true) } }, onRetry = { _state.update { it.copy(isLoading = true, loadError = false) } })
             .onEach { _state.value = it }
             .launchIn(viewModelScope)
     }
@@ -94,6 +100,7 @@ class HomeViewModel(
 
     fun onAction(action: HomeAction) {
         when (action) {
+            HomeAction.OnRetry -> retries.tryEmit(Unit)
             HomeAction.OnInfoClick -> sheet.value = HomeSheet.NET
             is HomeAction.OnKpiClick -> sheet.value = when (action.id) {
                 KpiId.INCOME -> HomeSheet.INCOME

@@ -60,4 +60,7 @@
     <string name="account_type_kf">Endowment insurance</string>
     <string name="account_type_pension">Pension</string>
     <string name="account_type_other">Other</string>
+    <string name="load_error_title">Could not load</string>
+    <string name="load_error_text">The data on the phone could not be read just now. Nothing has changed.</string>
+    <string name="retry">Try again</string>
 </resources>

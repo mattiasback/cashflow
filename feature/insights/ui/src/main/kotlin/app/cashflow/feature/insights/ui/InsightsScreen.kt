@@ -67,6 +67,7 @@ import app.cashflow.core.designsystem.component.CfSnackbarHost
 import app.cashflow.core.designsystem.component.GoalBar
 import app.cashflow.core.designsystem.component.SheetHeader
 import app.cashflow.core.designsystem.component.SkeletonBlock
+import app.cashflow.core.ui.LoadErrorCard
 import app.cashflow.core.designsystem.component.SummaryCard
 import app.cashflow.core.designsystem.icon.CfIcons
 import app.cashflow.core.designsystem.theme.Accent
@@ -154,6 +155,7 @@ fun InsightsScreen(
                                 infoLabel = stringResource(R.string.cd_info),
                             )
                         }
+                        state.loadError -> LoadErrorCard(onRetry = { onAction(InsightsAction.OnRetry) })
                         state.isLoading -> SkeletonBlock(Modifier.fillMaxWidth().height(150.dp))
                         else -> EmptyCard(state.hasData, onAction)
                     }

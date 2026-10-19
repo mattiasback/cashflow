@@ -78,6 +78,7 @@ import app.cashflow.core.designsystem.component.SankeyLinkUi
 import app.cashflow.core.designsystem.component.SankeyNodeUi
 import app.cashflow.core.designsystem.component.Segment
 import app.cashflow.core.designsystem.component.SkeletonBlock
+import app.cashflow.core.ui.LoadErrorCard
 import app.cashflow.core.designsystem.component.StatTile
 import app.cashflow.core.designsystem.component.SummaryCard
 import app.cashflow.core.designsystem.component.TabItem
@@ -168,7 +169,11 @@ fun FlowScreen(
         ) {
             item(key = "header") { Header(state, onAction) }
             if (!state.hasData) {
-                if (state.isLoading) item(key = "skeleton") { Skeleton() }
+                if (state.loadError) {
+                    item(key = "error") { LoadErrorCard(onRetry = { onAction(FlowAction.OnRetry) }, modifier = Modifier.padding(Spacing.gutter)) }
+                } else if (state.isLoading) {
+                    item(key = "skeleton") { Skeleton() }
+                }
                 return@LazyColumn
             }
             item(key = "tabs") {

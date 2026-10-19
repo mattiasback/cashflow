@@ -169,9 +169,12 @@ data class FlowState(
     val sheet: NodeSheetUi? = null,
     val hasData: Boolean = false,
     val isLoading: Boolean = true,
+    /** The data could not be read; the screen offers "Försök igen". */
+    val loadError: Boolean = false,
 )
 
 sealed interface FlowAction {
+    data object OnRetry : FlowAction
     data class OnTabSelect(val tab: FlowTab) : FlowAction
     data class OnModeSelect(val mode: PeriodMode) : FlowAction
     /** A bar group (month or year key) or a picker chip. */

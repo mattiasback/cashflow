@@ -60,4 +60,7 @@
     <string name="account_type_kf">Kapitalförsäkring</string>
     <string name="account_type_pension">Pension</string>
     <string name="account_type_other">Annat</string>
+    <string name="load_error_title">Det gick inte att läsa in</string>
+    <string name="load_error_text">Uppgifterna på telefonen kunde inte läsas just nu. Inget har ändrats.</string>
+    <string name="retry">Försök igen</string>
 </resources>

@@ -229,8 +229,3 @@ fun FitText(text: String, style: TextStyle, color: Color, modifier: Modifier = M
     )
 }
 
-/** A grey placeholder block for section skeletons. */
-@Composable
-fun SkeletonBlock(modifier: Modifier = Modifier) {
-    Box(modifier.clip(Radius.sm).background(CashFlowTheme.colors.surfaceControl).fillMaxHeight())
-}

@@ -38,6 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cashflow.core.designsystem.component.AccentHeader
+import app.cashflow.core.designsystem.component.SkeletonRows
+import app.cashflow.core.ui.LoadErrorCard
 import app.cashflow.core.designsystem.component.LocalNavRailInset
 import app.cashflow.core.designsystem.component.BandStatusBar
 import app.cashflow.core.designsystem.component.rememberOnBand
@@ -120,6 +122,11 @@ fun EventsScreen(
                 AccentHeader(accent = Accent.Events, title = stringResource(R.string.events_title), leading = { BandIconButton(CfIcons.User, stringResource(R.string.cd_profile), { onAction(EventsAction.OnProfileClick) }) }) {
                     ImportCard(state, onAction)
                 }
+            }
+            if (state.loadError) {
+                item(key = "error") { LoadErrorCard(onRetry = { onAction(EventsAction.OnRetry) }, modifier = Modifier.padding(Spacing.gutter)) }
+            } else if (state.isLoading && state.days.isEmpty()) {
+                item(key = "skeleton") { SkeletonRows(6, Modifier.padding(Spacing.gutter)) }
             }
             if (state.reviewCount > 0) {
                 item(key = "review") {

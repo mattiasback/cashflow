@@ -53,10 +53,13 @@ data class EventsState(
     val categoryOptions: List<CategoryOptionUi> = emptyList(),
     val periodOptions: List<PeriodOptionUi> = emptyList(),
     val isLoading: Boolean = true,
+    /** The data could not be read; the screen offers "Försök igen". */
+    val loadError: Boolean = false,
     val error: UiText? = null,
 )
 
 sealed interface EventsAction {
+    data object OnRetry : EventsAction
     data class OnQueryChange(val query: String) : EventsAction
     data class OnStatusChipClick(val filter: StatusFilter) : EventsAction
     data object OnCategoryFilterClick : EventsAction

@@ -16,6 +16,8 @@ import app.cashflow.core.domain.model.Period
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import app.cashflow.core.ui.retryOn
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -57,6 +59,8 @@ class FlowViewModel(
     private val selection = MutableStateFlow<FlowSelection?>(null)
     private var input: FlowInput? = null
 
+    private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
     init {
         // The stored tab and period, also when Hem changes them (a trend row opens a sub-tab).
         settings.settings.map { it.lastTab to it.lastPeriod }.distinctUntilChanged().onEach { (tab, period) ->
@@ -84,12 +88,14 @@ class FlowViewModel(
             input = i
             builder.build(i, sel)
         }.flowOn(compute)
+            .retryOn(retries, onError = { _state.update { it.copy(isLoading = false, loadError = true) } }, onRetry = { _state.update { it.copy(isLoading = true, loadError = false) } })
             .onEach { s -> _state.value = s }
             .launchIn(viewModelScope)
     }
 
     fun onAction(action: FlowAction) {
         when (action) {
+            FlowAction.OnRetry -> retries.tryEmit(Unit)
             is FlowAction.OnTabSelect -> select { it.copy(tab = action.tab, path = emptyList(), sheet = null) }
             is FlowAction.OnModeSelect -> select { it.copy(mode = action.mode, path = emptyList(), pickerYear = null) }
             is FlowAction.OnPeriodSelect -> select { sel ->

@@ -53,6 +53,7 @@ import app.cashflow.core.designsystem.theme.CashFlowTheme
 import app.cashflow.core.designsystem.theme.Radius
 import app.cashflow.core.designsystem.theme.Spacing
 import app.cashflow.core.ui.DetailSheetContent
+import app.cashflow.core.ui.LoadErrorCard
 import app.cashflow.core.ui.ObserveAsEvents
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -138,17 +139,23 @@ fun HomeScreen(
                             infoLabel = stringResource(R.string.cd_info),
                             rollDigits = true,
                         )
+                    } else if (state.loadError) {
+                        LoadErrorCard(onRetry = { onAction(HomeAction.OnRetry) })
                     } else if (state.isLoading) {
                         SkeletonBlock(Modifier.fillMaxWidth().height(150.dp))
                     }
                 }
+            }
+            if (state.isLoading && !state.hasData) {
+                // Design FlowLoading: the key figures and trends as grey blocks until the sums are ready.
+                item(key = "skeleton") { HomeSkeleton() }
             }
             if (state.hasData) {
                 item(key = "kpis") { Kpis(state, onAction) }
                 section("trends", R.string.section_trends, trailing = R.string.trends_span)
                 item(key = "trends") { Trends(state, onAction) }
             }
-            if (!state.isLoading) {
+            if (!state.isLoading && !state.loadError) {
                 section("todo", R.string.section_todo)
                 item(key = "todo") {
                     Column(Modifier.padding(horizontal = Spacing.gutter), verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
@@ -179,6 +186,19 @@ fun HomeScreen(
             }
         }
         BandStatusBar(rememberOnBand(listState))
+    }
+}
+
+@Composable
+private fun HomeSkeleton() {
+    Column(Modifier.padding(horizontal = Spacing.gutter).padding(top = Spacing.s4), verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+        repeat(2) {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+                SkeletonBlock(Modifier.weight(1f).height(146.dp))
+                SkeletonBlock(Modifier.weight(1f).height(146.dp))
+            }
+        }
+        SkeletonBlock(Modifier.fillMaxWidth().padding(top = Spacing.s6).height(260.dp))
     }
 }
 

@@ -73,9 +73,12 @@ data class HomeState(
     val sheet: HomeSheetUi? = null,
     val hasData: Boolean = false,
     val isLoading: Boolean = true,
+    /** The data could not be read; the screen offers "Försök igen". */
+    val loadError: Boolean = false,
 )
 
 sealed interface HomeAction {
+    data object OnRetry : HomeAction
     data object OnInfoClick : HomeAction
     data class OnKpiClick(val id: KpiId) : HomeAction
     data class OnTrendClick(val id: TrendId) : HomeAction

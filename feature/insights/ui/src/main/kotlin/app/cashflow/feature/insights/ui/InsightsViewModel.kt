@@ -13,6 +13,8 @@ import app.cashflow.core.domain.model.Goals
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import app.cashflow.core.ui.retryOn
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +23,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
@@ -47,6 +50,8 @@ class InsightsViewModel(
 
     private data class Ui(val extraKronor: Int = 2_000, val sheet: InsightSheet? = null, val copied: Boolean = false)
 
+    private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
     init {
         val model = combine(transactions.observeAll(), categories.observeCategories(), goals.observeGoals(), settings.settings) { txs, cats, goalList, prefs ->
             val byId = cats.associateBy { it.id }
@@ -65,12 +70,14 @@ class InsightsViewModel(
         combine(model, ui) { (input, m), u ->
             builder.build(input, m, u.extraKronor, u.sheet, u.copied)
         }.flowOn(compute)
+            .retryOn(retries, onError = { _state.update { it.copy(isLoading = false, loadError = true) } }, onRetry = { _state.update { it.copy(isLoading = true, loadError = false) } })
             .onEach { _state.value = it }
             .launchIn(viewModelScope)
     }
 
     fun onAction(action: InsightsAction) {
         when (action) {
+            InsightsAction.OnRetry -> retries.tryEmit(Unit)
             is InsightsAction.OnOpportunityClick -> ui.value = ui.value.copy(sheet = InsightSheet.Suggestion(action.id))
             InsightsAction.OnAboutClick -> ui.value = ui.value.copy(sheet = InsightSheet.About)
             InsightsAction.OnSheetDone -> {

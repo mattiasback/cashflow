@@ -60,6 +60,8 @@ sealed interface InsightSheet {
 @Immutable
 data class InsightsState(
     val isLoading: Boolean = true,
+    /** The data could not be read; the screen offers "Försök igen". */
+    val loadError: Boolean = false,
     val hasData: Boolean = false,
     /** At least three months: averages and recurring charges need some history. */
     val enoughData: Boolean = false,
@@ -76,6 +78,7 @@ data class InsightsState(
 )
 
 sealed interface InsightsAction {
+    data object OnRetry : InsightsAction
     data class OnOpportunityClick(val id: String) : InsightsAction
     data object OnAboutClick : InsightsAction
     data object OnSheetDone : InsightsAction
