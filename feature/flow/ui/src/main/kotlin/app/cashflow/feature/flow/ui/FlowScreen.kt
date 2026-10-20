@@ -288,7 +288,10 @@ private fun Hero(state: FlowState, onAction: (FlowAction) -> Unit) {
             infoLabel = stringResource(R.string.cd_info, infoTitle),
             rollDigits = true,
         )
-    } else if (!state.isLoading) {
+    } else if (state.isLoading) {
+        SkeletonBlock(Modifier.fillMaxWidth().height(150.dp))
+    } else if (!state.loadError) {
+        // No data yet (not a read failure, which shows "Försök igen" below instead).
         CfCard(Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
                 Text(stringResource(R.string.flow_empty_title), style = CashFlowTheme.typography.title, color = c.textPrimary)
