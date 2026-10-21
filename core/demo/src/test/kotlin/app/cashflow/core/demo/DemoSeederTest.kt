@@ -84,6 +84,9 @@ class DemoSeederTest {
         assertThat(data.twelveMonthsTo(data.periods.last()).count { data.month(it).net.isNegative }).isBetween(1, 2)
         // A responsible family that saves some: a savings rate of 7–10 %.
         assertThat(data.sum(data.twelveMonthsTo(data.periods.last())).savingsRatePercent!!).isBetween(7.0, 10.0)
+        // Little is left unplaced on the account: about 1–3 % of income.
+        val year = data.sum(data.twelveMonthsTo(data.periods.last()))
+        assertThat(year.left.ore.toDouble() / year.income.ore * 100).isBetween(0.5, 4.0)
     }
 
     @Test

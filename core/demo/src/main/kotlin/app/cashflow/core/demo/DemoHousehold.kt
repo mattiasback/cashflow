@@ -119,14 +119,14 @@ object DemoHousehold {
 
             // Food for four, about Konsumentverket's 2025 estimate (~12 800 kr a month, a bit above for a family that also buys snacks and household goods there).
             repeat(if (p.month == 12) 22 else 19) {
-                add(someDay(), -vary(850.0, 280.0), pick("ICA SUPERMARKET", "HEMKÖP", "CITY GROSS", "LIDL", "ICA NÄRA"))
+                add(someDay(), -vary(930.0, 280.0), pick("ICA SUPERMARKET", "HEMKÖP", "CITY GROSS", "LIDL", "ICA NÄRA"))
             }
             // Eating out; the last two months more: "Håll snittet för Restaurang".
             repeat(if (m >= MONTHS - 2) 6 else random.nextInt(3, 5)) {
                 add(someDay(), -vary(420.0, 200.0), pick("PIZZERIA EXEMPEL", "ESPRESSO HOUSE", "SUSHI DEMO", "THAI EXEMPEL", "MAX HAMBURGARE"))
             }
             repeat(random.nextInt(5, 8)) {
-                add(someDay(), -vary(850.0, 500.0), pick("H&M", "CLAS OHLSON", "ELGIGANTEN", "PANDURO", "NETONNET", "XXL"))
+                add(someDay(), -vary(920.0, 500.0), pick("H&M", "CLAS OHLSON", "ELGIGANTEN", "PANDURO", "NETONNET", "XXL"))
             }
             repeat(random.nextInt(3, 5)) { add(someDay(), -vary(700.0, 250.0), pick("CIRCLE K", "OKQ8", "PREEM")) }
             repeat(random.nextInt(1, 3)) { add(someDay(), -vary(260.0, 120.0), "KRONANS APOTEK") }
