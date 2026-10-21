@@ -72,14 +72,18 @@ class DemoSeederTest {
     }
 
     @Test
-    fun `three years up to the current month, with two deficit months`() = runTest {
+    fun `three years up to the current month, one or two deficit months a year`() = runTest {
         val rows = seeded().first.rows.value.values.filter { it.countsInCashFlow }
         val catalog = BundledCatalog.load().defaultCategories().associate { it.id to it.kind }
         val data = FlowData.of(rows.toList(), MortgageSplit(), { catalog[it] ?: CategoryKind.UNCATEGORIZED })
         assertThat(data.periods.size).isEqualTo(DemoHousehold.MONTHS)
         assertThat(data.periods.last()).isEqualTo(Period.of(today))
         val deficits = data.periods.count { data.month(it).net.isNegative }
-        assertThat(deficits).isBetween(2, 5)
+        // One or two deficit months a year, also in the last twelve.
+        assertThat(deficits).isBetween(3, 6)
+        assertThat(data.twelveMonthsTo(data.periods.last()).count { data.month(it).net.isNegative }).isBetween(1, 2)
+        // A responsible family that saves some: a savings rate of 7–10 %.
+        assertThat(data.sum(data.twelveMonthsTo(data.periods.last())).savingsRatePercent!!).isBetween(7.0, 10.0)
     }
 
     @Test

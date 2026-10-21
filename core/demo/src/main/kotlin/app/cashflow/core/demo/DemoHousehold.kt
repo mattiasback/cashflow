@@ -82,88 +82,97 @@ object DemoHousehold {
             }
             fun vary(base: Double, spread: Double) = base + random.nextDouble(-spread, spread)
             fun pick(vararg names: String) = names[random.nextInt(names.size)]
+            fun someDay() = random.nextInt(1, 29)
             val winter = p.month in listOf(11, 12, 1, 2, 3)
             val year = m / 12
+            // One bigger unplanned cost a year, in a different month each year.
+            val unplannedMonth = listOf(3, 10, 5)[year % 3]
 
-            // Income: a raise every April, a holiday bonus in June, a tax refund some summers.
-            val raise = 1.0 + 0.03 * (year + if (p.month >= 4) 1 else 0)
-            add(25, vary(31_800.0 * raise, 300.0), "LÖN EXEMPELBOLAGET AB")
-            add(25, vary(27_400.0 * raise, 300.0), "LÖN DEMOFÖRETAGET AB")
-            add(20, 1_250.0, "BARNBIDRAG")
-            if (p.month == 6) add(25, vary(6_500.0, 500.0), "LÖN SEMESTERERSÄTTNING")
-            if (p.month == 6 && year % 2 == 1) add(10, vary(4_200.0, 800.0), "SKATTEVERKET ÅTERBÄRING")
+            // Income: about SCB's 2024 median for couples with children (818 tkr a year after tax,
+            // ~68 000 kr a month), a raise every April, holiday pay in June, a tax refund some years.
+            val raise = 1.0 + 0.025 * (year + if (p.month >= 4) 1 else 0)
+            add(25, vary(32_400.0 * raise, 250.0), "LÖN EXEMPELBOLAGET AB")
+            add(25, vary(28_600.0 * raise, 250.0), "LÖN DEMOFÖRETAGET AB")
+            add(20, 2_650.0, "BARNBIDRAG")
+            if (p.month == 6) add(25, vary(5_800.0, 400.0), "LÖN SEMESTERERSÄTTNING")
+            if (p.month == 6 && year % 2 == 1) add(10, vary(3_600.0, 600.0), "SKATTEVERKET ÅTERBÄRING")
 
-            // Fixed costs.
-            add(1, -5_380.0 - 120.0 * year, "BRF EXEMPELGÅRDEN AVGIFT")
-            add(28, -9_850.0, "BOLÅN DEMOBANKEN")
-            add(9, -(if (winter) vary(1_450.0, 300.0) else vary(520.0, 150.0)), "VATTENFALL")
+            // Fixed costs: a family flat with a mortgage, preschool for two, and a car.
+            add(1, -5_420.0 - 140.0 * year, "BRF EXEMPELGÅRDEN AVGIFT")
+            add(28, -14_900.0, "BOLÅN DEMOBANKEN")
+            add(9, -(if (winter) vary(1_650.0, 350.0) else vary(640.0, 160.0)), "VATTENFALL")
+            add(8, -2_813.0, "FÖRSKOLAN EXEMPEL")
+            add(15, -1_450.0, "TRYGG-HANSA")
             add(3, -930.0, "VÄSTTRAFIK")
-            add(15, -612.0, "TRYGG-HANSA")
-            add(27, -320.0, "UNIONEN")
+            add(27, -310.0, "UNIONEN")
+            add(27, -295.0, "VISION")
             add(4, -399.0, "TELIA")
+            add(4, -449.0, "BAHNHOF BREDBAND")
             add(5, -169.0, "STORYTEL")
-            add(8, -1_150.0, "FÖRSKOLAN EXEMPEL")
             // A price rise four months ago: Insikter's "Se över abonnemangen".
             add(7, if (m < MONTHS - 4) -129.0 else -159.0, "NETFLIX")
-            add(2, -399.0, "NORDIC WELLNESS")
+            add(2, -449.0, "NORDIC WELLNESS")
             // Small monthly charges: "Stoppa små dragningar".
             add(11, -29.0, "GOOGLE ONE")
             add(13, -79.0, "BONNIER NYHETER")
             add(17, -49.0, "PARKERING APPEN")
 
-            // Food: steady, eleven shops a month, a bit more in December.
-            repeat(if (p.month == 12) 14 else 11) {
-                add(random.nextInt(1, 29), -vary(620.0, 220.0), pick("ICA SUPERMARKET", "HEMKÖP", "CITY GROSS", "LIDL", "ICA NÄRA"))
+            // Food for four, about Konsumentverket's 2025 estimate (~12 800 kr a month, a bit above for a family that also buys snacks and household goods there).
+            repeat(if (p.month == 12) 22 else 19) {
+                add(someDay(), -vary(850.0, 280.0), pick("ICA SUPERMARKET", "HEMKÖP", "CITY GROSS", "LIDL", "ICA NÄRA"))
             }
             // Eating out; the last two months more: "Håll snittet för Restaurang".
-            repeat(if (m >= MONTHS - 2) 5 else random.nextInt(2, 5)) {
-                add(random.nextInt(1, 29), -vary(380.0, 180.0), pick("PIZZERIA EXEMPEL", "ESPRESSO HOUSE", "SUSHI DEMO", "THAI EXEMPEL", "MAX HAMBURGARE"))
+            repeat(if (m >= MONTHS - 2) 6 else random.nextInt(3, 5)) {
+                add(someDay(), -vary(420.0, 200.0), pick("PIZZERIA EXEMPEL", "ESPRESSO HOUSE", "SUSHI DEMO", "THAI EXEMPEL", "MAX HAMBURGARE"))
             }
-            repeat(random.nextInt(1, 4)) {
-                add(random.nextInt(1, 29), -vary(850.0, 600.0), pick("H&M", "CLAS OHLSON", "ELGIGANTEN", "PANDURO", "NETONNET"))
+            repeat(random.nextInt(5, 8)) {
+                add(someDay(), -vary(850.0, 500.0), pick("H&M", "CLAS OHLSON", "ELGIGANTEN", "PANDURO", "NETONNET", "XXL"))
             }
-            repeat(random.nextInt(1, 3)) { add(random.nextInt(1, 29), -vary(650.0, 250.0), pick("CIRCLE K", "OKQ8", "PREEM")) }
-            if (random.nextInt(3) == 0) add(random.nextInt(1, 29), -vary(240.0, 120.0), "KRONANS APOTEK")
-            if (random.nextInt(3) == 0) add(random.nextInt(1, 29), -vary(420.0, 200.0), "STADIUM")
-            if (random.nextInt(4) == 0) add(random.nextInt(1, 29), -vary(310.0, 90.0), "FRISÖR EXEMPEL")
-            if (random.nextInt(5) == 0) add(random.nextInt(1, 29), -vary(1_400.0, 600.0), "FOLKTANDVÅRDEN")
+            repeat(random.nextInt(3, 5)) { add(someDay(), -vary(700.0, 250.0), pick("CIRCLE K", "OKQ8", "PREEM")) }
+            repeat(random.nextInt(1, 3)) { add(someDay(), -vary(260.0, 120.0), "KRONANS APOTEK") }
+            add(someDay(), -vary(350.0, 150.0), "STADIUM")
+            if (random.nextInt(2) == 0) add(someDay(), -vary(320.0, 90.0), "FRISÖR EXEMPEL")
+            if (random.nextInt(4) == 0) add(someDay(), -vary(1_400.0, 600.0), "FOLKTANDVÅRDEN")
+            if (random.nextInt(3) == 0) add(someDay(), -vary(450.0, 150.0), "BIOGRAF EXEMPEL")
             // Unknown payees for Att granska: a few each quarter.
             if (m % 3 == 0 || m >= MONTHS - 2) {
-                add(random.nextInt(1, 29), -vary(260.0, 180.0), pick("LOPPIS DEMO", "FÖRENINGEN EXEMPEL", "MARKNADEN STAND", "KVARTERSBUTIKEN"))
+                add(someDay(), -vary(280.0, 180.0), pick("LOPPIS DEMO", "FÖRENINGEN EXEMPEL", "MARKNADEN STAND", "KVARTERSBUTIKEN"))
             }
 
             // Seasons.
             if (p.month == 12) {
-                repeat(4) { add(random.nextInt(5, 23), -vary(900.0, 400.0), pick("LEKIA", "ÅHLÉNS", "BOOZT", "BR LEKSAKER")) }
+                repeat(5) { add(random.nextInt(5, 23), -vary(950.0, 400.0), pick("LEKIA", "ÅHLÉNS", "BOOZT", "BR LEKSAKER")) }
             }
-            if (p.month == 8) add(18, -vary(2_400.0, 600.0), "XXL")
-            // Two deficit months: a summer holiday, and a kitchen renovation nine months ago.
+            if (p.month == 8) add(18, -vary(2_600.0, 600.0), "XXL")
+            // The summer holiday: every July is a deficit month.
             if (p.month == 7) {
-                add(3, -vary(16_000.0, 2_000.0), "SJ")
-                add(5, -vary(14_500.0, 2_000.0), "HOTELL EXEMPEL")
-                if (m >= MONTHS - 14) add(8, -vary(19_000.0, 1_500.0), "RESEBYRÅN EXEMPEL")
-                repeat(4) { add(random.nextInt(4, 20), -vary(620.0, 200.0), "RESTAURANG SOMMAR") }
+                add(3, -vary(9_500.0, 1_500.0), "SJ")
+                add(5, -vary(11_500.0, 1_500.0), "HOTELL EXEMPEL")
+                repeat(5) { add(random.nextInt(4, 20), -vary(640.0, 200.0), "RESTAURANG SOMMAR") }
             }
-            if (m == MONTHS - 9) {
-                add(14, -38_500.0, "KÖKSFIRMAN EXEMPEL")
-                add(16, -6_900.0, "BYGGVARUHUSET EXEMPEL")
+            // One unplanned cost a year: a new dishwasher, a dentist bill, a car repair.
+            if (p.month == unplannedMonth) {
+                when (year % 3) {
+                    0 -> add(14, -vary(14_900.0, 500.0), "ELGIGANTEN")
+                    1 -> add(14, -vary(13_800.0, 500.0), "FOLKTANDVÅRDEN")
+                    else -> add(14, -vary(14_500.0, 500.0), "BILVERKSTAD DEMO")
+                }
             }
 
-            // Savings: the buffer and the ISK, both legs, so transfer matching pairs them. Less is
-            // saved in the deficit months.
-            val deficit = p.month == 7 || m == MONTHS - 9
-            val toBuffer = if (deficit) 1_000.0 else 2_500.0
-            val toIsk = if (deficit) 1_000.0 else 4_000.0
+            // Savings: a steady monthly transfer to the buffer and the ISK, about 8–9 % of income (Swedish families often save less than 10 %).
+            // Both legs are imported, so transfer matching pairs them. Less in the holiday month.
+            val holiday = p.month == 7
+            val toBuffer = if (holiday) 1_000.0 else 2_500.0
+            val toIsk = if (holiday) 1_500.0 else 4_200.0
             add(26, -toBuffer, "ÖVERFÖRING BUFFERTKONTO")
             buffer += Row(date(26), toBuffer, "ÖVERFÖRING FRÅN LÖNEKONTO")
             add(27, -toIsk, "ÖVERFÖRING ISK")
             isk += Row(date(27), toIsk, "Insättning", Movement.DEPOSIT)
-            isk += Row(date(28), vary(900.0, 1_400.0), "Avkastning", Movement.RETURN)
-            // An unplanned car repair paid from the buffer.
-            if (m == MONTHS - 6) {
-                add(12, -7_800.0, "BILVERKSTAD DEMO")
-                buffer += Row(date(12), -7_800.0, "ÖVERFÖRING TILL LÖNEKONTO")
-                add(12, 7_800.0, "ÖVERFÖRING BUFFERTKONTO")
+            isk += Row(date(28), vary(700.0, 1_200.0), "Avkastning", Movement.RETURN)
+            // The buffer does its job: the last unplanned cost is paid back from it.
+            if (p.month == unplannedMonth && m >= MONTHS - 12) {
+                buffer += Row(date(15), -10_000.0, "ÖVERFÖRING TILL LÖNEKONTO")
+                add(15, 10_000.0, "ÖVERFÖRING BUFFERTKONTO")
             }
             period = period.next()
             index++
