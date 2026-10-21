@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+  CashFlow bank sync, step 8: the https redirect page for Enable Banking, if the control panel
+  does not accept cashflow://bank-callback directly. It only forwards the query (code, state or
+  error) to the app on this phone. Nothing is stored, sent or logged by this page, and the code
+  is useless without the private key that only the app holds.
+-->
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>CashFlow · tillbaka till appen</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font: 16px/1.5 system-ui, sans-serif; margin: 0; padding: 32px 16px; max-width: 480px; margin-inline: auto; }
+    a.button { display: block; text-align: center; padding: 14px; border-radius: 6px; background: #1B98BE; color: #fff; text-decoration: none; font-weight: 600; }
+    p { color: GrayText; }
+  </style>
+</head>
+<body>
+  <h1>Tillbaka till CashFlow</h1>
+  <a class="button" id="open" href="#">Öppna CashFlow</a>
+  <p>Öppnas inte appen? Kopiera adressen i adressfältet och klistra in den under Profil → Bankkoppling.</p>
+  <script>
+    (function () {
+      var query = window.location.search;
+      // Only the bank's answer is forwarded; anything else stays here.
+      if (!/[?&](code|error)=/.test(query) || !/[?&]state=/.test(query)) return;
+      var target = "cashflow://bank-callback" + query;
+      document.getElementById("open").href = target;
+      window.location.replace(target);
+    })();
+  </script>
+</body>
+</html>

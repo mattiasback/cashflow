@@ -36,19 +36,23 @@ keeps the provider behind one interface.
     the Android Keystore. It is stored in `noBackupFilesDir`, so it is excluded from backup and
     device transfer.
   - The key is never written to the repo, logs or settings. "Ta bort nyckel" removes it.
-- **Read-only.** Only the AIS endpoints (accounts, balances, transactions) are used. There is no
-  payment code.
+- **Read-only.** Only the account endpoints are used (`/application` to check the key, `/aspsps`,
+  `/auth`, `/sessions`, transactions). There is no payment code.
 
 ## Flow
 
-1. **Nyckel**: pick the `.pem` file and paste the application id.
+1. **Nyckel**: pick the `.pem` file, paste the application id and the redirect address. "Kontrollera
+   och spara" calls `GET /application` first: the key must sign, the application must be active and
+   the redirect address must be one of its registered ones.
 2. **Koppla bank**:
    - Choose the bank from `GET /aspsps?country=SE`.
    - `POST /auth` with access `valid_until` (up to 180 days) and a random `state`.
    - The bank's BankID page opens in the browser.
 3. **Tillbaka till appen**: the redirect URL carries `code` and `state`.
-   - **Primary:** a tiny https page (`docs/bank-callback/index.html`, to be hosted on GitHub Pages)
-     forwards `?code&state` to `cashflow://bank-callback`, which the app's intent filter catches.
+   - **Primary:** register `cashflow://bank-callback` itself as the redirect URL; the app's intent
+     filter catches it. Enable Banking's API docs do not require https, but the control panel may.
+   - **If the panel wants https:** host `docs/bank-callback/index.html` (GitHub Pages). It only
+     forwards `?code&state` to `cashflow://bank-callback`.
    - **Fallback, always available:** paste the address from the browser.
    - Either way the app checks `state`, then calls `POST /sessions`.
 4. **Konton**:
@@ -58,7 +62,8 @@ keeps the provider behind one interface.
      renewing consent does not ask again.
 5. **Synka nu**:
    - Fetch transactions from the start date to today, booked only (`transaction_status=BOOK`).
-   - Fetch balances, page through `continuation_key`, map the rows and reconcile them (see below).
+   - Page through `continuation_key`, map the rows and reconcile them (see below). A row's
+     `balance_after_transaction`, when the bank gives one, becomes a known balance for the account.
    - Insert, then match transfers and categorize as usual.
    - Show a receipt: how many rows are new and how many were already there from a file.
 6. **Samtycke**: shows the date the consent is valid until. "Koppla från" deletes the session at
@@ -87,19 +92,19 @@ The rules:
    - A pair must have:
      - the same account;
      - the same amount in öre;
-     - a booking date at most 3 days apart (or a transaction date at most 1 day apart).
-   - Candidate pairs are ranked by date distance, then payee similarity.
+     - a booking date at most 3 days apart.
+   - Candidate pairs are ranked by booking-date distance, then the same payee, then
+     transaction-date distance.
    - Pairs are assigned 1:1 for the whole batch, so two genuine 45 kr coffees on one day pair with
      two rows, never one.
 3. **A match keeps the row that is already there**, with its category, notes and review decisions.
    The incoming id is stored as an **alias** (`transaction_aliases`), so the next sync or import
    skips it by id.
-   - When a file row matches a synced row without a balance, the file's balance is copied onto it,
-     so the balance chain keeps working.
+   - A file's balances are still stored as known balances, so the balance chain keeps working.
 4. **When a match is unclear, ask instead of guessing.** An incoming row with no 1:1 partner, but
    with an other-origin row of the same amount within 3 days that is already taken, is inserted
-   and flagged "Möjlig dubblett" in the existing review. The answers are "Samma" (merge into an
-   alias) or "Inte en dubblett".
+   and flagged "Möjlig dubblett" in the existing review. The answers are the existing ones: "Ta
+   bort" (its id is tombstoned, so neither origin brings it back) or "Inte en dubblett".
 5. **Same-origin duplicate detection is unchanged for files.** Bank rows are left out of
    `DuplicateDetector`, since their ids are stable and two coffees a day apart are not duplicates.
 6. **Pending rows** (`PDNG`, `HOLD`) are never stored; they would be replaced when booked, under
@@ -113,17 +118,16 @@ The rules:
    Deleting a row tombstones its id and its aliases, so neither origin brings it back.
 
 The texts differ between origins, so merchant memory and rules keyed on the payee may not hit for
-synced rows. The first real sync is checked read-only against the matched pairs: the
-`SourceMatcher` keeps the text pairs, so the mapper can be tuned to the bank. This is noted under
-Open questions.
+synced rows. The first real sync shows how far apart they are; the mapper is tuned then (see Open
+questions).
 
 ## Storage (Room v5, additive auto-migration)
 
 - `transactions.origin`: `FILE` by default.
 - `transaction_aliases(aliasId PK, txId FK → transactions ON DELETE CASCADE)`.
 - `bank_links`:
-  - `identificationHash` (primary key), `provider`, `accountId`.
-  - `sessionId`, `providerAccountUid`, `validUntil`, `lastSyncedEpochDay`.
+  - `stableKey` (the provider's `identification_hash`, primary key), `provider`, `accountId`.
+  - `institution`, `sessionId`, `providerAccountUid`, `validUntilEpochMillis`, `lastSyncedEpochDay`.
   - `displayName`, `maskedNumber`.
 - `ImportSource.BANK_SYNC` for sync batches, so the import history lists them.
 
@@ -134,12 +138,12 @@ Open questions.
 ```kotlin
 interface BankSyncProvider {
     val id: String
+    suspend fun checkCredentials(credentials: BankCredentials): EmptyResult<BankError>
     suspend fun institutions(country: String): Result<List<BankInstitution>, BankError>
-    suspend fun startAuthorization(institution: BankInstitution, validUntil: Instant, state: String, redirectUrl: String): Result<AuthorizationStart, BankError>
+    suspend fun startAuthorization(institution: BankInstitution, validUntil: Instant, state: String): Result<AuthorizationStart, BankError>
     suspend fun completeAuthorization(code: String): Result<BankConsent, BankError>
-    suspend fun transactions(account: LinkedBankAccount, from: LocalDate, to: LocalDate): Result<List<BankTransaction>, BankError>
-    suspend fun balance(account: LinkedBankAccount): Result<Money?, BankError>
-    suspend fun revoke(consent: BankConsent): EmptyResult<BankError>
+    suspend fun transactions(providerAccountUid: String, from: LocalDate?, to: LocalDate): Result<List<BankTransaction>, BankError>
+    suspend fun revoke(sessionId: String): EmptyResult<BankError>
 }
 ```
 
@@ -152,8 +156,8 @@ and UI stay as they are.
 2. Create an application:
    - Environment: **Production**.
    - Let the panel generate the key, and save the `.pem` file.
-   - Redirect URL: `https://mattiasback.github.io/cashflow/bank-callback/` (or whichever page we
-     host).
+   - Redirect URL: `cashflow://bank-callback`. If the panel refuses it, use the https page
+     instead (see Flow, step 3).
 3. "Activate by linking accounts": link your own Länsförsäkringar accounts with BankID. Only those
    accounts can be reached.
 4. Copy the `.pem` to the phone (USB, not a cloud drive), import it in Profil → Bankkoppling, and
@@ -161,7 +165,8 @@ and UI stay as they are.
 
 ## Open questions
 
-- **Hosting the redirect page** on GitHub Pages is a public change, so it waits for your OK. Until
-  then, paste the address back by hand.
+- **Hosting the redirect page** is only needed if the control panel refuses
+  `cashflow://bank-callback`. Publishing it on GitHub Pages is a public change, so it waits for your
+  OK. Until then, paste the address back by hand.
 - **The bank's text format.** How Länsförsäkringar's API text compares with the xls text is only
   known after the first real sync. The mapper is tuned then.
