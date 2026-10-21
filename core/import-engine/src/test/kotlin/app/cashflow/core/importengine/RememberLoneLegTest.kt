@@ -70,4 +70,18 @@ class RememberLoneLegTest {
         val after = transactions.rows.value.values
         assertThat(after.all { it.loneLegConfirmed && it.status != TransactionStatus.TO_REVIEW }).isTrue()
     }
+
+    @Test
+    fun `a row marked as household transfer follows a later Kom ihåg for the payee`() = runTest {
+        setUp()
+        val (first, second) = transactions.rows.value.values.sortedBy { it.id.value }
+        categorize.confirmHouseholdTransfer(listOf(first))
+        assertThat(transactions.rows.value.getValue(first.id).categoryId).isEqualTo(CategoryId.TRANSFER)
+
+        categorize.categorize(listOf(transactions.rows.value.getValue(second.id)), CategoryId("lan"), remember = true)
+
+        val after = transactions.rows.value.values
+        assertThat(after.map { it.categoryId }.toSet()).isEqualTo(setOf(CategoryId("lan")))
+        assertThat(after.map { it.status }.toSet()).isEqualTo(setOf(TransactionStatus.AUTO))
+    }
 }

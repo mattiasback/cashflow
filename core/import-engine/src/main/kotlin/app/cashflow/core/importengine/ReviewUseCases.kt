@@ -93,14 +93,34 @@ class CategorizeUseCase(
     fun payeeKey(tx: Transaction): String = normalizer.key(tx.rawText)
 
     private suspend fun rememberPayees(rows: List<Transaction>, categoryId: CategoryId): EmptyResult<DataError.Local> {
-        rows.map { normalizer.key(it.rawText) }.distinct().forEach { key ->
+        val keys = rows.map { normalizer.key(it.rawText) }.toSet()
+        keys.forEach { key ->
             val r = memories.remember(MerchantMemory(key, categoryId, kotlin.time.Clock.System.now()))
             if (r is Result.Error) return r
         }
-        // Rows the user had set by hand for this payee follow the new decision too.
-        val manual = rows.filter { it.categorizedBy == CategorizedBy.MANUAL }
-        if (manual.isNotEmpty()) {
-            val r = transactions.updateClassifications(manual.map { it.toClassification().copy(categoryId = categoryId, categorizedBy = CategorizedBy.MEMORY) })
+        // Earlier decisions for this payee follow the new one too, on every row, not only the
+        // chosen ones: rows set by hand, and rows marked as a household transfer (a confirmed
+        // lone leg ignores rules, so without this it kept "Överföring" after choosing e.g. Lån).
+        val all = when (val r = transactions.getAll()) {
+            is Result.Error -> return r
+            is Result.Success -> r.data
+        }
+        val toTransfer = categoryId == CategoryId.TRANSFER
+        val earlier = all.filter { tx ->
+            normalizer.key(tx.rawText) in keys &&
+                (tx.categorizedBy == CategorizedBy.MANUAL || (tx.transferKind == TransferKind.LONE_LEG && tx.loneLegConfirmed))
+        }
+        if (earlier.isNotEmpty()) {
+            val updates = earlier.map { tx ->
+                val loneLeg = tx.transferKind == TransferKind.LONE_LEG
+                tx.toClassification().copy(
+                    categoryId = categoryId,
+                    categorizedBy = CategorizedBy.MEMORY,
+                    transferKind = if (loneLeg && !toTransfer) TransferKind.NONE else tx.transferKind,
+                    loneLegConfirmed = loneLeg && toTransfer,
+                )
+            }
+            val r = transactions.updateClassifications(updates)
             if (r is Result.Error) return r
         }
         return reclassify()
