@@ -64,6 +64,8 @@ import app.cashflow.feature.profile.ui.ProfileRoute
 import app.cashflow.feature.profile.ui.profileEntries
 import app.cashflow.feature.rules.ui.RuleEditorRoute
 import app.cashflow.feature.rules.ui.RulesRoute
+import app.cashflow.feature.banksync.ui.BankSyncRoute
+import app.cashflow.feature.banksync.ui.bankSyncEntries
 import app.cashflow.feature.rules.ui.rulesEntries
 import app.cashflow.navigation.BottomSheetSceneStrategy
 import app.cashflow.navigation.Navigator
@@ -82,6 +84,7 @@ private val TopLevel = listOf<NavKey>(HomeRoute, FlowRoute, InsightsRoute, Event
 @Composable
 fun CashFlowAppShell(
     sharedUris: Flow<List<String>>,
+    bankCallbacks: Flow<Unit> = kotlinx.coroutines.flow.emptyFlow(),
 ) {
     val state = rememberNavigationState(startRoute = HomeRoute, topLevelRoutes = TopLevel)
     val navigator = remember(state) { Navigator(state) }
@@ -90,6 +93,10 @@ fun CashFlowAppShell(
 
     LaunchedEffect(sharedUris) {
         sharedUris.collect { uris -> navigator.navigateIn(EventsRoute, ImportRoute(uris)) }
+    }
+    // Back from the bank's BankID page: show Bankkoppling, which completes the consent.
+    LaunchedEffect(bankCallbacks) {
+        bankCallbacks.collect { if (state.currentKey != BankSyncRoute) navigator.navigate(BankSyncRoute) }
     }
 
     // Lists scroll behind the floating pill; their last row clears it.
@@ -150,8 +157,10 @@ fun CashFlowAppShell(
             onOpenBufferBalance = { navigator.navigate(BufferBalanceRoute) },
             onOpenImportHistory = { navigator.navigate(ImportHistoryRoute) },
             onOpenRules = { navigator.navigate(RulesRoute) },
+            onOpenBankSync = { navigator.navigate(BankSyncRoute) },
             onBack = { navigator.goBack() },
         )
+        bankSyncEntries(contentPadding = contentPadding, onBack = { navigator.goBack() })
         rulesEntries(
             contentPadding = contentPadding,
             sheetMetadata = BottomSheetSceneStrategy.sheet,

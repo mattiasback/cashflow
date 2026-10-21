@@ -48,6 +48,7 @@ fun EntryProviderScope<NavKey>.profileEntries(
     onOpenBufferBalance: () -> Unit,
     onOpenImportHistory: () -> Unit,
     onOpenRules: () -> Unit,
+    onOpenBankSync: () -> Unit,
     onBack: () -> Unit,
 ) {
     entry<ProfileRoute> {
@@ -58,6 +59,7 @@ fun EntryProviderScope<NavKey>.profileEntries(
             onOpenBufferBalance = onOpenBufferBalance,
             onOpenImportHistory = onOpenImportHistory,
             onOpenRules = onOpenRules,
+            onOpenBankSync = onOpenBankSync,
             onBack = onBack,
         )
     }

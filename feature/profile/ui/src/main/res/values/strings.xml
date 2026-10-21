@@ -9,6 +9,8 @@
     <string name="profile_accounts">Konton</string>
     <string name="profile_accounts_line">%1$d konton · eget sparande %2$s</string>
     <string name="profile_import_history">Importhistorik</string>
+    <string name="profile_bank_sync">Bankkoppling</string>
+    <string name="profile_bank_sync_sub">Hämta transaktioner direkt från banken (beta)</string>
     <plurals name="profile_imports_line">
         <item quantity="one">%d import · ångra en hel import när som helst</item>
         <item quantity="other">%d importer · ångra en hel import när som helst</item>

@@ -22,6 +22,9 @@ class KoinGraphTest {
                 String::class,
                 List::class,
                 kotlin.time.Clock::class,
+                Int::class,
+                java.security.SecureRandom::class,
+                io.ktor.client.engine.HttpClientEngine::class,
             ),
         )
     }

@@ -33,6 +33,15 @@
                 <data android:mimeType="text/csv" />
                 <data android:mimeType="text/comma-separated-values" />
             </intent-filter>
+            <!-- Step 8: the bank sends you back here after BankID (cashflow://bank-callback?code=…&amp;state=…).
+                 Any app can open this link, so the answer is only used when its state matches the one this
+                 app started with. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="cashflow" android:host="bank-callback" />
+            </intent-filter>
         </activity>
     </application>
 </manifest>

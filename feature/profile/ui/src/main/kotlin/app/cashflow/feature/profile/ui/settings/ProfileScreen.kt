@@ -65,6 +65,7 @@ fun ProfileRoot(
     onOpenBufferBalance: () -> Unit,
     onOpenImportHistory: () -> Unit,
     onOpenRules: () -> Unit,
+    onOpenBankSync: () -> Unit = {},
     onBack: () -> Unit,
     viewModel: ProfileViewModel = koinViewModel(),
 ) {
@@ -74,6 +75,7 @@ fun ProfileRoot(
             ProfileEvent.OpenAccounts -> onOpenAccounts()
             ProfileEvent.OpenImportHistory -> onOpenImportHistory()
             ProfileEvent.OpenRules -> onOpenRules()
+            ProfileEvent.OpenBankSync -> onOpenBankSync()
             ProfileEvent.OpenMortgage -> onOpenMortgage()
             ProfileEvent.OpenBufferBalance -> onOpenBufferBalance()
             ProfileEvent.NavigateBack -> onBack()
@@ -112,6 +114,10 @@ fun ProfileScreen(
                 ListGroup {
                     NavRow(stringResource(R.string.profile_accounts), state.accountsLine.asString()) { onAction(ProfileAction.OnAccountsClick) }
                     NavRow(stringResource(R.string.profile_import_history), state.importsLine.asString(), divider = true) { onAction(ProfileAction.OnImportHistoryClick) }
+                    // Bank sync reaches your own accounts only, so it is never offered on the demo or the empty app.
+                    if (state.mode == AppMode.PRIVATE) {
+                        NavRow(stringResource(R.string.profile_bank_sync), stringResource(R.string.profile_bank_sync_sub), divider = true) { onAction(ProfileAction.OnBankSyncClick) }
+                    }
                 }
 
                 GroupHeading(stringResource(R.string.profile_group_calc))

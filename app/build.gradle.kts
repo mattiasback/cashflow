@@ -42,6 +42,11 @@ dependencies {
     implementation(projects.feature.insights.ui)
     implementation(projects.feature.profile.ui)
     implementation(projects.feature.rules.ui)
+    // Step 8, optional: bank sync through Enable Banking. The only modules that use the network.
+    implementation(projects.feature.banksync.domain)
+    implementation(projects.feature.banksync.enablebanking)
+    implementation(projects.feature.banksync.data)
+    implementation(projects.feature.banksync.ui)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
@@ -55,6 +60,8 @@ dependencies {
     implementation(libs.kermit)
 
     testImplementation(testFixtures(projects.core.domain))
+    // KoinGraphTest names the HTTP engine, which the provider module builds itself.
+    testImplementation(libs.ktor.client.core)
     androidTestImplementation(testFixtures(projects.core.domain))
     androidTestImplementation(platform(libs.koin.bom))
     androidTestImplementation(libs.koin.test)

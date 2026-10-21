@@ -5,6 +5,10 @@ import app.cashflow.core.categorization.di.categorizationModule
 import app.cashflow.core.data.di.coreDataModule
 import app.cashflow.core.importengine.di.importEngineModule
 import app.cashflow.di.appModule
+import app.cashflow.feature.banksync.data.di.bankSyncDataModule
+import app.cashflow.feature.banksync.domain.di.bankSyncDomainModule
+import app.cashflow.feature.banksync.enablebanking.di.enableBankingModule
+import app.cashflow.feature.banksync.ui.bankSyncUiModule
 import app.cashflow.feature.events.ui.di.eventsUiModule
 import app.cashflow.feature.flow.ui.flowUiModule
 import app.cashflow.feature.home.ui.homeUiModule
@@ -29,6 +33,10 @@ val cashFlowModules = listOf(
     insightsUiModule,
     profileUiModule,
     rulesUiModule,
+    bankSyncDomainModule,
+    enableBankingModule,
+    bankSyncDataModule,
+    bankSyncUiModule,
     appModule,
 )
 

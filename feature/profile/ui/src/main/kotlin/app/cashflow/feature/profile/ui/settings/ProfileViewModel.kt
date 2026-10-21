@@ -64,6 +64,7 @@ sealed interface ProfileAction {
     data object OnAccountsClick : ProfileAction
     data object OnImportHistoryClick : ProfileAction
     data object OnRulesClick : ProfileAction
+    data object OnBankSyncClick : ProfileAction
     data class OnMortgageToggle(val enabled: Boolean) : ProfileAction
     data object OnMortgageClick : ProfileAction
     data object OnBufferBalanceClick : ProfileAction
@@ -81,6 +82,7 @@ sealed interface ProfileAction {
 sealed interface ProfileEvent {
     data object OpenAccounts : ProfileEvent
     data object OpenImportHistory : ProfileEvent
+    data object OpenBankSync : ProfileEvent
     data object OpenRules : ProfileEvent
     data object OpenMortgage : ProfileEvent
     data object OpenBufferBalance : ProfileEvent
@@ -146,6 +148,7 @@ class ProfileViewModel(
             ProfileAction.OnAccountsClick -> send(ProfileEvent.OpenAccounts)
             ProfileAction.OnImportHistoryClick -> send(ProfileEvent.OpenImportHistory)
             ProfileAction.OnRulesClick -> send(ProfileEvent.OpenRules)
+            ProfileAction.OnBankSyncClick -> send(ProfileEvent.OpenBankSync)
             ProfileAction.OnMortgageClick -> send(ProfileEvent.OpenMortgage)
             ProfileAction.OnBufferBalanceClick -> send(ProfileEvent.OpenBufferBalance)
             ProfileAction.OnBackClick -> send(ProfileEvent.NavigateBack)

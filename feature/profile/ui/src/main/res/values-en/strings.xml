@@ -9,6 +9,8 @@
     <string name="profile_accounts">Accounts</string>
     <string name="profile_accounts_line">%1$d accounts · own savings %2$s</string>
     <string name="profile_import_history">Import history</string>
+    <string name="profile_bank_sync">Bank connection</string>
+    <string name="profile_bank_sync_sub">Fetch transactions straight from the bank (beta)</string>
     <plurals name="profile_imports_line">
         <item quantity="one">%d import · undo a whole import at any time</item>
         <item quantity="other">%d imports · undo a whole import at any time</item>

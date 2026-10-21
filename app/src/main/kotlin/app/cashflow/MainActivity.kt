@@ -11,7 +11,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.content.IntentCompat
 import app.cashflow.core.designsystem.theme.CashFlowTheme
+import app.cashflow.feature.banksync.ui.BankCallbacks
 import app.cashflow.core.domain.datasource.SettingsDataSource
+import app.cashflow.core.domain.model.AppMode
+import app.cashflow.core.domain.model.AppModeController
 import app.cashflow.core.domain.model.AppSettings
 import app.cashflow.core.domain.model.ThemeMode
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -25,6 +28,9 @@ class MainActivity : ComponentActivity() {
 
     private val sharedFiles = Channel<List<String>>(Channel.BUFFERED)
     private val settings: SettingsDataSource by inject()
+    private val bankCallbacks: BankCallbacks by inject()
+    private val appMode: AppModeController by inject()
+    private val bankReturns = Channel<Unit>(Channel.CONFLATED)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Every screen draws an accent band behind the status bar, so its icons are always light.
@@ -35,7 +41,7 @@ class MainActivity : ComponentActivity() {
             // The floating nav draws its own fade over the navigation bar.
             window.isNavigationBarContrastEnforced = false
         }
-        if (savedInstanceState == null) handleShare(intent)
+        if (savedInstanceState == null) handleIntent(intent)
         setContent {
             val prefs by settings.settings.collectAsStateWithLifecycle(initialValue = AppSettings())
             val dark = when (prefs.theme) {
@@ -44,14 +50,33 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.DARK -> true
             }
             CashFlowTheme(darkTheme = dark) {
-                CashFlowAppShell(sharedUris = sharedFiles.receiveAsFlow())
+                CashFlowAppShell(sharedUris = sharedFiles.receiveAsFlow(), bankCallbacks = bankReturns.receiveAsFlow())
             }
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        handleShare(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.action == Intent.ACTION_VIEW) handleBankCallback(intent) else handleShare(intent)
+    }
+
+    /**
+     * The bank's answer after BankID. Only the link's own query is read (no extras, no nested
+     * intents); ConnectBankUseCase then refuses it unless its state is the one this app started.
+     */
+    private fun handleBankCallback(intent: Intent) {
+        val data = intent.data
+        // Bank sync belongs to your own data; the demo and the empty app ignore the link.
+        if (appMode.mode == AppMode.PRIVATE && data != null && data.scheme == BankCallbacks.SCHEME && data.host == BankCallbacks.HOST && data.query != null) {
+            bankCallbacks.deliver(data.toString())
+            bankReturns.trySend(Unit)
+        }
+        setIntent(Intent(this, MainActivity::class.java))
     }
 
     /**

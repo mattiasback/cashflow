@@ -14,7 +14,8 @@ import org.koin.dsl.module
 /** Provider-neutral bank sync. The provider itself is bound by its own module. */
 val bankSyncDomainModule = module {
     factory { BankRowMapper(get()) }
-    factory { ReconcilingInserter(get(), SourceMatcher(get())) }
+    factory { SourceMatcher(get()) }
+    factoryOf(::ReconcilingInserter)
     // Lambda forms: the clock and the random source keep their defaults.
     factory { ConnectBankUseCase(get(), get()) }
     factoryOf(::LinkAccountsUseCase)
