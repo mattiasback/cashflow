@@ -80,13 +80,20 @@ class ReclassifyUseCase(
             ),
             context,
         )
+        // A lone leg (a transfer to an account that is never imported) waits for review until the
+        // user decides. A remembered payee or the user's own rule is that decision: "Överföring"
+        // confirms it as a household transfer, any other category makes it an ordinary payment.
+        // Without this the row kept its lone-leg status and came back to review after "Kom ihåg".
+        val decidedLoneLeg = kind == TransferKind.LONE_LEG && !tx.loneLegConfirmed &&
+            (decision.categorizedBy == CategorizedBy.MEMORY || decision.categorizedBy == CategorizedBy.USER_RULE)
+        val asTransfer = decidedLoneLeg && decision.categoryId == CategoryId.TRANSFER
         return Classification(
             id = tx.id,
             categoryId = decision.categoryId,
             categorizedBy = decision.categorizedBy,
-            transferKind = kind,
+            transferKind = if (decidedLoneLeg && !asTransfer) TransferKind.NONE else kind,
             transferPartnerId = transfer?.partner,
-            loneLegConfirmed = tx.loneLegConfirmed,
+            loneLegConfirmed = tx.loneLegConfirmed || asTransfer,
         )
     }
 }
