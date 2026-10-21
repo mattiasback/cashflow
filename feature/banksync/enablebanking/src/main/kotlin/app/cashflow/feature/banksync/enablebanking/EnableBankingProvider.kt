@@ -74,7 +74,8 @@ class EnableBankingProvider(
     ): Result<AuthorizationStart, BankError> {
         val redirect = credentials.load()?.redirectUrl ?: return Result.Error(BankError.NO_CREDENTIALS)
         val body = StartAuthorizationDto(
-            access = AccessDto(validUntil.toString()),
+            // Whole seconds: the API rejects nine-digit fractions.
+            access = AccessDto(Instant.fromEpochSeconds(validUntil.epochSeconds).toString()),
             aspsp = AspspRefDto(institution.name, institution.country),
             state = state,
             redirectUrl = redirect,
@@ -133,8 +134,11 @@ class EnableBankingProvider(
         return try {
             val response = client.request(signer.token(creds.applicationId, key))
             if (!response.status.isSuccess()) {
-                val error = errorOf(response.status.value, runCatching { response.bodyAsText() }.getOrDefault(""))
-                Logger.w { "Enable Banking answered ${response.status.value}: $error" }
+                val text = runCatching { response.bodyAsText() }.getOrDefault("")
+                val error = errorOf(response.status.value, text)
+                // Error answers carry a code and a message, never account data.
+                val detail = runCatching { enableBankingJson.decodeFromString<ErrorDto>(text) }.getOrNull()
+                Logger.w { "Enable Banking answered ${response.status.value}: $error (${detail?.error} ${detail?.message?.take(200)})" }
                 Result.Error(error)
             } else if (!parse) {
                 @Suppress("UNCHECKED_CAST")
