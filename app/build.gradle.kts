@@ -27,6 +27,7 @@ android {
 dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.importEngine)
+    implementation(projects.core.demo)
     implementation(projects.core.categorization)
     implementation(projects.core.database)
     implementation(projects.core.data)

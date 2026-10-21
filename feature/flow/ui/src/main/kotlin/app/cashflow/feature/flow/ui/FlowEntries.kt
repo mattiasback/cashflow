@@ -33,5 +33,5 @@ fun EntryProviderScope<NavKey>.flowEntries(
 }
 
 val flowUiModule = module {
-    viewModel { FlowViewModel(get(), get(), get(), get(), get()) }
+    viewModel { FlowViewModel(get(), get(), get(), get(), get(), debug = get()) }
 }

@@ -99,4 +99,9 @@
     <string name="cta_open_expenses">Open Expenses</string>
     <string name="cta_open_savings">Open Savings</string>
     <string name="cta_open_accounts">Open Accounts</string>
+    <string name="home_welcome_title">Welcome to CashFlow</string>
+    <string name="home_welcome_text">Import statements from your bank to see where the money goes. Everything stays on the phone. To see what it looks like first, try a made-up household.</string>
+    <string name="home_welcome_import">Import statements</string>
+    <string name="home_welcome_demo">Try with demo data</string>
+    <string name="home_demo_note">Demo mode: a made-up household, not your data. Switch off in Profile.</string>
 </resources>

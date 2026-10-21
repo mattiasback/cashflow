@@ -35,5 +35,5 @@ fun EntryProviderScope<NavKey>.homeEntries(
 }
 
 val homeUiModule = module {
-    viewModel { HomeViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get(), get(), get(), get(), get(), debug = get()) }
 }

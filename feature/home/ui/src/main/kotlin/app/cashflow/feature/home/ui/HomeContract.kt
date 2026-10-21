@@ -73,12 +73,16 @@ data class HomeState(
     val sheet: HomeSheetUi? = null,
     val hasData: Boolean = false,
     val isLoading: Boolean = true,
+    /** The made-up demo household is shown, not your data. */
+    val demo: Boolean = false,
     /** The data could not be read; the screen offers "Försök igen". */
     val loadError: Boolean = false,
 )
 
 sealed interface HomeAction {
     data object OnRetry : HomeAction
+    /** First start: try the app on the demo household instead of importing. */
+    data object OnTryDemo : HomeAction
     data object OnInfoClick : HomeAction
     data class OnKpiClick(val id: KpiId) : HomeAction
     data class OnTrendClick(val id: TrendId) : HomeAction

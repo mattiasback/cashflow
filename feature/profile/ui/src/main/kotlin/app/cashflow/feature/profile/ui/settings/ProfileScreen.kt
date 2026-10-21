@@ -25,6 +25,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import android.content.pm.ApplicationInfo
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -147,6 +149,31 @@ fun ProfileScreen(
                 GroupHeading(stringResource(R.string.profile_group_categories))
                 ListGroup {
                     NavRow(stringResource(R.string.profile_rules), state.rulesLine.asString()) { onAction(ProfileAction.OnRulesClick) }
+                }
+
+                GroupHeading(stringResource(R.string.profile_group_demo))
+                ListGroup {
+                    Column(Modifier.padding(horizontal = Spacing.s4, vertical = Spacing.s2)) {
+                        CfSwitchRow(
+                            label = stringResource(R.string.profile_demo_switch),
+                            checked = state.demo,
+                            onCheckedChange = { onAction(ProfileAction.OnDemoToggle(it)) },
+                        )
+                        Text(stringResource(R.string.profile_demo_hint), style = CashFlowTheme.typography.label, color = c.textSecondary)
+                    }
+                }
+
+                // Developer switches, only in debug builds: see the loading skeletons and "Försök igen".
+                val debuggable = (LocalContext.current.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+                if (debuggable) {
+                    GroupHeading(stringResource(R.string.profile_group_debug))
+                    ListGroup {
+                        Column(Modifier.padding(horizontal = Spacing.s4, vertical = Spacing.s2)) {
+                            CfSwitchRow(stringResource(R.string.profile_debug_slow), state.debugSlow, { onAction(ProfileAction.OnDebugSlowToggle(it)) })
+                            CfSwitchRow(stringResource(R.string.profile_debug_fail), state.debugFail, { onAction(ProfileAction.OnDebugFailToggle(it)) })
+                            Text(stringResource(R.string.profile_debug_hint), style = CashFlowTheme.typography.label, color = c.textSecondary)
+                        }
+                    }
                 }
 
                 GroupHeading(stringResource(R.string.profile_group_display))

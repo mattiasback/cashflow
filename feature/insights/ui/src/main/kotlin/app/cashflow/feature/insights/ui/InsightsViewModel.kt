@@ -14,6 +14,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import app.cashflow.core.ui.retryOn
+import app.cashflow.core.ui.withDebugFlags
+import app.cashflow.core.domain.model.DebugFlags
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,6 +38,8 @@ class InsightsViewModel(
     goals: GoalLocalDataSource,
     private val settings: SettingsDataSource,
     compute: CoroutineDispatcher = Dispatchers.Default,
+    // Debug builds: Profil › Utvecklare can slow or fail this tab's reads.
+    debug: DebugFlags = DebugFlags(),
 ) : ViewModel() {
 
     private val builder = InsightsBuilder()
@@ -70,7 +74,8 @@ class InsightsViewModel(
         combine(model, ui) { (input, m), u ->
             builder.build(input, m, u.extraKronor, u.sheet, u.copied)
         }.flowOn(compute)
-            .retryOn(retries, onError = { _state.update { it.copy(isLoading = false, loadError = true) } }, onRetry = { _state.update { it.copy(isLoading = true, loadError = false) } })
+            .withDebugFlags(debug)
+            .retryOn(retries, onError = { _state.update { it.copy(isLoading = false, loadError = true, hasData = false, enoughData = false) } }, onRetry = { _state.update { it.copy(isLoading = true, loadError = false) } })
             .onEach { _state.value = it }
             .launchIn(viewModelScope)
     }

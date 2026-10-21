@@ -103,4 +103,9 @@
     <string name="cta_open_expenses">Öppna Utgifter</string>
     <string name="cta_open_savings">Öppna Sparande</string>
     <string name="cta_open_accounts">Öppna Konton</string>
+    <string name="home_welcome_title">Välkommen till CashFlow</string>
+    <string name="home_welcome_text">Importera kontoutdrag från banken så ser du vart pengarna tar vägen. Allt stannar på telefonen. Vill du först se hur det ser ut kan du prova med ett påhittat hushåll.</string>
+    <string name="home_welcome_import">Importera kontoutdrag</string>
+    <string name="home_welcome_demo">Prova med demodata</string>
+    <string name="home_demo_note">Demoläge: ett påhittat hushåll, inte din data. Stäng av i Profil.</string>
 </resources>

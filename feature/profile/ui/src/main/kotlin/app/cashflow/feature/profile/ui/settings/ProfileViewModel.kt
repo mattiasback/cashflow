@@ -11,6 +11,9 @@ import app.cashflow.core.domain.datasource.MerchantMemoryLocalDataSource
 import app.cashflow.core.domain.datasource.RuleLocalDataSource
 import app.cashflow.core.domain.datasource.SettingsDataSource
 import app.cashflow.core.domain.datasource.TransactionLocalDataSource
+import app.cashflow.core.domain.model.AppMode
+import app.cashflow.core.domain.model.AppModeController
+import app.cashflow.core.domain.model.DebugFlags
 import app.cashflow.core.domain.model.Goal
 import app.cashflow.core.domain.model.GoalType
 import app.cashflow.core.domain.model.Goals
@@ -50,6 +53,11 @@ data class ProfileState(
     /** "50 000 kr den 2026-10-01" or "Inte angivet". */
     val bufferBalanceLine: UiText = UiText.DynamicString(""),
     val isLoading: Boolean = true,
+    /** Showing the made-up demo household instead of your data. */
+    val demo: Boolean = false,
+    /** Debug builds only: hold reads back, or fail them. */
+    val debugSlow: Boolean = false,
+    val debugFail: Boolean = false,
 )
 
 sealed interface ProfileAction {
@@ -61,6 +69,10 @@ sealed interface ProfileAction {
     data object OnBufferBalanceClick : ProfileAction
     data class OnPercentDecimalsToggle(val enabled: Boolean) : ProfileAction
     data class OnThemeSelect(val theme: ThemeMode) : ProfileAction
+    /** Restarts the app on the demo household or back on your data. */
+    data class OnDemoToggle(val enabled: Boolean) : ProfileAction
+    data class OnDebugSlowToggle(val enabled: Boolean) : ProfileAction
+    data class OnDebugFailToggle(val enabled: Boolean) : ProfileAction
     /** One step up (+1) or down (−1) for a goal; months for Buffert, percent for Sparkvot. */
     data class OnGoalStep(val type: GoalType, val step: Int) : ProfileAction
     data object OnBackClick : ProfileAction
@@ -84,6 +96,8 @@ class ProfileViewModel(
     rules: RuleLocalDataSource,
     memories: MerchantMemoryLocalDataSource,
     private val goals: GoalLocalDataSource,
+    private val mode: AppModeController,
+    private val debug: DebugFlags,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
@@ -119,8 +133,12 @@ class ProfileViewModel(
                     UiText.StringResource(R.string.profile_buffer_balance_line, arrayOf(MoneyFormatter.format(b.amount, locale = locale), PeriodFormatter.iso(b.date, locale)))
                 } ?: UiText.StringResource(R.string.profile_buffer_balance_none),
                 isLoading = false,
+                demo = mode.mode == AppMode.DEMO,
             )
-        }.onEach { s -> _state.update { s } }.launchIn(viewModelScope)
+        }.onEach { s -> _state.update { s.copy(debugSlow = it.debugSlow, debugFail = it.debugFail) } }.launchIn(viewModelScope)
+        combine(debug.slowLoading, debug.failReads) { slow, fail -> slow to fail }
+            .onEach { (slow, fail) -> _state.update { it.copy(debugSlow = slow, debugFail = fail) } }
+            .launchIn(viewModelScope)
     }
 
     fun onAction(action: ProfileAction) {
@@ -138,6 +156,9 @@ class ProfileViewModel(
             }
             is ProfileAction.OnPercentDecimalsToggle -> update { it.copy(percentDecimals = action.enabled) }
             is ProfileAction.OnThemeSelect -> update { it.copy(theme = action.theme) }
+            is ProfileAction.OnDebugSlowToggle -> debug.setSlowLoading(action.enabled)
+            is ProfileAction.OnDebugFailToggle -> debug.setFailReads(action.enabled)
+            is ProfileAction.OnDemoToggle -> mode.switchTo(if (action.enabled) AppMode.DEMO else AppMode.PRIVATE)
             is ProfileAction.OnGoalStep -> {
                 val current = when (action.type) {
                     GoalType.BUFFER_MONTHS -> _state.value.bufferGoalMonths

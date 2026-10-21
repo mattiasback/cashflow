@@ -39,6 +39,7 @@ import app.cashflow.core.designsystem.component.BandIconButton
 import app.cashflow.core.designsystem.component.BandSegmented
 import app.cashflow.core.designsystem.component.CfBottomSheet
 import app.cashflow.core.designsystem.component.CfButton
+import app.cashflow.core.designsystem.component.CfButtonVariant
 import app.cashflow.core.designsystem.component.CfCard
 import app.cashflow.core.designsystem.component.CfSnackbarHost
 import app.cashflow.core.designsystem.component.KpiTile
@@ -143,6 +144,8 @@ fun HomeScreen(
                         LoadErrorCard(onRetry = { onAction(HomeAction.OnRetry) })
                     } else if (state.isLoading) {
                         SkeletonBlock(Modifier.fillMaxWidth().height(150.dp))
+                    } else {
+                        WelcomeCard(onAction)
                     }
                 }
             }
@@ -173,6 +176,16 @@ fun HomeScreen(
                         }
                     }
                 }
+                if (state.demo) {
+                    item(key = "demo") {
+                        Text(
+                            stringResource(R.string.home_demo_note),
+                            style = CashFlowTheme.typography.label,
+                            color = c.textSecondary,
+                            modifier = Modifier.padding(horizontal = Spacing.gutter + 4.dp).padding(top = Spacing.s4),
+                        )
+                    }
+                }
                 state.footer?.let { footer ->
                     item(key = "footer") {
                         Text(
@@ -186,6 +199,20 @@ fun HomeScreen(
             }
         }
         BandStatusBar(rememberOnBand(listState))
+    }
+}
+
+/** First start, before any import: import your statements or try the demo household. */
+@Composable
+private fun WelcomeCard(onAction: (HomeAction) -> Unit) {
+    val c = CashFlowTheme.colors
+    CfCard(Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
+            Text(stringResource(R.string.home_welcome_title), style = CashFlowTheme.typography.title, color = c.textPrimary)
+            Text(stringResource(R.string.home_welcome_text), style = CashFlowTheme.typography.body, color = c.textSecondary)
+            CfButton(stringResource(R.string.home_welcome_import), { onAction(HomeAction.OnImportClick) }, Modifier.fillMaxWidth(), icon = CfIcons.File)
+            CfButton(stringResource(R.string.home_welcome_demo), { onAction(HomeAction.OnTryDemo) }, Modifier.fillMaxWidth(), variant = CfButtonVariant.Outline)
+        }
     }
 }
 

@@ -29,5 +29,5 @@ fun EntryProviderScope<NavKey>.insightsEntries(
 }
 
 val insightsUiModule = module {
-    viewModel { InsightsViewModel(get(), get(), get(), get()) }
+    viewModel { InsightsViewModel(get(), get(), get(), get(), debug = get()) }
 }

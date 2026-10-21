@@ -17,6 +17,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import app.cashflow.core.ui.retryOn
+import app.cashflow.core.ui.withDebugFlags
+import app.cashflow.core.domain.model.DebugFlags
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,6 +47,8 @@ class FlowViewModel(
     goals: GoalLocalDataSource,
     // Month sums are computed off the main thread; tests pass their own dispatcher.
     compute: CoroutineDispatcher = Dispatchers.Default,
+    // Debug builds: Profil › Utvecklare can slow or fail this tab's reads.
+    debug: DebugFlags = DebugFlags(),
 ) : ViewModel() {
 
     private val builder = FlowBuilder()
@@ -88,7 +92,8 @@ class FlowViewModel(
             input = i
             builder.build(i, sel)
         }.flowOn(compute)
-            .retryOn(retries, onError = { _state.update { it.copy(isLoading = false, loadError = true) } }, onRetry = { _state.update { it.copy(isLoading = true, loadError = false) } })
+            .withDebugFlags(debug)
+            .retryOn(retries, onError = { _state.update { it.copy(isLoading = false, loadError = true, hasData = false) } }, onRetry = { _state.update { it.copy(isLoading = true, loadError = false) } })
             .onEach { s -> _state.value = s }
             .launchIn(viewModelScope)
     }

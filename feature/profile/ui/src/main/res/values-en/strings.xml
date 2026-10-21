@@ -50,7 +50,7 @@
     <string name="profile_theme_system">System</string>
     <string name="profile_theme_light">Light</string>
     <string name="profile_theme_dark">Dark</string>
-    <string name="profile_footer">CashFlow 0.5.0 · step 5</string>
+    <string name="profile_footer">CashFlow 0.7.0 · step 7</string>
 
     <string name="accounts_title">Accounts</string>
     <string name="accounts_savings_title">Own savings</string>
@@ -91,4 +91,11 @@
     <string name="mortgage_no_match">No payment matches the text yet.</string>
     <string name="mortgage_preview">%1$d payments match. Latest %2$s: %3$s becomes interest %4$s and amortization %5$s.</string>
     <string name="mortgage_save">Save</string>
+    <string name="profile_group_demo">Demo mode</string>
+    <string name="profile_demo_switch">Show demo data</string>
+    <string name="profile_demo_hint">A made-up household with 14 months of data, so you can try the app without importing anything. Your own data stays untouched and comes back when you switch off. The app restarts when you switch.</string>
+    <string name="profile_group_debug">Developer</string>
+    <string name="profile_debug_slow">Slow loading</string>
+    <string name="profile_debug_fail">Simulate read errors</string>
+    <string name="profile_debug_hint">Debug builds only. Reads take 3 seconds or fail, so the loading skeletons and \"Try again\" can be seen. Stays on until you switch it off, also after a restart.</string>
 </resources>

@@ -10,6 +10,8 @@ import app.cashflow.core.domain.datasource.GoalLocalDataSource
 import app.cashflow.core.domain.datasource.ImportBatchLocalDataSource
 import app.cashflow.core.domain.datasource.SettingsDataSource
 import app.cashflow.core.domain.datasource.TransactionLocalDataSource
+import app.cashflow.core.domain.model.AppMode
+import app.cashflow.core.domain.model.AppModeController
 import app.cashflow.core.domain.model.CategoryKind
 import app.cashflow.core.domain.model.Goals
 import app.cashflow.core.domain.model.Period
@@ -18,6 +20,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import app.cashflow.core.ui.retryOn
+import app.cashflow.core.ui.withDebugFlags
+import app.cashflow.core.domain.model.DebugFlags
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,8 +49,11 @@ class HomeViewModel(
     batches: ImportBatchLocalDataSource,
     goals: GoalLocalDataSource,
     private val settings: SettingsDataSource,
+    private val mode: AppModeController,
     compute: CoroutineDispatcher = Dispatchers.Default,
     private val today: () -> LocalDate = { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
+    // Debug builds: Profil › Utvecklare can slow or fail this tab's reads.
+    debug: DebugFlags = DebugFlags(),
 ) : ViewModel() {
 
     private val builder = HomeBuilder()
@@ -85,8 +92,9 @@ class HomeViewModel(
             input = i
             builder.build(i, s)
         }.flowOn(compute)
-            .retryOn(retries, onError = { _state.update { it.copy(isLoading = false, loadError = true) } }, onRetry = { _state.update { it.copy(isLoading = true, loadError = false) } })
-            .onEach { _state.value = it }
+            .withDebugFlags(debug)
+            .retryOn(retries, onError = { _state.update { it.copy(isLoading = false, loadError = true, hasData = false) } }, onRetry = { _state.update { it.copy(isLoading = true, loadError = false) } })
+            .onEach { _state.value = it.copy(demo = mode.mode == AppMode.DEMO) }
             .launchIn(viewModelScope)
     }
 
@@ -101,6 +109,7 @@ class HomeViewModel(
     fun onAction(action: HomeAction) {
         when (action) {
             HomeAction.OnRetry -> retries.tryEmit(Unit)
+            HomeAction.OnTryDemo -> mode.switchTo(AppMode.DEMO)
             HomeAction.OnInfoClick -> sheet.value = HomeSheet.NET
             is HomeAction.OnKpiClick -> sheet.value = when (action.id) {
                 KpiId.INCOME -> HomeSheet.INCOME

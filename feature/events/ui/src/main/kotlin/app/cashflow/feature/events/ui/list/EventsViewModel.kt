@@ -26,6 +26,8 @@ import app.cashflow.feature.events.ui.common.toRowUi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import app.cashflow.core.ui.retryOn
+import app.cashflow.core.ui.withDebugFlags
+import app.cashflow.core.domain.model.DebugFlags
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -70,6 +72,8 @@ class EventsViewModel(
     batches: ImportBatchLocalDataSource,
     initialCategory: String? = null,
     initialPeriod: String? = null,
+    // Debug builds: Profil › Utvecklare can slow or fail this tab's reads.
+    debug: DebugFlags = DebugFlags(),
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EventsState())
@@ -96,7 +100,8 @@ class EventsViewModel(
         combine(transactions.observeAll(), categories.observeCategories(), batches.observeBatches(), filters, searchHits) { txs, cats, imports, f, hits ->
             buildState(txs, cats.associateBy { it.id }, imports, f, hits)
         }
-            .retryOn(retries, onError = { _state.update { it.copy(isLoading = false, loadError = true) } }, onRetry = { _state.update { it.copy(isLoading = true, loadError = false) } })
+            .withDebugFlags(debug)
+            .retryOn(retries, onError = { _state.update { it.copy(isLoading = false, loadError = true, days = emptyList()) } }, onRetry = { _state.update { it.copy(isLoading = true, loadError = false) } })
             .onEach { s -> _state.update { s } }.launchIn(viewModelScope)
     }
 

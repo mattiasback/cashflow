@@ -63,7 +63,7 @@ abstract class CashFlowDatabase : RoomDatabase() {
         /** Kept out of cloud backup by the app's data_extraction_rules.xml. */
         const val FILE_NAME = "cashflow.db"
 
-        fun create(context: Context): CashFlowDatabase =
-            Room.databaseBuilder(context.applicationContext, CashFlowDatabase::class.java, FILE_NAME).build()
+        fun create(context: Context, fileName: String = FILE_NAME): CashFlowDatabase =
+            Room.databaseBuilder(context.applicationContext, CashFlowDatabase::class.java, fileName).build()
     }
 }
