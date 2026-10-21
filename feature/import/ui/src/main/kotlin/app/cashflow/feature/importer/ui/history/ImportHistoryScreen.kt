@@ -138,6 +138,7 @@ private fun KindIcon(kind: ImportKind, undone: Boolean) {
         ImportKind.BANK_FILE -> Triple(c.accentEventsTint, c.textOnEventsTint, CfIcons.File)
         ImportKind.SAVINGS_FILE -> Triple(c.vizSavingsFill, c.vizSavings, CfIcons.Savings)
         ImportKind.MAPPED_FILE -> Triple(c.surfaceControl, c.textPrimary, CfIcons.Sliders)
+        ImportKind.BANK_SYNC -> Triple(c.accentEventsTint, c.textOnEventsTint, CfIcons.Sync)
     }
     Box(
         Modifier.size(Sizes.badgeSize + 8.dp).clip(Radius.pill).background(if (undone) c.surfaceControl else bg),

@@ -66,12 +66,15 @@ data class ImportOutcome(
     val newCount: Int,
     val duplicateCount: Int,
     val warningCount: Int,
+    /** Rows bank sync already had: kept once, not counted as new. */
+    val matchedCount: Int = 0,
 )
 
 /**
  * The import pipeline shared by file import and (later) bank sync:
- * read (done by the caller) → infer or create accounts → hash → insertBatch (atomic, skips
- * existing ids) → flag possible duplicates → match transfers → categorize. The receipt is
+ * read (done by the caller) → infer or create accounts → hash → match rows bank sync already
+ * has → insertBatch (atomic, skips existing ids) → flag possible duplicates → match transfers
+ * → categorize. The receipt is
  * read back from storage by import id.
  */
 class ImportStatementUseCase(
@@ -82,6 +85,7 @@ class ImportStatementUseCase(
     private val normalizer: PayeeNormalizer,
     private val reclassify: ReclassifyUseCase,
     private val duplicates: DuplicateDetector = DuplicateDetector(normalizer),
+    private val inserter: ReconcilingInserter = ReconcilingInserter(transactions, SourceMatcher(normalizer)),
     private val clock: Clock = Clock.System,
 ) {
 
@@ -140,6 +144,8 @@ class ImportStatementUseCase(
         var newCount = 0
         var duplicates = 0
         var warnings = 0
+        var matched = 0
+        val unclear = HashMap<app.cashflow.core.domain.model.TxId, app.cashflow.core.domain.model.TxId>()
         for (file in plan.files) {
             // Every row's account: one for a bank statement, one per named account in a savings export.
             val accountOfRow: (StatementRow) -> Account = when (val g = file.guess) {
@@ -206,30 +212,35 @@ class ImportStatementUseCase(
                 duplicateCount = 0,
                 warnings = file.statement.warnings,
             )
-            val existingBefore = (transactions.existingIds(txs.map { it.id }) as? Result.Success)?.data ?: return Result.Error(ImportError.STORAGE)
-            val summary = when (val r = transactions.insertBatch(batch, txs)) {
+            val inserted = when (val r = inserter.insert(batch, txs)) {
                 is Result.Error -> return Result.Error(ImportError.STORAGE)
                 is Result.Success -> r.data
             }
+            val summary = inserted.summary
             accounts.addBalanceStates(
                 rows.mapIndexedNotNull { i, row -> row.balanceAfter?.let { BalanceState(rowAccounts[i].id, row.bookingDate, it) } },
             )
-            newIds += txs.map { it.id }.filter { it !in existingBefore }
+            newIds += inserted.newIds
+            matched += inserted.matchedCount
+            unclear += inserted.unclear
             ids += importId
             newCount += summary.newCount
             duplicates += summary.duplicateCount
             warnings += file.statement.warnings.size
         }
 
-        if (flagPossibleDuplicates(newIds.toSet()) is Result.Error) return Result.Error(ImportError.STORAGE)
+        if (flagPossibleDuplicates(newIds.toSet(), unclear) is Result.Error) return Result.Error(ImportError.STORAGE)
         if (reclassify() is Result.Error) return Result.Error(ImportError.STORAGE)
-        return Result.Success(ImportOutcome(ids, newCount, duplicates, warnings))
+        return Result.Success(ImportOutcome(ids, newCount, duplicates, warnings, matched))
     }
 
-    private suspend fun flagPossibleDuplicates(newIds: Set<app.cashflow.core.domain.model.TxId>): Result<Unit, *> {
+    private suspend fun flagPossibleDuplicates(
+        newIds: Set<app.cashflow.core.domain.model.TxId>,
+        unclear: Map<app.cashflow.core.domain.model.TxId, app.cashflow.core.domain.model.TxId>,
+    ): Result<Unit, *> {
         if (newIds.isEmpty()) return Result.Success(Unit)
         val all = (transactions.getAll() as? Result.Success)?.data ?: return Result.Error(ImportError.STORAGE)
-        val flagged = duplicates.find(all, newIds)
+        val flagged = duplicates.find(all, newIds) + unclear.filterKeys { it in newIds }
         if (flagged.isEmpty()) return Result.Success(Unit)
         return transactions.setDuplicates(flagged)
     }

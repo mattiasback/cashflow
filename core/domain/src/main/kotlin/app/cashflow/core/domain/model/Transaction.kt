@@ -38,6 +38,15 @@ enum class CategorizedBy {
     NONE,
 }
 
+/**
+ * Where a row came from. The same bank event can arrive from a file and from bank sync with
+ * different texts and ids, so rows are matched across origins (SourceMatcher), never within one.
+ */
+enum class TransactionOrigin {
+    FILE,
+    BANK,
+}
+
 enum class TransactionStatus {
     AUTO,
     TO_REVIEW,
@@ -74,6 +83,7 @@ data class Transaction(
     val duplicateOf: TxId? = null,
     /** The user said it is not a duplicate, so it is never flagged again. */
     val duplicateChecked: Boolean = false,
+    val origin: TransactionOrigin = TransactionOrigin.FILE,
 ) {
     val status: TransactionStatus
         get() = when {

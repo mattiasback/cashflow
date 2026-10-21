@@ -58,6 +58,8 @@ data class TransactionEntity(
     @ColumnInfo(defaultValue = "0") val undone: Boolean = false,
     val duplicateOf: String? = null,
     @ColumnInfo(defaultValue = "0") val duplicateChecked: Boolean = false,
+    /** v5: FILE or BANK (bank sync). */
+    @ColumnInfo(defaultValue = "FILE") val origin: String = "FILE",
 )
 
 /** Full-text search over the bank text and the cleaned payee. */
@@ -66,6 +68,46 @@ data class TransactionEntity(
 data class TransactionFtsEntity(
     val rawText: String,
     val normalizedText: String,
+)
+
+/**
+ * v5: the id of the same bank event from the other origin (a file row for a synced row, or the
+ * reverse). Stored instead of a second row, so the next import or sync skips it by id.
+ */
+@Entity(
+    tableName = "transaction_aliases",
+    foreignKeys = [
+        ForeignKey(entity = TransactionEntity::class, parentColumns = ["id"], childColumns = ["txId"], onDelete = ForeignKey.CASCADE),
+    ],
+    indices = [Index("txId")],
+)
+data class TransactionAliasEntity(
+    @PrimaryKey val aliasId: String,
+    val txId: String,
+)
+
+/**
+ * v5: a bank account reached through bank sync, keyed by the provider's stable account hash
+ * (the same across consents). Holds no secret: the session id is useless without your key.
+ */
+@Entity(
+    tableName = "bank_links",
+    foreignKeys = [
+        ForeignKey(entity = AccountEntity::class, parentColumns = ["id"], childColumns = ["accountId"], onDelete = ForeignKey.CASCADE),
+    ],
+    indices = [Index("accountId")],
+)
+data class BankLinkEntity(
+    @PrimaryKey val stableKey: String,
+    val provider: String,
+    val accountId: String,
+    val institution: String,
+    val sessionId: String,
+    val providerAccountUid: String,
+    val validUntilEpochMillis: Long,
+    val displayName: String,
+    val maskedNumber: String?,
+    val lastSyncedEpochDay: Long?,
 )
 
 /** v2: the id of a deleted row, so a re-import does not bring it back. */

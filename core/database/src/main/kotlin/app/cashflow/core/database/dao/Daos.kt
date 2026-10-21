@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import androidx.room.Upsert
 import app.cashflow.core.database.entity.AccountEntity
 import app.cashflow.core.database.entity.BalanceStateEntity
+import app.cashflow.core.database.entity.BankLinkEntity
 import app.cashflow.core.database.entity.CategoryEntity
 import app.cashflow.core.database.entity.GoalEntity
 import app.cashflow.core.database.entity.CsvProfileEntity
@@ -15,6 +16,7 @@ import app.cashflow.core.database.entity.ImportBatchEntity
 import app.cashflow.core.database.entity.MerchantMemoryEntity
 import app.cashflow.core.database.entity.RuleEntity
 import app.cashflow.core.database.entity.TombstoneEntity
+import app.cashflow.core.database.entity.TransactionAliasEntity
 import app.cashflow.core.database.entity.TransactionEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -34,6 +36,21 @@ interface TransactionDao {
 
     @Query("SELECT id FROM transactions WHERE id IN (:ids) AND undone = 0")
     suspend fun existingIds(ids: List<String>): List<String>
+
+    /** Aliases whose kept row is live: the same event already arrived from the other origin. */
+    @Query(
+        "SELECT a.aliasId FROM transaction_aliases a JOIN transactions t ON t.id = a.txId WHERE a.aliasId IN (:ids) AND t.undone = 0",
+    )
+    suspend fun liveAliasIds(ids: List<String>): List<String>
+
+    @Query("SELECT DISTINCT a.txId FROM transaction_aliases a JOIN transactions t ON t.id = a.txId WHERE t.undone = 0")
+    suspend fun aliasedIds(): List<String>
+
+    @Query("SELECT aliasId FROM transaction_aliases WHERE txId IN (:ids)")
+    suspend fun aliasesOf(ids: List<String>): List<String>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAliases(aliases: List<TransactionAliasEntity>)
 
     @Query("SELECT id FROM transactions WHERE id IN (:ids) AND undone = 1")
     suspend fun undoneIds(ids: List<String>): List<String>
@@ -61,12 +78,15 @@ interface TransactionDao {
 
     /**
      * Inserts a whole import in one transaction and returns how many rows were new. Rows of an
-     * undone import come back under this import; deleted rows (tombstones) stay deleted.
+     * undone import come back under this import; deleted rows (tombstones) stay deleted; rows
+     * matched to the other origin are stored as [aliases], and earlier aliases are skipped.
      */
     @Transaction
-    suspend fun insertBatch(batch: ImportBatchEntity, rows: List<TransactionEntity>): Int {
+    suspend fun insertBatch(batch: ImportBatchEntity, rows: List<TransactionEntity>, aliases: List<TransactionAliasEntity> = emptyList()): Int {
         val ids = rows.map { it.id }
-        val deleted = ids.chunked(CHUNK).flatMap { tombstonedIds(it) }.toHashSet()
+        val deletedAliases = aliases.map { it.aliasId }.chunked(CHUNK).flatMap { tombstonedIds(it) }.toHashSet()
+        insertAliases(aliases.filter { it.aliasId !in deletedAliases })
+        val deleted = ids.chunked(CHUNK).flatMap { tombstonedIds(it) + liveAliasIds(it) }.toHashSet()
         val setAside = ids.chunked(CHUNK).flatMap { undoneIds(it) }.toHashSet()
         setAside.toList().chunked(CHUNK).forEach { revive(it, batch.id) }
         val fresh = rows.filter { it.id !in deleted && it.id !in setAside }
@@ -102,8 +122,10 @@ interface TransactionDao {
     /** Deletes rows and remembers their ids, in one transaction. */
     @Transaction
     suspend fun deleteWithTombstones(ids: List<String>, atEpochMillis: Long) {
+        // The other origin's ids of the same events stay deleted too.
+        val aliases = ids.chunked(CHUNK).flatMap { aliasesOf(it) }
         ids.chunked(CHUNK).forEach { deleteRows(it) }
-        insertTombstones(ids.map { TombstoneEntity(it, atEpochMillis) })
+        insertTombstones((ids + aliases).map { TombstoneEntity(it, atEpochMillis) })
     }
 
     @Query("UPDATE transactions SET duplicateOf = :duplicateOf WHERE id = :id")
@@ -229,4 +251,24 @@ interface GoalDao {
 
     @Upsert
     suspend fun upsert(goal: GoalEntity)
+}
+
+
+/** v5: bank accounts reached through bank sync. */
+@Dao
+interface BankLinkDao {
+    @Query("SELECT * FROM bank_links ORDER BY institution, displayName")
+    fun observeLinks(): Flow<List<BankLinkEntity>>
+
+    @Query("SELECT * FROM bank_links")
+    suspend fun getLinks(): List<BankLinkEntity>
+
+    @Upsert
+    suspend fun upsert(links: List<BankLinkEntity>)
+
+    @Query("UPDATE bank_links SET lastSyncedEpochDay = :epochDay WHERE stableKey = :stableKey")
+    suspend fun setLastSynced(stableKey: String, epochDay: Long)
+
+    @Query("DELETE FROM bank_links WHERE sessionId = :sessionId")
+    suspend fun deleteSession(sessionId: String)
 }

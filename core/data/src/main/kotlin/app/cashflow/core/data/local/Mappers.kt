@@ -29,6 +29,7 @@ import app.cashflow.core.domain.model.RowWarningReason
 import app.cashflow.core.domain.model.RuleMatch
 import app.cashflow.core.domain.model.RuleOrigin
 import app.cashflow.core.domain.model.Transaction
+import app.cashflow.core.domain.model.TransactionOrigin
 import app.cashflow.core.domain.model.TransferKind
 import app.cashflow.core.domain.model.TxId
 import kotlinx.datetime.LocalDate
@@ -55,6 +56,7 @@ fun TransactionEntity.toTransaction() = Transaction(
     hidden = hidden,
     duplicateOf = duplicateOf?.let(::TxId),
     duplicateChecked = duplicateChecked,
+    origin = TransactionOrigin.entries.firstOrNull { it.name == origin } ?: TransactionOrigin.FILE,
 )
 
 fun Transaction.toEntity() = TransactionEntity(
@@ -78,6 +80,7 @@ fun Transaction.toEntity() = TransactionEntity(
     hidden = hidden,
     duplicateOf = duplicateOf?.value,
     duplicateChecked = duplicateChecked,
+    origin = origin.name,
 )
 
 fun AccountEntity.toAccount() = Account(

@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-enum class ImportKind { BANK_FILE, SAVINGS_FILE, MAPPED_FILE }
+enum class ImportKind { BANK_FILE, SAVINGS_FILE, MAPPED_FILE, BANK_SYNC }
 
 @Immutable
 data class ImportRowUi(
@@ -154,6 +154,7 @@ class ImportHistoryViewModel(
                             ImportKind.BANK_FILE -> R.string.history_kind_bank
                             ImportKind.SAVINGS_FILE -> R.string.history_kind_savings
                             ImportKind.MAPPED_FILE -> R.string.history_kind_mapped
+                            ImportKind.BANK_SYNC -> R.string.history_kind_sync
                         },
                     ),
                     importedAt = stamp(b),
@@ -215,5 +216,6 @@ class ImportHistoryViewModel(
         ImportSource.LANSFORSAKRINGAR_XLS, ImportSource.CSV -> ImportKind.BANK_FILE
         ImportSource.LYSA_XLS, ImportSource.AVANZA_CSV -> ImportKind.SAVINGS_FILE
         ImportSource.CSV_MAPPED -> ImportKind.MAPPED_FILE
+        ImportSource.BANK_SYNC -> ImportKind.BANK_SYNC
     }
 }

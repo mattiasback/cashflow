@@ -2,6 +2,7 @@ package app.cashflow.core.importengine
 
 import app.cashflow.core.categorization.PayeeNormalizer
 import app.cashflow.core.domain.model.Transaction
+import app.cashflow.core.domain.model.TransactionOrigin
 import app.cashflow.core.domain.model.TxId
 import kotlin.math.abs
 
@@ -12,6 +13,9 @@ import kotlin.math.abs
  * account with the same amount, a date at most [windowDays] away and the same payee. Rows with
  * a balance never need this: the balance chain already catches overlap.
  *
+ * Only file rows are compared, with each other. Bank rows have stable ids from the bank, and two
+ * coffees a day apart are not duplicates; a file row against a bank row is [SourceMatcher]'s job.
+ *
  * Each earlier row explains at most one new row, so two genuine identical purchases in the
  * new file are not both flagged against one old row.
  */
@@ -21,9 +25,9 @@ class DuplicateDetector(
 ) {
 
     fun find(all: List<Transaction>, newIds: Set<TxId>): Map<TxId, TxId> {
-        val fresh = all.filter { it.id in newIds && it.balanceAfter == null && !it.duplicateChecked }
+        val fresh = all.filter { it.id in newIds && it.origin == TransactionOrigin.FILE && it.balanceAfter == null && !it.duplicateChecked }
         if (fresh.isEmpty()) return emptyMap()
-        val older = all.filter { it.id !in newIds && it.duplicateOf == null }
+        val older = all.filter { it.id !in newIds && it.origin == TransactionOrigin.FILE && it.duplicateOf == null }
             .groupBy { Triple(it.accountId, it.amount.ore, normalizer.key(it.rawText)) }
         val used = HashSet<TxId>()
         val result = HashMap<TxId, TxId>()

@@ -65,6 +65,7 @@
     <string name="history_kind_bank">Bank statement</string>
     <string name="history_kind_savings">Savings export</string>
     <string name="history_kind_mapped">File with your own column mapping</string>
+    <string name="history_kind_sync">Bank sync</string>
     <string name="history_stat_added">new transactions</string>
     <string name="history_stat_dups">duplicates skipped</string>
     <string name="history_stat_review">to review</string>

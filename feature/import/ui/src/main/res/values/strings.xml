@@ -65,6 +65,7 @@
     <string name="history_kind_bank">Kontoutdrag</string>
     <string name="history_kind_savings">Sparexport</string>
     <string name="history_kind_mapped">Fil med egen kolumnmappning</string>
+    <string name="history_kind_sync">Banksynk</string>
     <string name="history_stat_added">nya transaktioner</string>
     <string name="history_stat_dups">dubbletter överhoppade</string>
     <string name="history_stat_review">att granska</string>

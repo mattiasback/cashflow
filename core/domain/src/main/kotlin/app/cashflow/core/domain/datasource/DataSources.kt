@@ -44,13 +44,24 @@ interface TransactionLocalDataSource {
     /** Full-text search over raw and normalized text; returns matching ids. */
     fun search(query: String): Flow<Set<TxId>>
     suspend fun getAll(): Result<List<Transaction>, DataError.Local>
+
+    /** Ids that are live, or aliases of a live row (the same event from the other origin). */
     suspend fun existingIds(ids: Collection<TxId>): Result<Set<TxId>, DataError.Local>
 
     /**
-     * Atomic: inserts the batch and its rows. Ids that are already live are duplicates; ids
-     * of an undone import come back under this import; deleted ids (tombstones) stay deleted.
+     * Atomic: inserts the batch and its rows. Ids that are already live, or aliases of a live
+     * row, are duplicates; ids of an undone import come back under this import; deleted ids
+     * (tombstones) stay deleted. [aliases] are incoming ids matched to a row of the other
+     * origin (alias → kept row): stored as aliases instead of inserted.
      */
-    suspend fun insertBatch(batch: ImportBatch, rows: List<Transaction>): Result<InsertSummary, DataError.Local>
+    suspend fun insertBatch(
+        batch: ImportBatch,
+        rows: List<Transaction>,
+        aliases: Map<TxId, TxId> = emptyMap(),
+    ): Result<InsertSummary, DataError.Local>
+
+    /** Rows that already stand in for a row of the other origin. */
+    suspend fun aliasedIds(): Result<Set<TxId>, DataError.Local>
 
     /** Atomic: updates the classification of many rows at once. */
     suspend fun updateClassifications(updates: List<Classification>): EmptyResult<DataError.Local>
@@ -58,7 +69,7 @@ interface TransactionLocalDataSource {
     /** "Dölj" / "Visa igen": hidden rows stay listed but leave every total. */
     suspend fun setHidden(ids: Collection<TxId>, hidden: Boolean): EmptyResult<DataError.Local>
 
-    /** "Ta bort": deletes the rows and writes a tombstone per id, so a re-import skips them. */
+    /** "Ta bort": deletes the rows and writes a tombstone per id and alias, so no import or sync brings them back. */
     suspend fun delete(ids: Collection<TxId>, at: Instant): EmptyResult<DataError.Local>
 
     /** Marks rows as possible duplicates of earlier rows (or clears with a null value). */

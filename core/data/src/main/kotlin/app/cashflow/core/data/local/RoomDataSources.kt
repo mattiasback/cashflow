@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteFullException
 import androidx.room.withTransaction
 import app.cashflow.core.database.CashFlowDatabase
 import app.cashflow.core.database.entity.GoalEntity
+import app.cashflow.core.database.entity.TransactionAliasEntity
 import app.cashflow.core.domain.DataError
 import app.cashflow.core.domain.EmptyResult
 import app.cashflow.core.domain.Result
@@ -65,11 +66,18 @@ class RoomTransactionDataSource(private val db: CashFlowDatabase) : TransactionL
     override suspend fun getAll(): Result<List<Transaction>, DataError.Local> = dbCall { dao.getAll().map { it.toTransaction() } }
 
     override suspend fun existingIds(ids: Collection<TxId>): Result<Set<TxId>, DataError.Local> = dbCall {
-        ids.map { it.value }.chunked(CHUNK).flatMap { dao.existingIds(it) }.map(::TxId).toSet()
+        ids.map { it.value }.chunked(CHUNK).flatMap { dao.existingIds(it) + dao.liveAliasIds(it) }.map(::TxId).toSet()
     }
 
-    override suspend fun insertBatch(batch: ImportBatch, rows: List<Transaction>): Result<InsertSummary, DataError.Local> = dbCall {
-        val newCount = dao.insertBatch(batch.toEntity(), rows.map { it.toEntity() })
+    override suspend fun aliasedIds(): Result<Set<TxId>, DataError.Local> = dbCall { dao.aliasedIds().map(::TxId).toSet() }
+
+    override suspend fun insertBatch(
+        batch: ImportBatch,
+        rows: List<Transaction>,
+        aliases: Map<TxId, TxId>,
+    ): Result<InsertSummary, DataError.Local> = dbCall {
+        val aliasRows = aliases.map { (alias, kept) -> TransactionAliasEntity(alias.value, kept.value) }
+        val newCount = dao.insertBatch(batch.toEntity(), rows.map { it.toEntity() }, aliasRows)
         InsertSummary(newCount = newCount, duplicateCount = rows.size - newCount)
     }
 

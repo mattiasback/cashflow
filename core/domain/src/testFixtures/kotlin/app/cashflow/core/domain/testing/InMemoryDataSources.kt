@@ -45,6 +45,9 @@ class InMemoryTransactionDataSource(
     val rows = MutableStateFlow<Map<TxId, Transaction>>(emptyMap())
     val setAside = MutableStateFlow<Map<TxId, Transaction>>(emptyMap())
     val tombstones = MutableStateFlow<Set<TxId>>(emptySet())
+
+    /** Alias id → the live row it stands for. */
+    val aliases = MutableStateFlow<Map<TxId, TxId>>(emptyMap())
     var failNextWrite: DataError.Local? = null
 
     init {
@@ -60,13 +63,22 @@ class InMemoryTransactionDataSource(
 
     override suspend fun getAll(): Result<List<Transaction>, DataError.Local> = Result.Success(rows.value.values.toList())
     override suspend fun existingIds(ids: Collection<TxId>): Result<Set<TxId>, DataError.Local> =
-        Result.Success(ids.filter { it in rows.value }.toSet())
+        Result.Success(ids.filter { it in rows.value || aliases.value[it]?.let { kept -> kept in rows.value } == true }.toSet())
 
-    override suspend fun insertBatch(batch: ImportBatch, rows: List<Transaction>): Result<InsertSummary, DataError.Local> {
+    override suspend fun aliasedIds(): Result<Set<TxId>, DataError.Local> =
+        Result.Success(aliases.value.values.filter { it in rows.value }.toSet())
+
+    override suspend fun insertBatch(
+        batch: ImportBatch,
+        rows: List<Transaction>,
+        aliases: Map<TxId, TxId>,
+    ): Result<InsertSummary, DataError.Local> {
         failNextWrite?.let { failNextWrite = null; return Result.Error(it) }
+        this.aliases.update { it + aliases.filterKeys { id -> id !in tombstones.value } }
+        val aliased = this.aliases.value.filterValues { it in this.rows.value }.keys
         val revived = rows.mapNotNull { r -> setAside.value[r.id]?.copy(importId = batch.id) }
         setAside.update { it - revived.map { r -> r.id }.toSet() }
-        val fresh = rows.filter { it.id !in this.rows.value && it.id !in tombstones.value && revived.none { r -> r.id == it.id } }
+        val fresh = rows.filter { it.id !in this.rows.value && it.id !in aliased && it.id !in tombstones.value && revived.none { r -> r.id == it.id } }
         this.rows.update { current -> current + fresh.associateBy { it.id } + revived.associateBy { it.id } }
         val newCount = fresh.size + revived.size
         val summary = InsertSummary(newCount = newCount, duplicateCount = rows.size - newCount)
@@ -96,9 +108,11 @@ class InMemoryTransactionDataSource(
 
     override suspend fun delete(ids: Collection<TxId>, at: Instant): EmptyResult<DataError.Local> {
         failNextWrite?.let { failNextWrite = null; return Result.Error(it) }
+        val aliasIds = aliases.value.filterValues { it in ids }.keys
+        aliases.update { it - aliasIds }
         rows.update { it - ids.toSet() }
         setAside.update { it - ids.toSet() }
-        tombstones.update { it + ids }
+        tombstones.update { it + ids + aliasIds }
         return Result.Success(Unit)
     }
 

@@ -39,6 +39,8 @@ object CfIcons {
     val Drop = line("M12 3c3 4 6 7.2 6 10.5a6 6 0 01-12 0C6 10.2 9 7 12 3z")
     val Fork = line("M7 3v8a2 2 0 002 2v8M11 3v8M15 3c2 0 3 2 3 5s-1 5-3 5v8")
     val Share = line("M12 4v11M7.5 8.5 12 4l4.5 4.5M5 13v6h14v-6")
+    val Bank = line("M3 9.5 12 4l9 5.5M5 10v8M9.7 10v8M14.3 10v8M19 10v8M3 20.5h18")
+    val Sync = line("M4.5 12a7.5 7.5 0 0 1 13-5.1L19.5 9M19.5 4.5V9H15M19.5 12a7.5 7.5 0 0 1-13 5.1L4.5 15M4.5 19.5V15H9")
 
     private fun line(d: String): ImageVector = ImageVector.Builder(
         defaultWidth = 24.dp,

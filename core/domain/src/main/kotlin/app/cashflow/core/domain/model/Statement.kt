@@ -11,6 +11,9 @@ enum class ImportSource {
 
     /** An unknown file read through a column mapping the user saved. */
     CSV_MAPPED,
+
+    /** Rows fetched from the bank (step 8), not read from a file. */
+    BANK_SYNC,
 }
 
 /**
