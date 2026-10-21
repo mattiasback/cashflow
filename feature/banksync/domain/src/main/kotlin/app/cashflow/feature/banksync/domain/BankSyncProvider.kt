@@ -16,8 +16,11 @@ interface BankSyncProvider {
     /** Stored on each link, e.g. "enablebanking". */
     val id: String
 
-    /** Checks a key and application id before they are saved: the key reads, and the provider accepts it. */
-    suspend fun checkCredentials(credentials: BankCredentials): EmptyResult<BankError>
+    /**
+     * Checks a key and application id before they are used: the key reads and the provider accepts
+     * it. Returns them with the redirect URL exactly as the provider registered it.
+     */
+    suspend fun checkCredentials(credentials: BankCredentials): Result<BankCredentials, BankError>
 
     suspend fun institutions(country: String): Result<List<BankInstitution>, BankError>
 

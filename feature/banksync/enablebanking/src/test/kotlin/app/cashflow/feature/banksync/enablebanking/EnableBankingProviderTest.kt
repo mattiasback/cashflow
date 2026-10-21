@@ -198,12 +198,13 @@ class EnableBankingCredentialCheckTest {
         result = provider.checkCredentials(BankCredentials("app", pem, redirect))
     }
 
-    private var result: EmptyResult<BankError>? = null
+    private var result: Result<BankCredentials, BankError>? = null
 
     @Test
     fun `the application must know the redirect URL and be active`() {
         check("""{"name":"CashFlow","environment":"PRODUCTION","redirect_urls":["cashflow://bank-callback/"],"active":true}""")
-        assertThat(result).isEqualTo(Result.Success(Unit))
+        // Saved as registered, trailing slash included.
+        assertThat((result as Result.Success).data.redirectUrl).isEqualTo("cashflow://bank-callback/")
         check("""{"redirect_urls":["https://example.org/cb"],"active":true}""")
         assertThat(result).isEqualTo(Result.Error(BankError.REDIRECT_NOT_REGISTERED))
         check("""{"redirect_urls":["cashflow://bank-callback"],"active":false}""")

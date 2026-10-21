@@ -36,7 +36,12 @@ class ConnectBankUseCase(
 
     /** Returns the bank's page to open. Consent lasts as long as the bank allows, at most [MAX_CONSENT_DAYS]. */
     suspend fun start(institution: BankInstitution): Result<AuthorizationStart, BankError> {
-        if (credentials.load() == null) return Result.Error(BankError.NO_CREDENTIALS)
+        val saved = credentials.load() ?: return Result.Error(BankError.NO_CREDENTIALS)
+        // Checked again each time: the application may have changed in the control panel since.
+        when (val check = provider.checkCredentials(saved)) {
+            is Result.Error -> return check
+            is Result.Success -> if (check.data != saved) credentials.save(check.data)
+        }
         val days = minOf(institution.maxConsentDays ?: MAX_CONSENT_DAYS, MAX_CONSENT_DAYS)
         val state = ByteArray(STATE_BYTES).also(random::nextBytes).joinToString("") { "%02x".format(it) }
         val now = clock.now()
@@ -188,7 +193,7 @@ class BankKeyUseCase(
         if (trimmed.applicationId.isEmpty() || trimmed.redirectUrl.isEmpty()) return Result.Error(BankError.NO_CREDENTIALS)
         return when (val check = provider.checkCredentials(trimmed)) {
             is Result.Error -> check
-            is Result.Success -> store.save(trimmed)
+            is Result.Success -> store.save(check.data)
         }
     }
 

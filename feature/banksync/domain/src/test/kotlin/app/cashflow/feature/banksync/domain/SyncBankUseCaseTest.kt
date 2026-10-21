@@ -139,7 +139,7 @@ class SyncBankUseCaseTest {
 
 private class FakeProvider : BankSyncProvider {
     override val id = "fake"
-    override suspend fun checkCredentials(credentials: BankCredentials) = Result.Success(Unit)
+    override suspend fun checkCredentials(credentials: BankCredentials) = Result.Success(credentials)
     var rows: List<BankTransaction> = emptyList()
     var lastFrom: LocalDate? = null
 

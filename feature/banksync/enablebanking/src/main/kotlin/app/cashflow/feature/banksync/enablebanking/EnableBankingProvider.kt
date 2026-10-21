@@ -50,13 +50,17 @@ class EnableBankingProvider(
     override val id = "enablebanking"
 
     /** `GET /application`: the key signs, the application is active and knows the redirect URL. */
-    override suspend fun checkCredentials(credentials: BankCredentials): EmptyResult<BankError> =
+    override suspend fun checkCredentials(credentials: BankCredentials): Result<BankCredentials, BankError> =
         when (val r = call<ApplicationDto>(with = credentials) { get("$BASE/application") { auth(it) } }) {
             is Result.Error -> r
-            is Result.Success -> when {
-                r.data.redirectUrls.none { it.trimEnd('/') == credentials.redirectUrl.trim().trimEnd('/') } -> Result.Error(BankError.REDIRECT_NOT_REGISTERED)
-                r.data.active == false -> Result.Error(BankError.APP_INACTIVE)
-                else -> Result.Success(Unit)
+            is Result.Success -> {
+                // /auth wants the URL exactly as registered, trailing slash included.
+                val registered = r.data.redirectUrls.firstOrNull { it.trimEnd('/') == credentials.redirectUrl.trim().trimEnd('/') }
+                when {
+                    registered == null -> Result.Error(BankError.REDIRECT_NOT_REGISTERED)
+                    r.data.active == false -> Result.Error(BankError.APP_INACTIVE)
+                    else -> Result.Success(credentials.copy(redirectUrl = registered))
+                }
             }
         }
 
