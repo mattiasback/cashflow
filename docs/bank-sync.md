@@ -50,7 +50,7 @@ keeps the provider behind one interface.
    - The bank's BankID page opens in the browser.
 3. **Tillbaka till appen**: the redirect URL carries `code` and `state`.
    - The control panel only accepts https, so the redirect URL is
-     `https://mattiasback.github.io/cashflow-callback/`: a copy of `docs/bank-callback/index.html`
+     `https://mattiasback.github.io/cashflow-callback`: a copy of `docs/bank-callback/index.html`
      in the mattiasback.github.io repo. It only forwards `?code&state` to `cashflow://bank-callback`,
      which the app's intent filter catches.
    - **Fallback, always available:** paste the address from the browser.
@@ -156,7 +156,7 @@ and UI stay as they are.
 2. Create an application:
    - Environment: **Production**.
    - Let the panel generate the key, and save the `.pem` file.
-   - Redirect URL: `https://mattiasback.github.io/cashflow-callback/` (the panel refuses
+   - Redirect URL: `https://mattiasback.github.io/cashflow-callback` (the panel refuses
      `cashflow://`).
 3. "Activate by linking accounts": link your own Länsförsäkringar accounts with BankID. Only those
    accounts can be reached.

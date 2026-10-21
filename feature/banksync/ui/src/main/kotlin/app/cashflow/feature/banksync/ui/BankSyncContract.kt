@@ -64,7 +64,7 @@ data class BankSyncState(
 
     companion object {
         /** Enable Banking needs https: this page (docs/bank-callback) forwards to cashflow://bank-callback. */
-        const val DEFAULT_REDIRECT = "https://mattiasback.github.io/cashflow-callback/"
+        const val DEFAULT_REDIRECT = "https://mattiasback.github.io/cashflow-callback"
     }
 }
 
