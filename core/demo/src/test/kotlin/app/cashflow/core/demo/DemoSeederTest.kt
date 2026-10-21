@@ -3,7 +3,11 @@ package app.cashflow.core.demo
 import app.cashflow.core.categorization.BundledCatalog
 import app.cashflow.core.categorization.Categorizer
 import app.cashflow.core.categorization.PayeeNormalizer
+import app.cashflow.core.domain.cashflow.FlowData
 import app.cashflow.core.domain.model.CategoryId
+import app.cashflow.core.domain.model.CategoryKind
+import app.cashflow.core.domain.model.MortgageSplit
+import app.cashflow.core.domain.model.Period
 import app.cashflow.core.domain.model.TransactionStatus
 import app.cashflow.core.domain.model.TransferKind
 import app.cashflow.core.domain.testing.InMemoryAccountDataSource
@@ -51,7 +55,8 @@ class DemoSeederTest {
         val rows = transactions.rows.value.values.filter { it.countsInCashFlow }
         val review = rows.count { it.status == TransactionStatus.TO_REVIEW }
         assertThat(rows.size).isGreaterThan(400)
-        assertThat(review).isBetween(10, 45)
+        // One payee (the preschool) recurs monthly, so one "Kom ihåg" clears most of them.
+        assertThat(review).isBetween(10, 70)
         assertThat(settings.settings.first().bufferBalance).isNotNull()
     }
 
@@ -64,6 +69,17 @@ class DemoSeederTest {
         assertThat(toIsk.all { it.transferKind == TransferKind.TO_SAVINGS && it.categoryId == CategoryId.FUNDS }).isEqualTo(true)
         val repair = rows.single { it.rawText == "ÖVERFÖRING BUFFERTKONTO" && it.amount.isPositive }
         assertThat(repair.transferKind).isEqualTo(TransferKind.FROM_SAVINGS)
+    }
+
+    @Test
+    fun `three years up to the current month, with two deficit months`() = runTest {
+        val rows = seeded().first.rows.value.values.filter { it.countsInCashFlow }
+        val catalog = BundledCatalog.load().defaultCategories().associate { it.id to it.kind }
+        val data = FlowData.of(rows.toList(), MortgageSplit(), { catalog[it] ?: CategoryKind.UNCATEGORIZED })
+        assertThat(data.periods.size).isEqualTo(DemoHousehold.MONTHS)
+        assertThat(data.periods.last()).isEqualTo(Period.of(today))
+        val deficits = data.periods.count { data.month(it).net.isNegative }
+        assertThat(deficits).isBetween(2, 5)
     }
 
     @Test

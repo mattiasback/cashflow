@@ -15,6 +15,10 @@ import app.cashflow.core.data.settings.DataStoreSettingsDataSource
 import app.cashflow.core.data.mode.AppModeStore
 import app.cashflow.core.database.CashFlowDatabase
 import app.cashflow.core.domain.model.AppMode
+import app.cashflow.core.domain.model.Period
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 import app.cashflow.core.domain.datasource.AccountLocalDataSource
 import app.cashflow.core.domain.datasource.CategoryLocalDataSource
 import app.cashflow.core.domain.datasource.CsvProfileLocalDataSource
@@ -32,7 +36,15 @@ import org.koin.dsl.module
 import java.io.File
 
 val coreDataModule = module {
-    single { AppModeStore(androidContext()) }
+    // Before the database or settings open: a new month starts the demo afresh.
+    single {
+        AppModeStore(androidContext()).also { store ->
+            if (store.mode == AppMode.DEMO) {
+                val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                store.refreshDemoFor(Period.of(today).toString(), androidContext())
+            }
+        }
+    }
     // Lambda form: the database is built by a factory method. Demo mode opens its own file, so the
     // made-up household never mixes with your rows.
     single {

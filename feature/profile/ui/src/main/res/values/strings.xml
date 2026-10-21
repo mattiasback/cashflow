@@ -93,7 +93,7 @@
     <string name="mortgage_save">Spara</string>
     <string name="profile_group_demo">Demoläge</string>
     <string name="profile_demo_switch">Visa demodata</string>
-    <string name="profile_demo_hint">Ett påhittat hushåll med 14 månaders data, så att du kan prova appen utan att importera något. Din egen data ligger kvar orörd och kommer tillbaka när du stänger av. Appen startar om när du byter.</string>
+    <string name="profile_demo_hint">Ett påhittat hushåll med tre års data fram till i dag, så att du kan prova appen utan att importera något. Din egen data ligger kvar orörd och kommer tillbaka när du stänger av. Appen startar om när du byter.</string>
     <string name="profile_group_debug">Utvecklare</string>
     <string name="profile_debug_slow">Långsam laddning</string>
     <string name="profile_debug_fail">Simulera läsfel</string>

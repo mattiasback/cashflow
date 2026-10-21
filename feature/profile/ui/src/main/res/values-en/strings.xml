@@ -93,7 +93,7 @@
     <string name="mortgage_save">Save</string>
     <string name="profile_group_demo">Demo mode</string>
     <string name="profile_demo_switch">Show demo data</string>
-    <string name="profile_demo_hint">A made-up household with 14 months of data, so you can try the app without importing anything. Your own data stays untouched and comes back when you switch off. The app restarts when you switch.</string>
+    <string name="profile_demo_hint">A made-up household with three years of data up to today, so you can try the app without importing anything. Your own data stays untouched and comes back when you switch off. The app restarts when you switch.</string>
     <string name="profile_group_debug">Developer</string>
     <string name="profile_debug_slow">Slow loading</string>
     <string name="profile_debug_fail">Simulate read errors</string>

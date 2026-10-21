@@ -13,6 +13,17 @@ class AppModeStore(context: Context) {
 
     val mode: AppMode get() = AppMode.entries.firstOrNull { it.name == prefs.getString(KEY, null) } ?: AppMode.PRIVATE
 
+    /**
+     * The demo always ends with the current month, so a new month starts it afresh: the demo
+     * database and settings are removed before they open, and the household is seeded again.
+     */
+    fun refreshDemoFor(month: String, context: Context) {
+        if (prefs.getString(DEMO_MONTH, null) == month) return
+        context.deleteDatabase(DEMO_DATABASE)
+        java.io.File(context.filesDir, "datastore/$DEMO_SETTINGS").delete()
+        prefs.edit(commit = true) { putString(DEMO_MONTH, month) }
+    }
+
     /** Written synchronously, since the process restarts right after. */
     fun set(mode: AppMode) = prefs.edit(commit = true) { putString(KEY, mode.name) }
 
@@ -24,6 +35,7 @@ class AppModeStore(context: Context) {
     companion object {
         private const val KEY = "mode"
         private const val DEBUG_SLOW = "debug_slow"
+        private const val DEMO_MONTH = "demo_month"
         private const val DEBUG_FAIL = "debug_fail"
         const val DEMO_DATABASE = "cashflow-demo.db"
         const val DEMO_SETTINGS = "cashflow-demo-settings.json"

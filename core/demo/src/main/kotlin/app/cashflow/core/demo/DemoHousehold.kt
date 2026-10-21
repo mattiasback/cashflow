@@ -35,17 +35,18 @@ data class DemoData(
 
 /**
  * A made-up household for demo mode: two salaries, a mortgage, a buffer account and an ISK,
- * [MONTHS] whole months up to the month before [today]. Payees are ordinary Swedish chains and services, so the real
- * pipeline (transfer matching, built-in rules) categorizes them; a few unknown payees land in
+ * [MONTHS] months (three years) up to the current month. Payees are ordinary Swedish chains and
+ * services, so the real pipeline (transfer matching, built-in rules) categorizes them; a few unknown payees land in
  * Att granska. No name, account number or amount comes from a real statement, and the same
  * day always gives the same data.
  *
  * Built to show every screen: a price rise and small monthly charges for Insikter, restaurant
- * spending above its average, a buffer withdrawal, a deficit month and rows to review.
+ * spending above its average, a buffer withdrawal, yearly raises and seasons, two deficit
+ * months (a summer holiday and a kitchen renovation) and rows to review.
  */
 object DemoHousehold {
 
-    const val MONTHS = 14
+    const val MONTHS = 36
 
     val BANK = Account(AccountId("demo-lonekonto"), "Lönekonto", AccountType.TRANSACTION, clearingPrefix = "9999")
     val BUFFER = Account(AccountId("demo-buffert"), "Buffertkonto", AccountType.SAVINGS, clearingPrefix = "9999")
@@ -58,8 +59,9 @@ object DemoHousehold {
 
     fun generate(today: LocalDate): DemoData {
         val random = Random(2026)
-        // Ends with the last whole month, so Hem opens on a full month (salary, savings and all).
-        val last = Period.of(today).previous()
+        // Ends with the current month, so the demo always looks up to date. Its rows are spread
+        // over the days so far, so even early in a month it has salary, bills and savings.
+        val last = Period.of(today)
         var first = last
         repeat(MONTHS - 1) { first = first.previous() }
 
@@ -72,26 +74,35 @@ object DemoHousehold {
             val rows = bank.getOrPut(period) { mutableListOf() }
             val p = period
             val m = index
+            val current = p == last
+            fun date(day: Int): LocalDate =
+                if (current) p.day(1 + (day.coerceIn(1, 28) - 1) * today.day / 28) else p.day(day)
             fun add(day: Int, kronor: Double, text: String) {
-                val date = p.day(day)
-                if (date <= today) rows += Row(date, kronor, text)
+                rows += Row(date(day), kronor, text)
             }
             fun vary(base: Double, spread: Double) = base + random.nextDouble(-spread, spread)
+            fun pick(vararg names: String) = names[random.nextInt(names.size)]
             val winter = p.month in listOf(11, 12, 1, 2, 3)
+            val year = m / 12
 
-            // Income.
-            add(25, vary(34_200.0, 400.0), "LÖN EXEMPELBOLAGET AB")
-            add(25, vary(29_600.0, 400.0), "LÖN DEMOFÖRETAGET AB")
+            // Income: a raise every April, a holiday bonus in June, a tax refund some summers.
+            val raise = 1.0 + 0.03 * (year + if (p.month >= 4) 1 else 0)
+            add(25, vary(31_800.0 * raise, 300.0), "LÖN EXEMPELBOLAGET AB")
+            add(25, vary(27_400.0 * raise, 300.0), "LÖN DEMOFÖRETAGET AB")
             add(20, 1_250.0, "BARNBIDRAG")
+            if (p.month == 6) add(25, vary(6_500.0, 500.0), "LÖN SEMESTERERSÄTTNING")
+            if (p.month == 6 && year % 2 == 1) add(10, vary(4_200.0, 800.0), "SKATTEVERKET ÅTERBÄRING")
+
             // Fixed costs.
-            add(1, -5_380.0, "BRF EXEMPELGÅRDEN AVGIFT")
+            add(1, -5_380.0 - 120.0 * year, "BRF EXEMPELGÅRDEN AVGIFT")
             add(28, -9_850.0, "BOLÅN DEMOBANKEN")
-            add(9, -(if (winter) vary(1_450.0, 250.0) else vary(520.0, 150.0)), "VATTENFALL")
+            add(9, -(if (winter) vary(1_450.0, 300.0) else vary(520.0, 150.0)), "VATTENFALL")
             add(3, -930.0, "VÄSTTRAFIK")
             add(15, -612.0, "TRYGG-HANSA")
             add(27, -320.0, "UNIONEN")
             add(4, -399.0, "TELIA")
             add(5, -169.0, "STORYTEL")
+            add(8, -1_150.0, "FÖRSKOLAN EXEMPEL")
             // A price rise four months ago: Insikter's "Se över abonnemangen".
             add(7, if (m < MONTHS - 4) -129.0 else -159.0, "NETFLIX")
             add(2, -399.0, "NORDIC WELLNESS")
@@ -99,41 +110,59 @@ object DemoHousehold {
             add(11, -29.0, "GOOGLE ONE")
             add(13, -79.0, "BONNIER NYHETER")
             add(17, -49.0, "PARKERING APPEN")
-            // Food, restaurants, shopping.
-            // Groceries are steady: eleven shops a month, so the category stays near its average.
-            repeat(11) {
-                add(random.nextInt(1, 29), -vary(620.0, 200.0), listOf("ICA SUPERMARKET", "HEMKÖP", "CITY GROSS", "LIDL")[random.nextInt(4)])
+
+            // Food: steady, eleven shops a month, a bit more in December.
+            repeat(if (p.month == 12) 14 else 11) {
+                add(random.nextInt(1, 29), -vary(620.0, 220.0), pick("ICA SUPERMARKET", "HEMKÖP", "CITY GROSS", "LIDL", "ICA NÄRA"))
             }
-            // The last two months eat out more: "Håll snittet för Restaurang".
-            val eatingOut = if (m >= MONTHS - 2) 5 else 3
-            repeat(eatingOut) {
-                add(random.nextInt(1, 29), -vary(380.0, 180.0), listOf("PIZZERIA EXEMPEL", "ESPRESSO HOUSE", "SUSHI DEMO")[random.nextInt(3)])
+            // Eating out; the last two months more: "Håll snittet för Restaurang".
+            repeat(if (m >= MONTHS - 2) 5 else random.nextInt(2, 5)) {
+                add(random.nextInt(1, 29), -vary(380.0, 180.0), pick("PIZZERIA EXEMPEL", "ESPRESSO HOUSE", "SUSHI DEMO", "THAI EXEMPEL", "MAX HAMBURGARE"))
             }
             repeat(random.nextInt(1, 4)) {
-                add(random.nextInt(1, 29), -vary(850.0, 600.0), listOf("H&M", "CLAS OHLSON", "ELGIGANTEN")[random.nextInt(3)])
+                add(random.nextInt(1, 29), -vary(850.0, 600.0), pick("H&M", "CLAS OHLSON", "ELGIGANTEN", "PANDURO", "NETONNET"))
             }
-            add(random.nextInt(1, 29), -vary(700.0, 400.0), "CIRCLE K")
+            repeat(random.nextInt(1, 3)) { add(random.nextInt(1, 29), -vary(650.0, 250.0), pick("CIRCLE K", "OKQ8", "PREEM")) }
             if (random.nextInt(3) == 0) add(random.nextInt(1, 29), -vary(240.0, 120.0), "KRONANS APOTEK")
             if (random.nextInt(3) == 0) add(random.nextInt(1, 29), -vary(420.0, 200.0), "STADIUM")
-            // Unknown payees for Att granska.
-            repeat(random.nextInt(1, 3)) {
-                add(random.nextInt(1, 29), -vary(260.0, 180.0), listOf("LOPPIS DEMO", "FÖRENINGEN EXEMPEL", "MARKNADEN STAND", "KVARTERSBUTIKEN")[random.nextInt(4)])
+            if (random.nextInt(4) == 0) add(random.nextInt(1, 29), -vary(310.0, 90.0), "FRISÖR EXEMPEL")
+            if (random.nextInt(5) == 0) add(random.nextInt(1, 29), -vary(1_400.0, 600.0), "FOLKTANDVÅRDEN")
+            // Unknown payees for Att granska: a few each quarter.
+            if (m % 3 == 0 || m >= MONTHS - 2) {
+                add(random.nextInt(1, 29), -vary(260.0, 180.0), pick("LOPPIS DEMO", "FÖRENINGEN EXEMPEL", "MARKNADEN STAND", "KVARTERSBUTIKEN"))
             }
-            // A summer trip and a deficit month.
+
+            // Seasons.
+            if (p.month == 12) {
+                repeat(4) { add(random.nextInt(5, 23), -vary(900.0, 400.0), pick("LEKIA", "ÅHLÉNS", "BOOZT", "BR LEKSAKER")) }
+            }
+            if (p.month == 8) add(18, -vary(2_400.0, 600.0), "XXL")
+            // Two deficit months: a summer holiday, and a kitchen renovation nine months ago.
             if (p.month == 7) {
-                add(4, -18_400.0, "SJ")
-                add(6, -6_900.0, "HOTELL EXEMPEL")
+                add(3, -vary(16_000.0, 2_000.0), "SJ")
+                add(5, -vary(14_500.0, 2_000.0), "HOTELL EXEMPEL")
+                if (m >= MONTHS - 14) add(8, -vary(19_000.0, 1_500.0), "RESEBYRÅN EXEMPEL")
+                repeat(4) { add(random.nextInt(4, 20), -vary(620.0, 200.0), "RESTAURANG SOMMAR") }
             }
-            // Savings: the buffer and the ISK, both legs, so transfer matching pairs them.
-            add(26, -2_500.0, "ÖVERFÖRING BUFFERTKONTO")
-            p.day(26).takeIf { it <= today }?.let { buffer += Row(it, 2_500.0, "ÖVERFÖRING FRÅN LÖNEKONTO") }
-            add(27, -4_000.0, "ÖVERFÖRING ISK")
-            p.day(27).takeIf { it <= today }?.let { isk += Row(it, 4_000.0, "Insättning", Movement.DEPOSIT) }
-            p.day(28).takeIf { it <= today }?.let { isk += Row(it, vary(900.0, 700.0), "Avkastning", Movement.RETURN) }
+            if (m == MONTHS - 9) {
+                add(14, -38_500.0, "KÖKSFIRMAN EXEMPEL")
+                add(16, -6_900.0, "BYGGVARUHUSET EXEMPEL")
+            }
+
+            // Savings: the buffer and the ISK, both legs, so transfer matching pairs them. Less is
+            // saved in the deficit months.
+            val deficit = p.month == 7 || m == MONTHS - 9
+            val toBuffer = if (deficit) 1_000.0 else 2_500.0
+            val toIsk = if (deficit) 1_000.0 else 4_000.0
+            add(26, -toBuffer, "ÖVERFÖRING BUFFERTKONTO")
+            buffer += Row(date(26), toBuffer, "ÖVERFÖRING FRÅN LÖNEKONTO")
+            add(27, -toIsk, "ÖVERFÖRING ISK")
+            isk += Row(date(27), toIsk, "Insättning", Movement.DEPOSIT)
+            isk += Row(date(28), vary(900.0, 1_400.0), "Avkastning", Movement.RETURN)
             // An unplanned car repair paid from the buffer.
             if (m == MONTHS - 6) {
                 add(12, -7_800.0, "BILVERKSTAD DEMO")
-                p.day(12).let { buffer += Row(it, -7_800.0, "ÖVERFÖRING TILL LÖNEKONTO") }
+                buffer += Row(date(12), -7_800.0, "ÖVERFÖRING TILL LÖNEKONTO")
                 add(12, 7_800.0, "ÖVERFÖRING BUFFERTKONTO")
             }
             period = period.next()
@@ -165,7 +194,7 @@ object DemoHousehold {
         imports += DemoImport(batch(iskId, "Transaktioner ISK Demobanken.csv", null, ImportSource.AVANZA_CSV, today, iskTxs.size), iskTxs)
 
         val iskValue = Money.ofDouble(isk.sumOf { it.kronor } + 120_000.0)
-        val balanceDate = last.previous().first
+        val balanceDate = last.previous().previous().first
         val bufferOnDate = 38_000.0 + buffer.filter { it.date <= balanceDate }.sumOf { it.kronor }
         return DemoData(
             accounts = listOf(BANK, BUFFER, ISK.copy(marketValue = iskValue, marketValueDate = today)),
