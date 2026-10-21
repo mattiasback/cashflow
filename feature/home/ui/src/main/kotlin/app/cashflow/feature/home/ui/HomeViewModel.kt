@@ -94,7 +94,14 @@ class HomeViewModel(
         }.flowOn(compute)
             .withDebugFlags(debug)
             .retryOn(retries, onError = { _state.update { it.copy(isLoading = false, loadError = true, hasData = false) } }, onRetry = { _state.update { it.copy(isLoading = true, loadError = false) } })
-            .onEach { _state.value = it.copy(demo = mode.mode == AppMode.DEMO) }
+            .onEach {
+                val note = when (mode.mode) {
+                    AppMode.PRIVATE -> null
+                    AppMode.DEMO -> UiText.StringResource(R.string.home_demo_note)
+                    AppMode.EMPTY -> UiText.StringResource(R.string.home_empty_note)
+                }
+                _state.value = it.copy(modeNote = note)
+            }
             .launchIn(viewModelScope)
     }
 

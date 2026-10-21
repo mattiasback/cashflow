@@ -91,11 +91,16 @@
     <string name="mortgage_no_match">No payment matches the text yet.</string>
     <string name="mortgage_preview">%1$d payments match. Latest %2$s: %3$s becomes interest %4$s and amortization %5$s.</string>
     <string name="mortgage_save">Save</string>
-    <string name="profile_group_demo">Demo mode</string>
+    <string name="profile_group_demo">Data</string>
     <string name="profile_demo_switch">Show demo data</string>
     <string name="profile_demo_hint">A made-up household with three years of data up to today, so you can try the app without importing anything. Your own data stays untouched and comes back when you switch off. The app restarts when you switch.</string>
     <string name="profile_group_debug">Developer</string>
     <string name="profile_debug_slow">Slow loading</string>
     <string name="profile_debug_fail">Simulate read errors</string>
     <string name="profile_debug_hint">Debug builds only. Reads take 3 seconds or fail, so the loading skeletons and \"Try again\" can be seen. Stays on until you switch it off, also after a restart.</string>
+    <string name="profile_mode_private">Mine</string>
+    <string name="profile_mode_demo">Demo</string>
+    <string name="profile_mode_empty">Empty app</string>
+    <string name="profile_mode_private_hint">Your own imported data.</string>
+    <string name="profile_mode_empty_hint">The app as a new user sees it, with no data. It is emptied each time you choose it. Your own data stays untouched. The app restarts when you switch.</string>
 </resources>

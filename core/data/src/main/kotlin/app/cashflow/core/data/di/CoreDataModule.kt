@@ -48,8 +48,7 @@ val coreDataModule = module {
     // Lambda form: the database is built by a factory method. Demo mode opens its own file, so the
     // made-up household never mixes with your rows.
     single {
-        val demo = get<AppModeStore>().mode == AppMode.DEMO
-        CashFlowDatabase.create(androidContext(), if (demo) AppModeStore.DEMO_DATABASE else CashFlowDatabase.FILE_NAME)
+        CashFlowDatabase.create(androidContext(), AppModeStore.databaseFile(get<AppModeStore>().mode))
     }
     // The bundled catalog (categories and built-in rules) is read once from the app's classpath.
     single<RuleCatalog> { BundledCatalog.load() }
@@ -69,8 +68,7 @@ val coreDataModule = module {
     singleOf(::RoomGoalDataSource) { bind<GoalLocalDataSource>() }
     // Lambda form: the DataStore file lives in the app's private files, excluded from backup.
     single<SettingsDataSource> {
-        val demo = get<AppModeStore>().mode == AppMode.DEMO
-        val file = if (demo) AppModeStore.DEMO_SETTINGS else DataStoreSettingsDataSource.FILE_NAME
+        val file = AppModeStore.settingsFile(get<AppModeStore>().mode)
         DataStoreSettingsDataSource.create(File(androidContext().filesDir, "datastore/$file"))
     }
 }

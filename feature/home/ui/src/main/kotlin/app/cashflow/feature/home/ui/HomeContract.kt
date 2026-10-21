@@ -73,8 +73,8 @@ data class HomeState(
     val sheet: HomeSheetUi? = null,
     val hasData: Boolean = false,
     val isLoading: Boolean = true,
-    /** The made-up demo household is shown, not your data. */
-    val demo: Boolean = false,
+    /** A note when the demo household or the empty app is shown, not your data. */
+    val modeNote: UiText? = null,
     /** The data could not be read; the screen offers "Försök igen". */
     val loadError: Boolean = false,
 )

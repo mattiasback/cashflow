@@ -108,4 +108,5 @@
     <string name="home_welcome_import">Importera kontoutdrag</string>
     <string name="home_welcome_demo">Prova med demodata</string>
     <string name="home_demo_note">Demoläge: ett påhittat hushåll, inte din data. Stäng av i Profil.</string>
+    <string name="home_empty_note">Tom app: så här ser appen ut innan något är importerat. Byt i Profil.</string>
 </resources>

@@ -13,6 +13,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import app.cashflow.core.designsystem.theme.Radius
+import app.cashflow.core.domain.model.AppMode
 import app.cashflow.core.domain.model.GoalType
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
@@ -154,12 +155,27 @@ fun ProfileScreen(
                 GroupHeading(stringResource(R.string.profile_group_demo))
                 ListGroup {
                     Column(Modifier.padding(horizontal = Spacing.s4, vertical = Spacing.s2)) {
-                        CfSwitchRow(
-                            label = stringResource(R.string.profile_demo_switch),
-                            checked = state.demo,
-                            onCheckedChange = { onAction(ProfileAction.OnDemoToggle(it)) },
+                        SegmentedControl(
+                            segments = listOf(
+                                Segment(AppMode.PRIVATE.name, stringResource(R.string.profile_mode_private)),
+                                Segment(AppMode.DEMO.name, stringResource(R.string.profile_mode_demo)),
+                                Segment(AppMode.EMPTY.name, stringResource(R.string.profile_mode_empty)),
+                            ),
+                            selectedKey = state.mode.name,
+                            onSelect = { onAction(ProfileAction.OnModeSelect(AppMode.valueOf(it))) },
                         )
-                        Text(stringResource(R.string.profile_demo_hint), style = CashFlowTheme.typography.label, color = c.textSecondary)
+                        Text(
+                            stringResource(
+                                when (state.mode) {
+                                    AppMode.PRIVATE -> R.string.profile_mode_private_hint
+                                    AppMode.DEMO -> R.string.profile_demo_hint
+                                    AppMode.EMPTY -> R.string.profile_mode_empty_hint
+                                },
+                            ),
+                            style = CashFlowTheme.typography.label,
+                            color = c.textSecondary,
+                            modifier = Modifier.padding(top = Spacing.s2),
+                        )
                     }
                 }
 

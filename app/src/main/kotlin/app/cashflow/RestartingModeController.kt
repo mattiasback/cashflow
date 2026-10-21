@@ -20,6 +20,8 @@ class RestartingModeController(
 
     override fun switchTo(mode: AppMode) {
         if (mode == store.mode) return
+        // The empty app always starts empty, as for a new user.
+        if (mode == AppMode.EMPTY) store.clear(AppMode.EMPTY, context)
         store.set(mode)
         val restart = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(restart)

@@ -2,7 +2,10 @@ package app.cashflow.core.data.mode
 
 import android.content.Context
 import androidx.core.content.edit
+import app.cashflow.core.data.settings.DataStoreSettingsDataSource
+import app.cashflow.core.database.CashFlowDatabase
 import app.cashflow.core.domain.model.AppMode
+import java.io.File
 
 /**
  * The chosen mode, read synchronously at start because it decides which database file opens.
@@ -19,9 +22,15 @@ class AppModeStore(context: Context) {
      */
     fun refreshDemoFor(month: String, context: Context) {
         if (prefs.getString(DEMO_MONTH, null) == month) return
-        context.deleteDatabase(DEMO_DATABASE)
-        java.io.File(context.filesDir, "datastore/$DEMO_SETTINGS").delete()
+        clear(AppMode.DEMO, context)
         prefs.edit(commit = true) { putString(DEMO_MONTH, month) }
+    }
+
+    /** Removes a mode's database and settings. Never called for [AppMode.PRIVATE]. */
+    fun clear(mode: AppMode, context: Context) {
+        require(mode != AppMode.PRIVATE) { "Your own data is never cleared here" }
+        context.deleteDatabase(databaseFile(mode))
+        File(context.filesDir, "datastore/${settingsFile(mode)}").delete()
     }
 
     /** Written synchronously, since the process restarts right after. */
@@ -37,7 +46,18 @@ class AppModeStore(context: Context) {
         private const val DEBUG_SLOW = "debug_slow"
         private const val DEMO_MONTH = "demo_month"
         private const val DEBUG_FAIL = "debug_fail"
-        const val DEMO_DATABASE = "cashflow-demo.db"
-        const val DEMO_SETTINGS = "cashflow-demo-settings.json"
+
+        /** Each mode has its own files, so the demo and the empty app never touch your data. */
+        fun databaseFile(mode: AppMode) = when (mode) {
+            AppMode.PRIVATE -> CashFlowDatabase.FILE_NAME
+            AppMode.DEMO -> "cashflow-demo.db"
+            AppMode.EMPTY -> "cashflow-empty.db"
+        }
+
+        fun settingsFile(mode: AppMode) = when (mode) {
+            AppMode.PRIVATE -> DataStoreSettingsDataSource.FILE_NAME
+            AppMode.DEMO -> "cashflow-demo-settings.json"
+            AppMode.EMPTY -> "cashflow-empty-settings.json"
+        }
     }
 }

@@ -53,8 +53,8 @@ data class ProfileState(
     /** "50 000 kr den 2026-10-01" or "Inte angivet". */
     val bufferBalanceLine: UiText = UiText.DynamicString(""),
     val isLoading: Boolean = true,
-    /** Showing the made-up demo household instead of your data. */
-    val demo: Boolean = false,
+    /** Your data, the made-up demo household, or the empty app a new user sees. */
+    val mode: AppMode = AppMode.PRIVATE,
     /** Debug builds only: hold reads back, or fail them. */
     val debugSlow: Boolean = false,
     val debugFail: Boolean = false,
@@ -69,8 +69,8 @@ sealed interface ProfileAction {
     data object OnBufferBalanceClick : ProfileAction
     data class OnPercentDecimalsToggle(val enabled: Boolean) : ProfileAction
     data class OnThemeSelect(val theme: ThemeMode) : ProfileAction
-    /** Restarts the app on the demo household or back on your data. */
-    data class OnDemoToggle(val enabled: Boolean) : ProfileAction
+    /** Restarts the app on the chosen data: yours, the demo household or an empty app. */
+    data class OnModeSelect(val mode: AppMode) : ProfileAction
     data class OnDebugSlowToggle(val enabled: Boolean) : ProfileAction
     data class OnDebugFailToggle(val enabled: Boolean) : ProfileAction
     /** One step up (+1) or down (−1) for a goal; months for Buffert, percent for Sparkvot. */
@@ -133,7 +133,7 @@ class ProfileViewModel(
                     UiText.StringResource(R.string.profile_buffer_balance_line, arrayOf(MoneyFormatter.format(b.amount, locale = locale), PeriodFormatter.iso(b.date, locale)))
                 } ?: UiText.StringResource(R.string.profile_buffer_balance_none),
                 isLoading = false,
-                demo = mode.mode == AppMode.DEMO,
+                mode = mode.mode,
             )
         }.onEach { s -> _state.update { s.copy(debugSlow = it.debugSlow, debugFail = it.debugFail) } }.launchIn(viewModelScope)
         combine(debug.slowLoading, debug.failReads) { slow, fail -> slow to fail }
@@ -158,7 +158,7 @@ class ProfileViewModel(
             is ProfileAction.OnThemeSelect -> update { it.copy(theme = action.theme) }
             is ProfileAction.OnDebugSlowToggle -> debug.setSlowLoading(action.enabled)
             is ProfileAction.OnDebugFailToggle -> debug.setFailReads(action.enabled)
-            is ProfileAction.OnDemoToggle -> mode.switchTo(if (action.enabled) AppMode.DEMO else AppMode.PRIVATE)
+            is ProfileAction.OnModeSelect -> mode.switchTo(action.mode)
             is ProfileAction.OnGoalStep -> {
                 val current = when (action.type) {
                     GoalType.BUFFER_MONTHS -> _state.value.bufferGoalMonths

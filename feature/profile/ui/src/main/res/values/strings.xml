@@ -91,11 +91,16 @@
     <string name="mortgage_no_match">Ingen betalning matchar texten ännu.</string>
     <string name="mortgage_preview">%1$d betalningar matchar. Senaste %2$s: %3$s blir ränta %4$s och amortering %5$s.</string>
     <string name="mortgage_save">Spara</string>
-    <string name="profile_group_demo">Demoläge</string>
+    <string name="profile_group_demo">Data</string>
     <string name="profile_demo_switch">Visa demodata</string>
     <string name="profile_demo_hint">Ett påhittat hushåll med tre års data fram till i dag, så att du kan prova appen utan att importera något. Din egen data ligger kvar orörd och kommer tillbaka när du stänger av. Appen startar om när du byter.</string>
     <string name="profile_group_debug">Utvecklare</string>
     <string name="profile_debug_slow">Långsam laddning</string>
     <string name="profile_debug_fail">Simulera läsfel</string>
     <string name="profile_debug_hint">Bara i debugbyggen. Läsningar tar 3 sekunder eller misslyckas, så att laddningsskeletten och \"Försök igen\" går att se. Gäller tills du stänger av, även efter omstart.</string>
+    <string name="profile_mode_private">Mina</string>
+    <string name="profile_mode_demo">Demo</string>
+    <string name="profile_mode_empty">Tom app</string>
+    <string name="profile_mode_private_hint">Din egen importerade data.</string>
+    <string name="profile_mode_empty_hint">Appen som en ny användare ser den, utan någon data. Den töms varje gång du väljer den. Din egen data ligger kvar orörd. Appen startar om när du byter.</string>
 </resources>

@@ -176,10 +176,10 @@ fun HomeScreen(
                         }
                     }
                 }
-                if (state.demo) {
-                    item(key = "demo") {
+                state.modeNote?.let { note ->
+                    item(key = "mode-note") {
                         Text(
-                            stringResource(R.string.home_demo_note),
+                            note.asString(),
                             style = CashFlowTheme.typography.label,
                             color = c.textSecondary,
                             modifier = Modifier.padding(horizontal = Spacing.gutter + 4.dp).padding(top = Spacing.s4),
