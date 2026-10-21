@@ -49,10 +49,10 @@ keeps the provider behind one interface.
    - `POST /auth` with access `valid_until` (up to 180 days) and a random `state`.
    - The bank's BankID page opens in the browser.
 3. **Tillbaka till appen**: the redirect URL carries `code` and `state`.
-   - **Primary:** register `cashflow://bank-callback` itself as the redirect URL; the app's intent
-     filter catches it. Enable Banking's API docs do not require https, but the control panel may.
-   - **If the panel wants https:** host `docs/bank-callback/index.html` (GitHub Pages). It only
-     forwards `?code&state` to `cashflow://bank-callback`.
+   - The control panel only accepts https, so the redirect URL is
+     `https://mattiasback.github.io/cashflow-callback/`: a copy of `docs/bank-callback/index.html`
+     in the mattiasback.github.io repo. It only forwards `?code&state` to `cashflow://bank-callback`,
+     which the app's intent filter catches.
    - **Fallback, always available:** paste the address from the browser.
    - Either way the app checks `state`, then calls `POST /sessions`.
 4. **Konton**:
@@ -156,8 +156,8 @@ and UI stay as they are.
 2. Create an application:
    - Environment: **Production**.
    - Let the panel generate the key, and save the `.pem` file.
-   - Redirect URL: `cashflow://bank-callback`. If the panel refuses it, use the https page
-     instead (see Flow, step 3).
+   - Redirect URL: `https://mattiasback.github.io/cashflow-callback/` (the panel refuses
+     `cashflow://`).
 3. "Activate by linking accounts": link your own Länsförsäkringar accounts with BankID. Only those
    accounts can be reached.
 4. Copy the `.pem` to the phone (USB, not a cloud drive), import it in Profil → Bankkoppling, and
@@ -165,9 +165,6 @@ and UI stay as they are.
 
 ## Open questions
 
-- **Hosting the redirect page** is only needed if the control panel refuses
-  `cashflow://bank-callback`. Publishing it on GitHub Pages is a public change, so it waits for your
-  OK. Until then, paste the address back by hand.
 - **The bank's text format.** How Länsförsäkringar's API text compares with the xls text is only
   known after the first real sync. The mapper is tuned then.
 

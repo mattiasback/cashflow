@@ -63,8 +63,8 @@ data class BankSyncState(
     val canSync: Boolean get() = consents.any { !it.expired } && !isWorking
 
     companion object {
-        /** The app's own link; register it (or an https page that forwards to it) at Enable Banking. */
-        const val DEFAULT_REDIRECT = "cashflow://bank-callback"
+        /** Enable Banking needs https: this page (docs/bank-callback) forwards to cashflow://bank-callback. */
+        const val DEFAULT_REDIRECT = "https://mattiasback.github.io/cashflow-callback/"
     }
 }
 
