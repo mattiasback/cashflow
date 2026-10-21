@@ -42,7 +42,7 @@ data class BankSyncState(
     val hasKey: Boolean = false,
     /** The last characters of the saved application id, so you can tell which app it is. */
     val keyHint: String? = null,
-    val applicationId: String = "",
+    val applicationId: String = BuildConfig.ENABLE_BANKING_APP_ID,
     val redirectUrl: String = DEFAULT_REDIRECT,
     val keyPicked: Boolean = false,
     val isSavingKey: Boolean = false,

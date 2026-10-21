@@ -116,7 +116,7 @@ class BankSyncViewModel(
             BankSyncAction.OnRemoveKeyClick -> viewModelScope.launch {
                 key.remove()
                 pickedKey = null
-                _state.update { it.copy(keyPicked = false, applicationId = "", awaitingBank = null, mapping = null, result = null, error = null) }
+                _state.update { it.copy(keyPicked = false, applicationId = BuildConfig.ENABLE_BANKING_APP_ID, awaitingBank = null, mapping = null, result = null, error = null) }
             }
             BankSyncAction.OnConnectClick -> loadBanks()
             BankSyncAction.OnBanksDismiss -> _state.update { it.copy(banks = null) }
