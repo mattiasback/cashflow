@@ -169,11 +169,7 @@ fun FlowScreen(
         ) {
             item(key = "header") { Header(state, onAction) }
             if (!state.hasData) {
-                if (state.loadError) {
-                    item(key = "error") { LoadErrorCard(onRetry = { onAction(FlowAction.OnRetry) }, modifier = Modifier.padding(Spacing.gutter)) }
-                } else if (state.isLoading) {
-                    item(key = "skeleton") { Skeleton() }
-                }
+                if (state.isLoading) item(key = "skeleton") { Skeleton() }
                 return@LazyColumn
             }
             item(key = "tabs") {
@@ -288,10 +284,13 @@ private fun Hero(state: FlowState, onAction: (FlowAction) -> Unit) {
             infoLabel = stringResource(R.string.cd_info, infoTitle),
             rollDigits = true,
         )
+    } else if (state.loadError) {
+        // In the hero, as on the other tabs.
+        LoadErrorCard(onRetry = { onAction(FlowAction.OnRetry) })
     } else if (state.isLoading) {
         SkeletonBlock(Modifier.fillMaxWidth().height(150.dp))
-    } else if (!state.loadError) {
-        // No data yet (not a read failure, which shows "Försök igen" below instead).
+    } else {
+        // No data yet.
         CfCard(Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.s3)) {
                 Text(stringResource(R.string.flow_empty_title), style = CashFlowTheme.typography.title, color = c.textPrimary)
