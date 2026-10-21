@@ -2,6 +2,7 @@ package app.cashflow.feature.banksync.domain.di
 
 import app.cashflow.core.importengine.ReconcilingInserter
 import app.cashflow.core.importengine.SourceMatcher
+import app.cashflow.feature.banksync.domain.BankKeyUseCase
 import app.cashflow.feature.banksync.domain.BankRowMapper
 import app.cashflow.feature.banksync.domain.ConnectBankUseCase
 import app.cashflow.feature.banksync.domain.DisconnectBankUseCase
@@ -18,5 +19,6 @@ val bankSyncDomainModule = module {
     factory { ConnectBankUseCase(get(), get()) }
     factoryOf(::LinkAccountsUseCase)
     factoryOf(::DisconnectBankUseCase)
+    factoryOf(::BankKeyUseCase)
     factory { SyncBankUseCase(get(), get(), get(), get(), get(), get(), get()) }
 }

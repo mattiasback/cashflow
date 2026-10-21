@@ -172,3 +172,24 @@ class DisconnectBankUseCase(
         return if (links.deleteSession(sessionId) is Result.Error) Result.Error(BankError.STORAGE) else Result.Success(Unit)
     }
 }
+
+/** "Nyckel": checks your key and application id with the provider, then keeps them encrypted. */
+class BankKeyUseCase(
+    private val provider: BankSyncProvider,
+    private val store: BankCredentialStore,
+    private val reader: KeyFileReader,
+) {
+    /** The key file's text, or null when it is no key file at all. */
+    suspend fun readKey(uri: String): String? = reader.read(uri)?.takeIf { "PRIVATE KEY" in it }
+
+    suspend fun save(credentials: BankCredentials): EmptyResult<BankError> {
+        val trimmed = credentials.copy(applicationId = credentials.applicationId.trim(), redirectUrl = credentials.redirectUrl.trim())
+        if (trimmed.applicationId.isEmpty() || trimmed.redirectUrl.isEmpty()) return Result.Error(BankError.NO_CREDENTIALS)
+        return when (val check = provider.checkCredentials(trimmed)) {
+            is Result.Error -> check
+            is Result.Success -> store.save(trimmed)
+        }
+    }
+
+    suspend fun remove(): EmptyResult<BankError> = store.clear()
+}

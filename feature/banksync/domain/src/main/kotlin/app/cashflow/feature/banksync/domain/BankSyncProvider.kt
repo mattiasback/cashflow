@@ -16,6 +16,9 @@ interface BankSyncProvider {
     /** Stored on each link, e.g. "enablebanking". */
     val id: String
 
+    /** Checks a key and application id before they are saved: the key reads, and the provider accepts it. */
+    suspend fun checkCredentials(credentials: BankCredentials): EmptyResult<BankError>
+
     suspend fun institutions(country: String): Result<List<BankInstitution>, BankError>
 
     suspend fun startAuthorization(
@@ -52,4 +55,10 @@ interface BankLinkLocalDataSource {
     suspend fun upsert(links: List<BankLink>): EmptyResult<DataError.Local>
     suspend fun setLastSynced(stableKey: String, date: LocalDate): EmptyResult<DataError.Local>
     suspend fun deleteSession(sessionId: String): EmptyResult<DataError.Local>
+}
+
+/** Reads the `.pem` file you pick, once; the text then goes encrypted into [BankCredentialStore]. */
+interface KeyFileReader {
+    /** Null when the file cannot be read or is far larger than a key. */
+    suspend fun read(uri: String): String?
 }

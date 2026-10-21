@@ -98,6 +98,7 @@ internal class InMemoryCredentials : BankCredentialStore {
 
 private class RecordingProvider : BankSyncProvider {
     override val id = "fake"
+    override suspend fun checkCredentials(credentials: BankCredentials) = Result.Success(Unit)
     var code: String? = null
     var validUntil: Instant? = null
     override suspend fun institutions(country: String) = Result.Success(emptyList<BankInstitution>())

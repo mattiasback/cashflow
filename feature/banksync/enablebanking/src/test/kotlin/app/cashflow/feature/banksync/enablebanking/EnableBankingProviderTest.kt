@@ -176,3 +176,37 @@ class EnableBankingProviderTest {
         const val PKCS8_HEADER = 26
     }
 }
+
+class EnableBankingCredentialCheckTest {
+    private val pem = run {
+        val key = KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair().private
+        "-----BEGIN PRIVATE KEY-----\n" + Base64.getMimeEncoder().encodeToString(key.encoded) + "\n-----END PRIVATE KEY-----"
+    }
+
+    private fun check(body: String, redirect: String = "cashflow://bank-callback") = kotlinx.coroutines.test.runTest {
+        val provider = EnableBankingProvider(
+            object : BankCredentialStore {
+                override val hasCredentials = flowOf(false)
+                override suspend fun load(): BankCredentials? = null
+                override suspend fun save(credentials: BankCredentials): EmptyResult<BankError> = Result.Success(Unit)
+                override suspend fun clear(): EmptyResult<BankError> = Result.Success(Unit)
+                override suspend fun pending(): PendingAuthorization? = null
+                override suspend fun setPending(pending: PendingAuthorization?) = Unit
+            },
+            enableBankingClient(MockEngine { respond(body, HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json")) }),
+        )
+        result = provider.checkCredentials(BankCredentials("app", pem, redirect))
+    }
+
+    private var result: EmptyResult<BankError>? = null
+
+    @Test
+    fun `the application must know the redirect URL and be active`() {
+        check("""{"name":"CashFlow","environment":"PRODUCTION","redirect_urls":["cashflow://bank-callback/"],"active":true}""")
+        assertThat(result).isEqualTo(Result.Success(Unit))
+        check("""{"redirect_urls":["https://example.org/cb"],"active":true}""")
+        assertThat(result).isEqualTo(Result.Error(BankError.REDIRECT_NOT_REGISTERED))
+        check("""{"redirect_urls":["cashflow://bank-callback"],"active":false}""")
+        assertThat(result).isEqualTo(Result.Error(BankError.APP_INACTIVE))
+    }
+}

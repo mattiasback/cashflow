@@ -107,3 +107,11 @@ internal data class ErrorDto(
     val error: String? = null,
     val message: String? = null,
 )
+
+@Serializable
+internal data class ApplicationDto(
+    val name: String? = null,
+    val environment: String? = null,
+    @SerialName("redirect_urls") val redirectUrls: List<String> = emptyList(),
+    val active: Boolean? = null,
+)

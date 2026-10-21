@@ -16,6 +16,12 @@ enum class BankError : app.cashflow.core.domain.Error {
     /** The provider refused the key or the application id. */
     UNAUTHORIZED,
 
+    /** The redirect URL you entered is not one of the application's registered URLs. */
+    REDIRECT_NOT_REGISTERED,
+
+    /** The application is not active yet: link your accounts in the provider's control panel. */
+    APP_INACTIVE,
+
     /** The consent ran out or was revoked: link the bank again. */
     CONSENT_EXPIRED,
 

@@ -8,6 +8,7 @@ import app.cashflow.feature.banksync.domain.BankAccount
 import app.cashflow.feature.banksync.domain.BankAccountKind
 import app.cashflow.feature.banksync.domain.BankConsent
 import app.cashflow.feature.banksync.domain.BankCredentialStore
+import app.cashflow.feature.banksync.domain.BankCredentials
 import app.cashflow.feature.banksync.domain.BankError
 import app.cashflow.feature.banksync.domain.BankInstitution
 import app.cashflow.feature.banksync.domain.BankSyncProvider
@@ -47,6 +48,17 @@ class EnableBankingProvider(
 ) : BankSyncProvider {
 
     override val id = "enablebanking"
+
+    /** `GET /application`: the key signs, the application is active and knows the redirect URL. */
+    override suspend fun checkCredentials(credentials: BankCredentials): EmptyResult<BankError> =
+        when (val r = call<ApplicationDto>(with = credentials) { get("$BASE/application") { auth(it) } }) {
+            is Result.Error -> r
+            is Result.Success -> when {
+                r.data.redirectUrls.none { it.trimEnd('/') == credentials.redirectUrl.trim().trimEnd('/') } -> Result.Error(BankError.REDIRECT_NOT_REGISTERED)
+                r.data.active == false -> Result.Error(BankError.APP_INACTIVE)
+                else -> Result.Success(Unit)
+            }
+        }
 
     override suspend fun institutions(country: String): Result<List<BankInstitution>, BankError> =
         call<AspspsDto> { get("$BASE/aspsps") { auth(it); parameter("country", country); parameter("psu_type", "personal") } }
@@ -113,9 +125,10 @@ class EnableBankingProvider(
     /** Signs the request with a fresh JWT from your key, or fails before any network call. */
     private suspend inline fun <reified T> call(
         parse: Boolean = true,
+        with: BankCredentials? = null,
         crossinline request: suspend HttpClient.(String) -> HttpResponse,
     ): Result<T, BankError> {
-        val creds = credentials.load() ?: return Result.Error(BankError.NO_CREDENTIALS)
+        val creds = with ?: credentials.load() ?: return Result.Error(BankError.NO_CREDENTIALS)
         val key = PemKeys.privateKey(creds.privateKeyPem) ?: return Result.Error(BankError.INVALID_KEY)
         return try {
             val response = client.request(signer.token(creds.applicationId, key))
