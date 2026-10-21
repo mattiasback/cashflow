@@ -38,6 +38,7 @@ enum class BankError : app.cashflow.core.domain.Error {
     UNKNOWN,
 }
 
+// Temporary (step 9): the key import is a stand-in until a backend holds the key (docs/bank-sync.md).
 /** Your own application at the provider: the key and id you created there. */
 data class BankCredentials(
     val applicationId: String,

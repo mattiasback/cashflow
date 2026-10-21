@@ -170,3 +170,22 @@ and UI stay as they are.
   OK. Until then, paste the address back by hand.
 - **The bank's text format.** How Länsförsäkringar's API text compares with the xls text is only
   known after the first real sync. The mapper is tuned then.
+
+## Temporary: importing your own key (to be replaced before a public release)
+
+Importing the `.pem` and application id by hand is a stand-in for your own use and for technical
+testers: every user needs their own free Enable Banking application anyway. For a public release
+(step 9) it is replaced by a backend that holds one application's key and signs the calls; the
+app then signs in to that backend and users only pick a bank and approve with BankID. The redirect
+becomes a verified https App Link.
+
+Everything that belongs to the stand-in is marked `Temporary (step 9)` in the code, so it can be
+removed in one go:
+
+- `KeyFileReader` / `ContentKeyFileReader`, `BankKeyUseCase`, `BankCredentials`.
+- `KeystoreCredentialStore` (the pending-authorization part moves to a plain store).
+- `EnableBankingProvider.checkCredentials` and the JWT signing on the device (`JwtSigner`, `PemKeys`).
+- The "Nyckel" section of Profil → Bankkoppling (`KeySection`) and its strings.
+
+The backend becomes a new `BankSyncProvider` module; matching, storage, links and the rest of the
+screen stay.

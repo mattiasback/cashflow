@@ -173,6 +173,7 @@ class DisconnectBankUseCase(
     }
 }
 
+// Temporary (step 9): the key import is a stand-in until a backend holds the key (docs/bank-sync.md).
 /** "Nyckel": checks your key and application id with the provider, then keeps them encrypted. */
 class BankKeyUseCase(
     private val provider: BankSyncProvider,

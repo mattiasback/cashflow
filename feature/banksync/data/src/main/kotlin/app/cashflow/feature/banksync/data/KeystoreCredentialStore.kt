@@ -28,6 +28,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import kotlin.time.Instant
 
+// Temporary (step 9): the key import is a stand-in until a backend holds the key (docs/bank-sync.md).
 /**
  * Your Enable Banking key and application id, encrypted with an AES-GCM key that never leaves
  * the Android Keystore. The files live in `noBackupFilesDir`, so they are in no cloud backup

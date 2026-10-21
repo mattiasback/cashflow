@@ -9,6 +9,7 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
+// Temporary (step 9): the key import is a stand-in until a backend holds the key (docs/bank-sync.md).
 /**
  * Enable Banking authenticates every call with a JWT that your own application's RSA key signs
  * (RS256): header `kid` = application id, claims iss `enablebanking.com`, aud

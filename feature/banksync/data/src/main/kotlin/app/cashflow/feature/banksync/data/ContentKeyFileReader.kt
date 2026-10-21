@@ -8,6 +8,7 @@ import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+// Temporary (step 9): the key import is a stand-in until a backend holds the key (docs/bank-sync.md).
 class ContentKeyFileReader(context: Context) : KeyFileReader {
     private val resolver = context.applicationContext.contentResolver
 

@@ -57,6 +57,7 @@ interface BankLinkLocalDataSource {
     suspend fun deleteSession(sessionId: String): EmptyResult<DataError.Local>
 }
 
+// Temporary (step 9): the key import is a stand-in until a backend holds the key (docs/bank-sync.md).
 /** Reads the `.pem` file you pick, once; the text then goes encrypted into [BankCredentialStore]. */
 interface KeyFileReader {
     /** Null when the file cannot be read or is far larger than a key. */

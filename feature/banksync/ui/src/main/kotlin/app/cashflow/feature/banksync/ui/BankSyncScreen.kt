@@ -118,6 +118,7 @@ fun BankSyncScreen(
     state.banks?.let { banks -> BankPicker(banks, state.isLoadingBanks, onAction) }
 }
 
+// Temporary (step 9): the key import is a stand-in until a backend holds the key (docs/bank-sync.md).
 @Composable
 private fun KeySection(state: BankSyncState, onAction: (BankSyncAction) -> Unit) {
     val c = CashFlowTheme.colors
