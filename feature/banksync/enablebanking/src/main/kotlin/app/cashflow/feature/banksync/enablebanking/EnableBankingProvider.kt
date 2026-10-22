@@ -109,8 +109,13 @@ class EnableBankingProvider(
             val page = call<TransactionsDto> {
                 get("$BASE/accounts/$providerAccountUid/transactions") {
                     auth(it)
-                    if (from != null) parameter("date_from", from.toString()) else parameter("strategy", "longest")
-                    parameter("date_to", to.toString())
+                    // date_to needs a date_from; "longest" ignores date_to anyway.
+                    if (from != null) {
+                        parameter("date_from", from.toString())
+                        parameter("date_to", to.toString())
+                    } else {
+                        parameter("strategy", "longest")
+                    }
                     continuation?.let { key -> parameter("continuation_key", key) }
                 }
             }

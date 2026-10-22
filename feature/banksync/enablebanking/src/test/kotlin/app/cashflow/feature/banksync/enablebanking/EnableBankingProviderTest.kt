@@ -167,6 +167,7 @@ class EnableBankingProviderTest {
         assertThat(fetched.rows.map { it.booked }).containsExactly(true, false)
         assertThat(fetched.rows[0].text).isEqualTo("KAFE EXEMPEL Kortköp")
         assertThat(requests.single().url.parameters["strategy"]).isEqualTo("longest")
+        assertThat(requests.single().url.parameters["date_to"]).isNull()
     }
 
     @Test
