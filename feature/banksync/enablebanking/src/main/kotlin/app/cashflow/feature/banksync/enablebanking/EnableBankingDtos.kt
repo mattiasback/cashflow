@@ -55,6 +55,7 @@ internal data class AccountDto(
     @SerialName("identification_hash") val identificationHash: String,
     @SerialName("account_id") val accountId: AccountIdentificationDto? = null,
     val name: String? = null,
+    val details: String? = null,
     val product: String? = null,
     val currency: String,
     @SerialName("cash_account_type") val cashAccountType: String? = null,

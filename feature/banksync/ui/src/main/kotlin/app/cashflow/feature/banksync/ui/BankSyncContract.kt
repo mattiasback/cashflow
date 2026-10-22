@@ -57,6 +57,8 @@ data class BankSyncState(
     val accountOptions: List<AccountOptionUi> = emptyList(),
     val isWorking: Boolean = false,
     val result: UiText? = null,
+    /** One line per account after a sync: what the bank delivered, no row contents. */
+    val reports: List<UiText> = emptyList(),
     val error: UiText? = null,
 ) {
     val canSaveKey: Boolean get() = applicationId.isNotBlank() && redirectUrl.isNotBlank() && keyPicked && !isSavingKey
@@ -84,6 +86,7 @@ sealed interface BankSyncAction {
     data class OnMappingSelect(val stableKey: String, val key: String) : BankSyncAction
     data object OnMappingConfirm : BankSyncAction
     data object OnSyncClick : BankSyncAction
+    data object OnResyncClick : BankSyncAction
     data class OnDisconnectClick(val sessionId: String) : BankSyncAction
 }
 

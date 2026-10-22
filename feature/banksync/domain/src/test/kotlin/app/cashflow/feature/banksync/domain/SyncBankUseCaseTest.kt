@@ -130,6 +130,41 @@ class SyncBankUseCaseTest {
     }
 
     @Test
+    fun `an account named after its holder is renamed by number, and a name you chose is kept`() = runTest {
+        setUp()
+        accounts.upsertAccount(account.copy(name = "Anna Exempel"))
+        links.upsert(listOf(link.copy(displayName = "Anna Exempel")))
+        sync(today)
+        assertThat(accounts.getAccounts().let { (it as Result.Success).data.single().name }).isEqualTo("Exempelbanken ··1234")
+        assertThat((links.getLinks() as Result.Success).data.single().displayName).isEqualTo("Exempelbanken ··1234")
+
+        accounts.upsertAccount(account.copy(name = "Mitt lönekonto"))
+        sync(today)
+        assertThat(accounts.getAccounts().let { (it as Result.Success).data.single().name }).isEqualTo("Mitt lönekonto")
+    }
+
+    @Test
+    fun `the receipt tells what the bank delivered per account, pending rows included`() = runTest {
+        setUp()
+        val report = (sync(today) as Result.Success).data.reports.single()
+
+        assertThat(listOf(report.fetched, report.booked, report.pending)).isEqualTo(listOf(4, 3, 1))
+        assertThat(report.newest).isEqualTo(LocalDate(2026, 10, 8))
+        assertThat(listOf(report.newCount, report.matchedCount)).isEqualTo(listOf(1, 2))
+    }
+
+    @Test
+    fun `fetching again from the start only fills what is missing`() = runTest {
+        setUp()
+        sync(today)
+        val again = (sync(today, full = true) as Result.Success).data
+
+        assertThat(again.newCount).isEqualTo(0)
+        assertThat(transactions.rows.value.size).isEqualTo(3)
+        assertThat(provider.lastFrom).isEqualTo(LocalDate(2026, 9, 28))
+    }
+
+    @Test
     fun `an expired consent asks to link the bank again`() = runTest {
         setUp()
         links.upsert(listOf(link.copy(validUntil = Instant.parse("2026-10-01T00:00:00Z"))))
@@ -149,9 +184,9 @@ private class FakeProvider : BankSyncProvider {
     override suspend fun completeAuthorization(code: String) =
         Result.Success(BankConsent("s1", "Exempelbanken", Instant.parse("2027-04-01T00:00:00Z"), emptyList()))
 
-    override suspend fun transactions(providerAccountUid: String, from: LocalDate?, to: LocalDate): Result<List<BankTransaction>, BankError> {
+    override suspend fun transactions(providerAccountUid: String, from: LocalDate?, to: LocalDate): Result<FetchedTransactions, BankError> {
         lastFrom = from
-        return Result.Success(rows.filter { from == null || it.bookingDate >= from })
+        return Result.Success(FetchedTransactions(rows.filter { from == null || it.bookingDate >= from }))
     }
 
     override suspend fun revoke(sessionId: String) = Result.Success(Unit)

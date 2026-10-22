@@ -70,12 +70,16 @@ data class PendingAuthorization(
 
 enum class BankAccountKind { CURRENT, SAVINGS, OTHER }
 
+/** What [BankSyncProvider.transactions] returned; rows the bank sent without any date are only counted. */
+data class FetchedTransactions(val rows: List<BankTransaction>, val undated: Int = 0)
+
 /** A bank account in a consent. */
 data class BankAccount(
     /** The same across consents, so renewing does not ask for the mapping again. */
     val stableKey: String,
     /** The provider's id for this consent only; null when it cannot be read. */
     val providerUid: String?,
+    /** The account's product name (never the holder's name); null when the bank gives none. */
     val name: String?,
     /** IBAN or clearing + account number, digits only; never logged. */
     val number: String?,
@@ -103,6 +107,13 @@ data class BankTransaction(
     /** Only booked rows are stored; pending ones change reference when they book. */
     val booked: Boolean,
 )
+
+/** "Länsförsäkringar ··1234 · Privatkonto": the account number's end, never the holder's name. */
+fun bankAccountLabel(institution: String, product: String?, number: String?): String =
+    listOfNotNull(
+        listOfNotNull(institution, number?.takeLast(4)?.let { "··$it" }).joinToString(" "),
+        product?.trim()?.takeIf { it.isNotEmpty() },
+    ).joinToString(" · ")
 
 /** A bank account linked to one of your CashFlow accounts. */
 data class BankLink(

@@ -118,7 +118,7 @@ class LinkAccountsUseCase(
                 bank.stableKey to when {
                     previous != null -> LinkTarget.Existing(previous)
                     byNumber != null -> LinkTarget.Existing(byNumber.id)
-                    else -> LinkTarget.New(bank.name ?: consent.institution, typeOf(bank.kind))
+                    else -> LinkTarget.New(bankAccountLabel(consent.institution, bank.name, bank.number), typeOf(bank.kind))
                 }
             },
         )
@@ -146,7 +146,7 @@ class LinkAccountsUseCase(
                 sessionId = consent.sessionId,
                 providerAccountUid = bank.providerUid!!,
                 validUntil = consent.validUntil,
-                displayName = bank.name ?: consent.institution,
+                displayName = bankAccountLabel(consent.institution, bank.name, bank.number),
                 maskedNumber = bank.number?.takeLast(4),
                 // A renewed consent goes on from where the last one stopped.
                 lastSynced = previous.firstOrNull { it.stableKey == bank.stableKey && it.accountId == accountId }?.lastSynced,

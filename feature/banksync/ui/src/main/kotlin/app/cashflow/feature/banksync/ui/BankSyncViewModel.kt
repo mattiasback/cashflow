@@ -17,6 +17,7 @@ import app.cashflow.feature.banksync.domain.BankError
 import app.cashflow.feature.banksync.domain.BankInstitution
 import app.cashflow.feature.banksync.domain.BankKeyUseCase
 import app.cashflow.feature.banksync.domain.BankLinkLocalDataSource
+import app.cashflow.feature.banksync.domain.bankAccountLabel
 import app.cashflow.feature.banksync.domain.ConnectBankUseCase
 import app.cashflow.feature.banksync.domain.DisconnectBankUseCase
 import app.cashflow.feature.banksync.domain.LinkAccountsUseCase
@@ -88,7 +89,7 @@ class BankSyncViewModel(
                     accounts = group.map { link ->
                         val target = known.firstOrNull { it.id == link.accountId }?.name.orEmpty()
                         LinkedAccountUi(
-                            title = listOfNotNull(link.displayName, link.maskedNumber?.let { "··$it" }).joinToString(" "),
+                            title = link.displayName,
                             into = target,
                             synced = link.lastSynced?.let { PeriodFormatter.iso(it, locale) },
                         )
@@ -116,7 +117,7 @@ class BankSyncViewModel(
             BankSyncAction.OnRemoveKeyClick -> viewModelScope.launch {
                 key.remove()
                 pickedKey = null
-                _state.update { it.copy(keyPicked = false, applicationId = BuildConfig.ENABLE_BANKING_APP_ID, awaitingBank = null, mapping = null, result = null, error = null) }
+                _state.update { it.copy(keyPicked = false, applicationId = BuildConfig.ENABLE_BANKING_APP_ID, awaitingBank = null, mapping = null, result = null, reports = emptyList(), error = null) }
             }
             BankSyncAction.OnConnectClick -> loadBanks()
             BankSyncAction.OnBanksDismiss -> _state.update { it.copy(banks = null) }
@@ -131,7 +132,8 @@ class BankSyncViewModel(
                 s.copy(mapping = s.mapping?.map { if (it.stableKey == action.stableKey) it.copy(selected = action.key) else it })
             }
             BankSyncAction.OnMappingConfirm -> confirmMapping()
-            BankSyncAction.OnSyncClick -> runSync()
+            BankSyncAction.OnSyncClick -> working { syncNow(full = false) }
+            BankSyncAction.OnResyncClick -> working { syncNow(full = true) }
             is BankSyncAction.OnDisconnectClick -> working {
                 disconnect(action.sessionId).onError { setError(it) }
             }
@@ -203,7 +205,7 @@ class BankSyncViewModel(
         val rows = linkAccounts.syncable(received).map { bank ->
             MappingRowUi(
                 stableKey = bank.stableKey,
-                title = listOfNotNull(bank.name ?: received.institution, bank.number?.takeLast(4)?.let { "··$it" }).joinToString(" "),
+                title = bankAccountLabel(received.institution, bank.name, bank.number),
                 kind = bank.kind,
                 selected = when (val t = suggested[bank.stableKey]) {
                     is LinkTarget.Existing -> t.accountId.value
@@ -224,7 +226,7 @@ class BankSyncViewModel(
                 row.stableKey to when (row.selected) {
                     MappingRowUi.SKIP -> LinkTarget.Skip
                     MappingRowUi.NEW -> LinkTarget.New(
-                        bank.name ?: received.institution,
+                        bankAccountLabel(received.institution, bank.name, bank.number),
                         if (bank.kind == BankAccountKind.SAVINGS) AccountType.SAVINGS else AccountType.TRANSACTION,
                     )
                     else -> LinkTarget.Existing(AccountId(row.selected))
@@ -241,11 +243,9 @@ class BankSyncViewModel(
         }
     }
 
-    private fun runSync() = working { syncNow() }
-
-    private suspend fun syncNow() {
+    private suspend fun syncNow(full: Boolean = false) {
         val today = clock.todayIn(TimeZone.currentSystemDefault())
-        when (val r = sync(today)) {
+        when (val r = sync(today, full)) {
             is Result.Error -> setError(r.error)
             is Result.Success -> {
                 val o = r.data
@@ -256,6 +256,12 @@ class BankSyncViewModel(
                             arrayOf(o.newCount, o.matchedCount, o.unclearCount),
                         ),
                         error = if (o.expiredCount > 0) BankError.CONSENT_EXPIRED.toUiText() else null,
+                        reports = o.reports.map { a ->
+                            UiText.StringResource(
+                                R.string.banksync_report,
+                                arrayOf(a.label, a.fetched, a.booked, a.pending, a.undated, a.newest?.let { d -> PeriodFormatter.iso(d, locale) } ?: "–", a.newCount, a.matchedCount),
+                            )
+                        },
                     )
                 }
             }

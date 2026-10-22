@@ -104,7 +104,7 @@ fun BankSyncScreen(
                         BanksSection(state, onAction)
                     }
                 }
-                Feedback(state.result, state.error)
+                Feedback(state.result, state.reports, state.error)
                 Text(
                     stringResource(R.string.banksync_footer),
                     style = CashFlowTheme.typography.label,
@@ -273,6 +273,13 @@ private fun BanksSection(state: BankSyncState, onAction: (BankSyncAction) -> Uni
                 icon = CfIcons.Sync,
                 modifier = Modifier.fillMaxWidth(),
             )
+            CfButton(
+                text = stringResource(R.string.banksync_resync),
+                onClick = { onAction(BankSyncAction.OnResyncClick) },
+                variant = CfButtonVariant.Outline,
+                enabled = state.canSync,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
         CfButton(
             text = stringResource(R.string.banksync_connect),
@@ -286,9 +293,10 @@ private fun BanksSection(state: BankSyncState, onAction: (BankSyncAction) -> Uni
 }
 
 @Composable
-private fun Feedback(result: UiText?, error: UiText?) {
+private fun Feedback(result: UiText?, reports: List<UiText>, error: UiText?) {
     val c = CashFlowTheme.colors
     result?.let { Text(it.asString(), style = CashFlowTheme.typography.body, color = c.textPrimary, modifier = Modifier.padding(top = Spacing.s4)) }
+    reports.forEach { Text(it.asString(), style = CashFlowTheme.typography.label, color = c.textSecondary, modifier = Modifier.padding(top = Spacing.s2)) }
     error?.let { Text(it.asString(), style = CashFlowTheme.typography.body, color = c.textDanger, modifier = Modifier.padding(top = Spacing.s4)) }
 }
 

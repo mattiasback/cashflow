@@ -69,7 +69,7 @@ class ConnectBankUseCaseTest {
         val suggested = (use.suggest(consent) as Result.Success).data
 
         assertThat(suggested).isEqualTo(
-            mapOf("h1" to LinkTarget.Existing(AccountId("lon")), "h2" to LinkTarget.New("Sparkonto", AccountType.SAVINGS)),
+            mapOf("h1" to LinkTarget.Existing(AccountId("lon")), "h2" to LinkTarget.New("Exempelbanken ··9999 · Sparkonto", AccountType.SAVINGS)),
         )
         use.link(consent, suggested)
         assertThat(links.links.value.keys).isEqualTo(setOf("h1", "h2"))
@@ -110,6 +110,6 @@ private class RecordingProvider : BankSyncProvider {
         this.code = code
         return Result.Success(BankConsent("s1", "Exempelbanken", Instant.parse("2027-04-01T00:00:00Z"), emptyList()))
     }
-    override suspend fun transactions(providerAccountUid: String, from: LocalDate?, to: LocalDate) = Result.Success(emptyList<BankTransaction>())
+    override suspend fun transactions(providerAccountUid: String, from: LocalDate?, to: LocalDate) = Result.Success(FetchedTransactions(emptyList()))
     override suspend fun revoke(sessionId: String) = Result.Success(Unit)
 }

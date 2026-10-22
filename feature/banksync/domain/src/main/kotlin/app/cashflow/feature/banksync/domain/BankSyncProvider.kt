@@ -33,8 +33,8 @@ interface BankSyncProvider {
     /** Exchanges the code from the redirect for a consent with its accounts. */
     suspend fun completeAuthorization(code: String): Result<BankConsent, BankError>
 
-    /** Booked rows from [from] (or as far back as the bank allows when null) to [to]. */
-    suspend fun transactions(providerAccountUid: String, from: LocalDate?, to: LocalDate): Result<List<BankTransaction>, BankError>
+    /** Every row from [from] (or as far back as the bank allows when null) to [to], booked or not. */
+    suspend fun transactions(providerAccountUid: String, from: LocalDate?, to: LocalDate): Result<FetchedTransactions, BankError>
 
     /** Ends the consent at the provider. */
     suspend fun revoke(sessionId: String): EmptyResult<BankError>

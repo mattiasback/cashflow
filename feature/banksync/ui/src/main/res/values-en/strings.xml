@@ -36,6 +36,8 @@
     <string name="banksync_disconnect">Disconnect %1$s</string>
     <string name="banksync_sync">Sync now</string>
     <string name="banksync_syncing">Syncing…</string>
+    <string name="banksync_resync">Fetch again from the start</string>
+    <string name="banksync_report">%1$s: %2$d fetched (%3$d booked, %4$d reserved, %5$d without a date), latest %6$s · %7$d new, %8$d already there</string>
     <string name="banksync_connect">Link bank</string>
     <string name="banksync_pick_bank">Choose bank</string>
     <string name="banksync_result">%1$d new · %2$d already there from a file · %3$d to review</string>

@@ -36,6 +36,8 @@
     <string name="banksync_disconnect">Koppla från %1$s</string>
     <string name="banksync_sync">Synka nu</string>
     <string name="banksync_syncing">Synkar…</string>
+    <string name="banksync_resync">Hämta om från början</string>
+    <string name="banksync_report">%1$s: %2$d hämtade (%3$d bokförda, %4$d reserverade, %5$d utan datum), senaste %6$s · %7$d nya, %8$d fanns redan</string>
     <string name="banksync_connect">Koppla bank</string>
     <string name="banksync_pick_bank">Välj bank</string>
     <string name="banksync_result">%1$d nya · %2$d fanns redan från fil · %3$d att granska</string>

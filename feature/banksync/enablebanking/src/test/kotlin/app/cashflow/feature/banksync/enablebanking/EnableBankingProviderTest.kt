@@ -12,6 +12,7 @@ import app.cashflow.feature.banksync.domain.PendingAuthorization
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
 import io.ktor.client.engine.mock.MockEngine
@@ -103,7 +104,7 @@ class EnableBankingProviderTest {
             HttpStatusCode.OK to """{"session_id":"s-1","aspsp":{"name":"Exempelbanken","country":"SE"},
                 "access":{"valid_until":"2027-04-19T10:00:00.000000+00:00"},
                 "accounts":[{"uid":"u-1","identification_hash":"h-1","account_id":{"iban":"SE12 3456 7890 1234 5678 9012"},
-                  "name":"Lönekonto","currency":"SEK","cash_account_type":"CACC"},
+                  "name":"Anna Exempel","details":"Lönekonto","currency":"SEK","cash_account_type":"CACC"},
                   {"identification_hash":"h-2","account_id":{"other":{"identification":"9999.12.34567","scheme_name":"BBAN"}},
                   "product":"Sparkonto","currency":"SEK","cash_account_type":"SVGS"}]}"""
         }.completeAuthorization("code-1")
@@ -115,7 +116,8 @@ class EnableBankingProviderTest {
             Triple("h-1", "1234567890123456789012", BankAccountKind.CURRENT),
             Triple("h-2", "99991234567", BankAccountKind.SAVINGS),
         )
-        assertThat(data.accounts[1].name).isEqualTo("Sparkonto")
+        // The account is named by its description or product, never by the holder's name.
+        assertThat(data.accounts.map { it.name }).containsExactly("Lönekonto", "Sparkonto")
         assertThat(data.accounts[1].providerUid).isEqualTo(null)
     }
 
@@ -133,7 +135,8 @@ class EnableBankingProviderTest {
                      "credit_debit_indicator":"CRDT","status":"BOOK","debtor":{"name":"ARBETSGIVARE AB"}}]}"""
             }
         }
-        val rows = (p.transactions("u-1", LocalDate(2026, 10, 1), LocalDate(2026, 10, 21)) as Result.Success).data
+        val fetched = (p.transactions("u-1", LocalDate(2026, 10, 1), LocalDate(2026, 10, 21)) as Result.Success).data
+        val rows = fetched.rows
 
         assertThat(rows.map { Triple(it.reference, it.amount, it.text) }).containsExactly(
             Triple("e1", Money(-24550), "MATBUTIK EXEMPEL"),
@@ -144,7 +147,26 @@ class EnableBankingProviderTest {
         val first = requests.first().url
         assertThat(first.encodedPath).isEqualTo("/accounts/u-1/transactions")
         assertThat(first.parameters["date_from"]).isEqualTo("2026-10-01")
-        assertThat(first.parameters["transaction_status"]).isEqualTo("BOOK")
+        // Every status is asked for, so pending rows can be counted.
+        assertThat(first.parameters["transaction_status"]).isNull()
+    }
+
+    @Test
+    fun `pending and undated rows are counted, and the merchant is kept next to a generic text`() = runTest {
+        val p = provider {
+            HttpStatusCode.OK to """{"transactions":[
+                {"entry_reference":"e1","booking_date":"2026-10-12","transaction_amount":{"currency":"SEK","amount":"45"},
+                 "credit_debit_indicator":"DBIT","status":"BOOK","remittance_information":["Kortköp"],"creditor":{"name":"KAFE EXEMPEL"}},
+                {"entry_reference":"e2","booking_date":"2026-10-20","transaction_amount":{"currency":"SEK","amount":"99"},
+                 "credit_debit_indicator":"DBIT","status":"PDNG","remittance_information":["KIOSK EXEMPEL"]},
+                {"entry_reference":"e3","transaction_amount":{"currency":"SEK","amount":"10"},"credit_debit_indicator":"DBIT","status":"BOOK"}]}"""
+        }
+        val fetched = (p.transactions("u-1", null, LocalDate(2026, 10, 21)) as Result.Success).data
+
+        assertThat(fetched.undated).isEqualTo(1)
+        assertThat(fetched.rows.map { it.booked }).containsExactly(true, false)
+        assertThat(fetched.rows[0].text).isEqualTo("KAFE EXEMPEL Kortköp")
+        assertThat(requests.single().url.parameters["strategy"]).isEqualTo("longest")
     }
 
     @Test

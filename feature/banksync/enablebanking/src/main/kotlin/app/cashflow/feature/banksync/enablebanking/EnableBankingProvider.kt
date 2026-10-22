@@ -13,6 +13,7 @@ import app.cashflow.feature.banksync.domain.BankError
 import app.cashflow.feature.banksync.domain.BankInstitution
 import app.cashflow.feature.banksync.domain.BankSyncProvider
 import app.cashflow.feature.banksync.domain.BankTransaction
+import app.cashflow.feature.banksync.domain.FetchedTransactions
 import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -100,8 +101,9 @@ class EnableBankingProvider(
                 )
             }
 
-    override suspend fun transactions(providerAccountUid: String, from: LocalDate?, to: LocalDate): Result<List<BankTransaction>, BankError> {
+    override suspend fun transactions(providerAccountUid: String, from: LocalDate?, to: LocalDate): Result<FetchedTransactions, BankError> {
         val rows = ArrayList<BankTransaction>()
+        var undated = 0
         var continuation: String? = null
         repeat(MAX_PAGES) {
             val page = call<TransactionsDto> {
@@ -109,19 +111,18 @@ class EnableBankingProvider(
                     auth(it)
                     if (from != null) parameter("date_from", from.toString()) else parameter("strategy", "longest")
                     parameter("date_to", to.toString())
-                    parameter("transaction_status", "BOOK")
                     continuation?.let { key -> parameter("continuation_key", key) }
                 }
             }
             when (page) {
                 is Result.Error -> return page
                 is Result.Success -> {
-                    page.data.transactions.mapNotNullTo(rows) { it.toBankTransaction() }
-                    continuation = page.data.continuationKey?.takeIf { it.isNotBlank() } ?: return Result.Success(rows)
+                    page.data.transactions.forEach { dto -> dto.toBankTransaction()?.let(rows::add) ?: undated++ }
+                    continuation = page.data.continuationKey?.takeIf { it.isNotBlank() } ?: return Result.Success(FetchedTransactions(rows, undated))
                 }
             }
         }
-        return Result.Success(rows)
+        return Result.Success(FetchedTransactions(rows, undated))
     }
 
     override suspend fun revoke(sessionId: String): EmptyResult<BankError> =
@@ -193,7 +194,8 @@ class EnableBankingProvider(
 internal fun AccountDto.toBankAccount() = BankAccount(
     stableKey = identificationHash,
     providerUid = uid,
-    name = name ?: product,
+    // `name` is the account holder's name; the account is described by its product or description.
+    name = (details ?: product)?.takeIf { it.isNotBlank() },
     number = (accountId?.iban ?: accountId?.other?.identification)?.filter { it.isDigit() }?.takeIf { it.isNotEmpty() },
     currency = currency,
     kind = when (cashAccountType) {
@@ -209,10 +211,11 @@ internal fun TransactionDto.toBankTransaction(): BankTransaction? {
     val magnitude = BigDecimal(transactionAmount.amount).abs().movePointRight(2).setScale(0, RoundingMode.HALF_UP).toLong()
     val debit = creditDebitIndicator == "DBIT"
     val counterparty = if (debit) creditor?.name else debtor?.name
-    val text = remittanceInformation?.filter { it.isNotBlank() }?.joinToString(" ")?.takeIf { it.isNotBlank() }
-        ?: counterparty?.takeIf { it.isNotBlank() }
-        ?: note?.takeIf { it.isNotBlank() }
-        ?: ""
+    // The merchant or sender is often only the counterparty; the remittance text may be just "Kortköp".
+    val remittance = remittanceInformation?.filter { it.isNotBlank() }?.joinToString(" ").orEmpty()
+    val parts = listOfNotNull(counterparty?.trim(), remittance.trim(), note?.trim()).filter { it.isNotEmpty() }
+    val text = parts.fold(emptyList<String>()) { kept, part -> if (kept.any { it.contains(part, ignoreCase = true) }) kept else kept + part }
+        .joinToString(" ")
     return BankTransaction(
         reference = entryReference?.takeIf { it.isNotBlank() } ?: transactionId?.takeIf { it.isNotBlank() },
         bookingDate = booked,
